@@ -17,7 +17,7 @@ jobs:
     steps:
 
       - name: Checking out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
 
@@ -92,7 +92,7 @@ jobs:
 
       - name: Checkout documentation pages branch
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: gh-pages
           path: pages

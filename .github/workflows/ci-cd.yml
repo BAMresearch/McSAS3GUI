@@ -42,7 +42,7 @@ jobs:
     steps:
 
       - name: Checking out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
 
@@ -63,5 +63,4 @@ jobs:
       - name: Publish package distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://pypi.org/legacy/
           verbose: true

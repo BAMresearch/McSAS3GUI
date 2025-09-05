@@ -14,7 +14,7 @@ jobs:
 
       # depth=0 is needed for semantic-release
       - name: Checking out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: main

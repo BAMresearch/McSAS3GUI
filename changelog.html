@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Authors" href="authors.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>CHANGELOG - McSAS3GUI 0.1.4 documentation</title>
+        <title>CHANGELOG - McSAS3GUI 0.1.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=34bb78ad" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">McSAS3GUI 0.1.4 documentation</div></a>
+      <a href="index.html"><div class="brand">McSAS3GUI 0.1.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">McSAS3GUI 0.1.4 documentation</span>
+  <span class="sidebar-brand-text">McSAS3GUI 0.1.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -199,7 +199,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="readme.html">McSAS3GUI (v0.1.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">McSAS3GUI (v0.1.5)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -334,167 +334,182 @@
         <article role="main" id="furo-main-content">
           <section id="changelog">
 <h1>CHANGELOG<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
-<section id="v0-1-4-2025-08-15">
-<h2>v0.1.4 (2025-08-15)<a class="headerlink" href="#v0-1-4-2025-08-15" title="Link to this heading">¶</a></h2>
+<section id="v0-1-5-2025-09-05">
+<h2>v0.1.5 (2025-09-05)<a class="headerlink" href="#v0-1-5-2025-09-05" title="Link to this heading">¶</a></h2>
 <section id="bug-fixes">
 <h3>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><strong>HistogramSettingsTab</strong>: set expected output file, do not use (not working) paths from <em>prefab</em> (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/a0c59ab39afe74495defb41923f5469b4fed7d4a"><code class="docutils literal notranslate"><span class="pre">a0c59ab</span></code></a>)</p></li>
-<li><p><strong>GettingStartedTab</strong>: test aginst the tab which is to be modified (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/0c35ce0fc720abf608df3c4d388fe0f3320216d0"><code class="docutils literal notranslate"><span class="pre">0c35ce0</span></code></a>)</p></li>
-</ul>
-</section>
-<section id="code-style">
-<h3>Code style<a class="headerlink" href="#code-style" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><strong>General</strong>: formatting (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/2d97002adcd9460b75a1941c5beb78936bf4ac52"><code class="docutils literal notranslate"><span class="pre">2d97002</span></code></a>)</p></li>
-</ul>
-</section>
-</section>
-<section id="v0-1-3-2025-08-14">
-<h2>v0.1.3 (2025-08-14)<a class="headerlink" href="#v0-1-3-2025-08-14" title="Link to this heading">¶</a></h2>
-<section id="id1">
-<h3>Bug fixes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><strong>PreFab</strong>: output files from testdata written to temp directory as well (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/0fd044266f0c10ea9fca3cf297af7982a643965a"><code class="docutils literal notranslate"><span class="pre">0fd0442</span></code></a>)</p></li>
-<li><p><strong>RunSettingsTab</strong>: use the same temp dir in run_test_optimization() (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/7ac2399c6d52fa046c12120d55c737436958dbb5"><code class="docutils literal notranslate"><span class="pre">7ac2399</span></code></a>)</p></li>
-<li><p><strong>GettingStartedTab &amp; Logging</strong>: create a proper temp dir out-of-source for log files and intermediate configs (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/a4b5bdfe6116703fe8859c380fc4cca06b53d219"><code class="docutils literal notranslate"><span class="pre">a4b5bdf</span></code></a>)</p></li>
-<li><p><strong>DataLoadingTab</strong>: csvargs is expected as dict in McSAS (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/209dc62fc5ef5a9b84b304fdea35e7873f893c65"><code class="docutils literal notranslate"><span class="pre">209dc62</span></code></a>)</p></li>
-<li><p><strong>Configurations Examples</strong>: moved to src dir since they need to be installed along (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/e75c5a6639dace8885961bbe0e4c510b7f45b326"><code class="docutils literal notranslate"><span class="pre">e75c5a6</span></code></a>)</p></li>
-<li><p><strong>Project</strong>: remove redundant dependencies implied by mcsas3 (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/2e550ef646360d91be1a3115f1b4f6a30e873ea6"><code class="docutils literal notranslate"><span class="pre">2e550ef</span></code></a>)</p></li>
-</ul>
-</section>
-<section id="continuous-integration">
-<h3>Continuous integration<a class="headerlink" href="#continuous-integration" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><strong>Publish</strong>: show verbose messages in case of error (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/35c0bedd1df81a22a44748752ceefb3b6ab47087"><code class="docutils literal notranslate"><span class="pre">35c0bed</span></code></a>)</p></li>
-<li><p><strong>Tests</strong>: testing Windows (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/5ff1ebc1d98f9713adca8ea4a5b1c63d3caf7b32"><code class="docutils literal notranslate"><span class="pre">5ff1ebc</span></code></a>)</p></li>
-<li><p><strong>Publish</strong>: pypi url needs /legacy/ suffix (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/15121e8f5dce114220e0d00b5787769e6ca9703f"><code class="docutils literal notranslate"><span class="pre">15121e8</span></code></a>)</p></li>
-<li><p><strong>Publish</strong>: use test.pypi.org (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/505c64aa07fc683f990b9b65217edcddd0ed5c6a"><code class="docutils literal notranslate"><span class="pre">505c64a</span></code></a>)</p></li>
-</ul>
-</section>
-</section>
-<section id="v0-1-2-2025-08-13">
-<h2>v0.1.2 (2025-08-13)<a class="headerlink" href="#v0-1-2-2025-08-13" title="Link to this heading">¶</a></h2>
-<section id="id2">
-<h3>Bug fixes<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><strong>Project</strong>: McSAS3 dependency available on PyPI now (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/cf280f89e12b583ac9ce267d0912645a8cdb914c"><code class="docutils literal notranslate"><span class="pre">cf280f8</span></code></a>)</p></li>
-</ul>
-</section>
-<section id="id3">
-<h3>Code style<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><strong>General</strong>: formatting improved (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/9159f968c560aebdd19b741570a2dff1c0b54e3f"><code class="docutils literal notranslate"><span class="pre">9159f96</span></code></a>)</p></li>
-</ul>
-</section>
-<section id="id4">
-<h3>Continuous integration<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><strong>Release</strong>: debug job (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/82c195284a4eb405f725d4b83ed1438d4744432c"><code class="docutils literal notranslate"><span class="pre">82c1952</span></code></a>)</p></li>
-<li><p><strong>Docs</strong>: update package DB here as well (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/04960719d998362802bdb02735cf2e403288e655"><code class="docutils literal notranslate"><span class="pre">0496071</span></code></a>)</p></li>
-<li><p><strong>Tests</strong>: before installing sys packages, update package DB, to avoid outdated lists (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/e00a085cac8194b0d44eee98624ef4a851f503be"><code class="docutils literal notranslate"><span class="pre">e00a085</span></code></a>)</p></li>
-<li><p><strong>Tests</strong>: try installing PyQt6 system-wide to get all required binary dependencies (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/be3e5f5d451f0225831cee7d2b1a9a48cda9295c"><code class="docutils literal notranslate"><span class="pre">be3e5f5</span></code></a>)</p></li>
-<li><p><strong>Tests</strong>: typo installing additional system packages required by PyQt6 (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/909c2084939253d4809b25f6c14593862e7b7918"><code class="docutils literal notranslate"><span class="pre">909c208</span></code></a>)</p></li>
-<li><p><strong>Tests</strong>: additional system packages required by PyQt6 (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/9584c296dc85826ce99b39dc9be157782b19dc70"><code class="docutils literal notranslate"><span class="pre">9584c29</span></code></a>)</p></li>
+<li><p><strong>Histogramming</strong>: actually use new input/ouput paths given to hist_run_tab (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/51398b21ff5e622f8ad5aa5dd9336b672c536922"><code class="docutils literal notranslate"><span class="pre">51398b2</span></code></a>)</p></li>
 </ul>
 </section>
 <section id="unknown-scope">
 <h3>Unknown Scope<a class="headerlink" href="#unknown-scope" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p>Revert “ci(Release): debug job” (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/e3fd4eddf990a05d2ca6845615cafbcac426158d"><code class="docutils literal notranslate"><span class="pre">e3fd4ed</span></code></a>)</p></li>
-<li><p>tests(Utils): remove unused code which causes import errors (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/c40719635f67c603d7c310ed6224b8c5a59258d1"><code class="docutils literal notranslate"><span class="pre">c407196</span></code></a>)</p></li>
+<li><p>Update on logo (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/c82daecf85c1d0f08c8a7b9e2feacfc172bc0f4b"><code class="docutils literal notranslate"><span class="pre">c82daec</span></code></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="v0-1-4-2025-08-15">
+<h2>v0.1.4 (2025-08-15)<a class="headerlink" href="#v0-1-4-2025-08-15" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h3>Bug fixes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>HistogramSettingsTab</strong>: set expected output file, do not use (not working) paths from <em>prefab</em> (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/a0c59ab39afe74495defb41923f5469b4fed7d4a"><code class="docutils literal notranslate"><span class="pre">a0c59ab</span></code></a>)</p></li>
+<li><p><strong>GettingStartedTab</strong>: test aginst the tab which is to be modified (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/0c35ce0fc720abf608df3c4d388fe0f3320216d0"><code class="docutils literal notranslate"><span class="pre">0c35ce0</span></code></a>)</p></li>
+</ul>
+</section>
+<section id="code-style">
+<h3>Code style<a class="headerlink" href="#code-style" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>General</strong>: formatting (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/2d97002adcd9460b75a1941c5beb78936bf4ac52"><code class="docutils literal notranslate"><span class="pre">2d97002</span></code></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="v0-1-3-2025-08-14">
+<h2>v0.1.3 (2025-08-14)<a class="headerlink" href="#v0-1-3-2025-08-14" title="Link to this heading">¶</a></h2>
+<section id="id2">
+<h3>Bug fixes<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>PreFab</strong>: output files from testdata written to temp directory as well (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/0fd044266f0c10ea9fca3cf297af7982a643965a"><code class="docutils literal notranslate"><span class="pre">0fd0442</span></code></a>)</p></li>
+<li><p><strong>RunSettingsTab</strong>: use the same temp dir in run_test_optimization() (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/7ac2399c6d52fa046c12120d55c737436958dbb5"><code class="docutils literal notranslate"><span class="pre">7ac2399</span></code></a>)</p></li>
+<li><p><strong>GettingStartedTab &amp; Logging</strong>: create a proper temp dir out-of-source for log files and intermediate configs (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/a4b5bdfe6116703fe8859c380fc4cca06b53d219"><code class="docutils literal notranslate"><span class="pre">a4b5bdf</span></code></a>)</p></li>
+<li><p><strong>DataLoadingTab</strong>: csvargs is expected as dict in McSAS (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/209dc62fc5ef5a9b84b304fdea35e7873f893c65"><code class="docutils literal notranslate"><span class="pre">209dc62</span></code></a>)</p></li>
+<li><p><strong>Configurations Examples</strong>: moved to src dir since they need to be installed along (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/e75c5a6639dace8885961bbe0e4c510b7f45b326"><code class="docutils literal notranslate"><span class="pre">e75c5a6</span></code></a>)</p></li>
+<li><p><strong>Project</strong>: remove redundant dependencies implied by mcsas3 (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/2e550ef646360d91be1a3115f1b4f6a30e873ea6"><code class="docutils literal notranslate"><span class="pre">2e550ef</span></code></a>)</p></li>
+</ul>
+</section>
+<section id="continuous-integration">
+<h3>Continuous integration<a class="headerlink" href="#continuous-integration" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Publish</strong>: show verbose messages in case of error (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/35c0bedd1df81a22a44748752ceefb3b6ab47087"><code class="docutils literal notranslate"><span class="pre">35c0bed</span></code></a>)</p></li>
+<li><p><strong>Tests</strong>: testing Windows (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/5ff1ebc1d98f9713adca8ea4a5b1c63d3caf7b32"><code class="docutils literal notranslate"><span class="pre">5ff1ebc</span></code></a>)</p></li>
+<li><p><strong>Publish</strong>: pypi url needs /legacy/ suffix (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/15121e8f5dce114220e0d00b5787769e6ca9703f"><code class="docutils literal notranslate"><span class="pre">15121e8</span></code></a>)</p></li>
+<li><p><strong>Publish</strong>: use test.pypi.org (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/505c64aa07fc683f990b9b65217edcddd0ed5c6a"><code class="docutils literal notranslate"><span class="pre">505c64a</span></code></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="v0-1-2-2025-08-13">
+<h2>v0.1.2 (2025-08-13)<a class="headerlink" href="#v0-1-2-2025-08-13" title="Link to this heading">¶</a></h2>
+<section id="id3">
+<h3>Bug fixes<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Project</strong>: McSAS3 dependency available on PyPI now (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/cf280f89e12b583ac9ce267d0912645a8cdb914c"><code class="docutils literal notranslate"><span class="pre">cf280f8</span></code></a>)</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>Code style<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>General</strong>: formatting improved (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/9159f968c560aebdd19b741570a2dff1c0b54e3f"><code class="docutils literal notranslate"><span class="pre">9159f96</span></code></a>)</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>Continuous integration<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Release</strong>: debug job (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/82c195284a4eb405f725d4b83ed1438d4744432c"><code class="docutils literal notranslate"><span class="pre">82c1952</span></code></a>)</p></li>
+<li><p><strong>Docs</strong>: update package DB here as well (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/04960719d998362802bdb02735cf2e403288e655"><code class="docutils literal notranslate"><span class="pre">0496071</span></code></a>)</p></li>
+<li><p><strong>Tests</strong>: before installing sys packages, update package DB, to avoid outdated lists (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/e00a085cac8194b0d44eee98624ef4a851f503be"><code class="docutils literal notranslate"><span class="pre">e00a085</span></code></a>)</p></li>
+<li><p><strong>Tests</strong>: try installing PyQt6 system-wide to get all required binary dependencies (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/be3e5f5d451f0225831cee7d2b1a9a48cda9295c"><code class="docutils literal notranslate"><span class="pre">be3e5f5</span></code></a>)</p></li>
+<li><p><strong>Tests</strong>: typo installing additional system packages required by PyQt6 (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/909c2084939253d4809b25f6c14593862e7b7918"><code class="docutils literal notranslate"><span class="pre">909c208</span></code></a>)</p></li>
+<li><p><strong>Tests</strong>: additional system packages required by PyQt6 (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/9584c296dc85826ce99b39dc9be157782b19dc70"><code class="docutils literal notranslate"><span class="pre">9584c29</span></code></a>)</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>Unknown Scope<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Revert “ci(Release): debug job” (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/e3fd4eddf990a05d2ca6845615cafbcac426158d"><code class="docutils literal notranslate"><span class="pre">e3fd4ed</span></code></a>)</p></li>
+<li><p>tests(Utils): remove unused code which causes import errors (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/c40719635f67c603d7c310ed6224b8c5a59258d1"><code class="docutils literal notranslate"><span class="pre">c407196</span></code></a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="v0-1-1-2025-08-12">
 <h2>v0.1.1 (2025-08-12)<a class="headerlink" href="#v0-1-1-2025-08-12" title="Link to this heading">¶</a></h2>
-<section id="id5">
-<h3>Unknown Scope<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<section id="id7">
+<h3>Unknown Scope<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p>0.1.1 (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/29a34cc454885061f918336042de2ab032ac5afa"><code class="docutils literal notranslate"><span class="pre">29a34cc</span></code></a>)</p></li>
-<li><p>Last example: RR dataset 3 (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/210889e1ac642cfa78eb3059d7fdd24db760f056"><code class="docutils literal notranslate"><span class="pre">210889e</span></code></a>)</p></li>
-<li><p>will work on 3.10 as well. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/4ed299edb749589b7a340f0b13af91e606351350"><code class="docutils literal notranslate"><span class="pre">4ed299e</span></code></a>)</p></li>
-<li><p>modern numpy now works as well, removing restriction on python 3.13 (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/86cf44b0e8dbf16a45203a2935eb6da1b93c2e23"><code class="docutils literal notranslate"><span class="pre">86cf44b</span></code></a>)</p></li>
-<li><p>Extra explanation (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/400c602cdc51987e59cc574bc3f74d299184d743"><code class="docutils literal notranslate"><span class="pre">400c602</span></code></a>)</p></li>
-<li><p>Updates to the examples (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/bb33ec86c63a5970f41d18fe73edadba9b766c0b"><code class="docutils literal notranslate"><span class="pre">bb33ec8</span></code></a>)</p></li>
-<li><p>Adjustment to the advanced nexus demo (highlighting logRandom), and addition of the round robin 1 demo (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/6fa5d84cc3a746a8b1371b2321493d568d11a756"><code class="docutils literal notranslate"><span class="pre">6fa5d84</span></code></a>)</p></li>
-<li><p>adding logo (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/49e14dae7fc0f70679a69371027d6da7d9555a7b"><code class="docutils literal notranslate"><span class="pre">49e14da</span></code></a>)</p></li>
-<li><p>improved structure of eventFilter. Still allows internal drag and drops though. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/d9e0025c2d72588bffb4cc25c2856f762bb7a6c5"><code class="docutils literal notranslate"><span class="pre">d9e0025</span></code></a>)</p></li>
-<li><p>Fixing table highlight color (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/02a7232d5d8be148c73b07d1737ebbdcba2af330"><code class="docutils literal notranslate"><span class="pre">02a7232</span></code></a>)</p></li>
-<li><p>Drag and drop fix for the file table widgets. This was hard. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/28036dad7596bac08abcec02c47ffa3781ec63d2"><code class="docutils literal notranslate"><span class="pre">28036da</span></code></a>)</p></li>
-<li><p>Add drag-and-drop support for files into the tables. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/02b80098cca0be226a478c901026f942bf8d287b"><code class="docutils literal notranslate"><span class="pre">02b8009</span></code></a>)</p></li>
-<li><p>last one (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/3014af06cded75b2d23dcdf46f80196e10eb95d4"><code class="docutils literal notranslate"><span class="pre">3014af0</span></code></a>)</p></li>
-<li><p>Ok, windows is a pain in the butt. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/800965ff2a59fafb97c1ad0717bbc4c01f7adef7"><code class="docutils literal notranslate"><span class="pre">800965f</span></code></a>)</p></li>
-<li><p>Applying some style to override Window’s dark defaults. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/20572e91b5470c372327a29494e4ad6d3aadcbda"><code class="docutils literal notranslate"><span class="pre">20572e9</span></code></a>)</p></li>
-<li><p>Stopped messing around with fonts as they’re not consistent cross-platform. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/0ba0b0912222ce30bd0db7f9c793b5751fe48033"><code class="docutils literal notranslate"><span class="pre">0ba0b09</span></code></a>)</p></li>
-<li><p>minifix. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/3281589709ba3c11446fc502619743515a5211d3"><code class="docutils literal notranslate"><span class="pre">3281589</span></code></a>)</p></li>
-<li><p>Changing debug levels (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/0f2cd55ad1111717052f5aee541aecdf07663604"><code class="docutils literal notranslate"><span class="pre">0f2cd55</span></code></a>)</p></li>
-<li><p>Improving the text on the three examples. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/166ee4f45d8fe6e2d60cbc3c218c96cda53e13f9"><code class="docutils literal notranslate"><span class="pre">166ee4f</span></code></a>)</p></li>
-<li><p>New nexus example, and an update to the configuration files (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/9d67def732be0f613859e1851e989e44aa09b558"><code class="docutils literal notranslate"><span class="pre">9d67def</span></code></a>)</p></li>
-<li><p>Update order and text. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/d049a3602474c867997eed693efeb93bc233547f"><code class="docutils literal notranslate"><span class="pre">d049a36</span></code></a>)</p></li>
-<li><p>showing the test histogram PDF, even on Windows (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/2b7119fd12bb8a4ae32f577a77bb53b052059a21"><code class="docutils literal notranslate"><span class="pre">2b7119f</span></code></a>)</p></li>
-<li><p>Trying to get the PDF to show on Windows. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/0cd38899a94ada933fe7cc6591d974efe9df7256"><code class="docutils literal notranslate"><span class="pre">0cd3889</span></code></a>)</p></li>
-<li><p>Bug fixes for windows (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/1d21d518ad5197c4608f2a263272b21b88b4a3b8"><code class="docutils literal notranslate"><span class="pre">1d21d51</span></code></a>)</p></li>
-<li><p>making sure we can plot the test histogram also in windows (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/4fa9b371e365a1aad851368e7a12f2b3150b389b"><code class="docutils literal notranslate"><span class="pre">4fa9b37</span></code></a>)</p></li>
-<li><p>minifix (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/519335e04fd9cc9145d002ed3fbf45a8aca1077a"><code class="docutils literal notranslate"><span class="pre">519335e</span></code></a>)</p></li>
-<li><p>Can load prefabricated examples from a single yaml (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/6dcdc12768557f790b7078ac90d321611f911d89"><code class="docutils literal notranslate"><span class="pre">6dcdc12</span></code></a>)</p></li>
-<li><p>Removing too challenging nexus data from the test data. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/6e6a379b80a8307ec6277659f1e507f233861765"><code class="docutils literal notranslate"><span class="pre">6e6a379</span></code></a>)</p></li>
-<li><p>updating getting started. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/e0a138eddb0c639d370238dcba0e9c639c56728b"><code class="docutils literal notranslate"><span class="pre">e0a138e</span></code></a>)</p></li>
-<li><p>correcting file extension of processed files to .hdf5 (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/606d5d1b82f408fd1fa3347e190b43da52faef36"><code class="docutils literal notranslate"><span class="pre">606d5d1</span></code></a>)</p></li>
-<li><p>fixing a path issue on windows (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/d6c6783a657595214e8ce25e047569bc0d60e8b5"><code class="docutils literal notranslate"><span class="pre">d6c6783</span></code></a>)</p></li>
-<li><p>prevent breaking on windows with empty model name (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/75c0cb3b661baba02e8e261139d4cf1e4a23a76a"><code class="docutils literal notranslate"><span class="pre">75c0cb3</span></code></a>)</p></li>
-<li><p>Ensure that the default configurations are loaded from the correct path (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/b87a922e98ffd57b385f09b749fcc3cda86da534"><code class="docutils literal notranslate"><span class="pre">b87a922</span></code></a>)</p></li>
-<li><p>fixed annoying window repositioning issue (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/5446eaf405a5c2daa1612d943571c7752a4215d2"><code class="docutils literal notranslate"><span class="pre">5446eaf</span></code></a>)</p></li>
-<li><p>Fixing small usability issue - launch with python -m mcsas3gui (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/7b56ae637fd53f2935e6d4f481544d8353ca1b60"><code class="docutils literal notranslate"><span class="pre">7b56ae6</span></code></a>)</p></li>
-<li><p>Change the way mcsas3 is launched to avoid command-line scripts. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/008f094812f386df1b180f762d2fd63287d4a60e"><code class="docutils literal notranslate"><span class="pre">008f094</span></code></a>)</p></li>
-<li><p>enforcing posix paths on CLI (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/2f3c3ee15874d4ba5e2bd6e917b2080a2450f24e"><code class="docutils literal notranslate"><span class="pre">2f3c3ee</span></code></a>)</p></li>
-<li><p>Updated pyproject fixing bug (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/a44d9227daf0a341a3b0cdc0e548c6282c08ecf7"><code class="docutils literal notranslate"><span class="pre">a44d922</span></code></a>)</p></li>
-<li><p>small update (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/02b6018ed1dbaea46e3e84daa49801a880d909c8"><code class="docutils literal notranslate"><span class="pre">02b6018</span></code></a>)</p></li>
-<li><p>pyinstaller –name McSAS3GUI –windowed src/mcsas3gui/main.py # not yet fully functional executable (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/7986876ac6c8822689e6d7468c9acd4b3e69ed32"><code class="docutils literal notranslate"><span class="pre">7986876</span></code></a>)</p></li>
-<li><p>updated pyproject towards build (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/34128cdb70ffc23e2fc037c3c1daacd920e08c24"><code class="docutils literal notranslate"><span class="pre">34128cd</span></code></a>)</p></li>
-<li><p>reorganisation to enable pip installability, resulting in command-line m3gui (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/63a0795a10fffeb9d3e6a974827be0ac735233e2"><code class="docutils literal notranslate"><span class="pre">63a0795</span></code></a>)</p></li>
-<li><p>connecting signals to set saved config files in the optimization and histogramming tabs (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/411d120fd89b2fa388aa48b624740c451a9f3af7"><code class="docutils literal notranslate"><span class="pre">411d120</span></code></a>)</p></li>
-<li><p>Updating pulldown menus on save (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/ab2a492725630fc731b6d89d9023f3ae392bd05c"><code class="docutils literal notranslate"><span class="pre">ab2a492</span></code></a>)</p></li>
-<li><p>A readme and a license (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/477e819ee5886bdbfaf542999fd06d90819d6907"><code class="docutils literal notranslate"><span class="pre">477e819</span></code></a>)</p></li>
-<li><p>updated requirements to remove particular mcsas3 commit (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/36546740980b9a533f608d66e7331358c79d2a09"><code class="docutils literal notranslate"><span class="pre">3654674</span></code></a>)</p></li>
-<li><p>handling of IEmin in data settings tab (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/16a2b558fae752795bc38a1975ac37dba7ad4815"><code class="docutils literal notranslate"><span class="pre">16a2b55</span></code></a>)</p></li>
-<li><p>Minor edits for readability (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/5aa460b50ac60dc6edc0fda4921d716aed914de4"><code class="docutils literal notranslate"><span class="pre">5aa460b</span></code></a>)</p></li>
-<li><p>Adjusting the yaml display and saving with a custom dumper (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/967be910dd17abad581f77b4ed083bc012840db5"><code class="docutils literal notranslate"><span class="pre">967be91</span></code></a>)</p></li>
-<li><p>Fleshing out the “Getting Started” helpful bits. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/e109fd65981cd3d3cc77e0e9b36d5a3da5e9aaba"><code class="docutils literal notranslate"><span class="pre">e109fd6</span></code></a>)</p></li>
-<li><p>Clearer plotting when using omit (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/2d5639ebb1ada7d7d59a8214a38ad378e6a2bd4c"><code class="docutils literal notranslate"><span class="pre">2d5639e</span></code></a>)</p></li>
-<li><p>Test histogram now opens PDF automatically. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/c815eebfb7b6e05a7784fac0301b6df278e69dcf"><code class="docutils literal notranslate"><span class="pre">c815eeb</span></code></a>)</p></li>
-<li><p>Histogramming works and editor works.. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/1f9afb0dc07d4f0d03f224b9699d502ea5bf95de"><code class="docutils literal notranslate"><span class="pre">1f9afb0</span></code></a>)</p></li>
-<li><p>fix file extensions (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/48cdc8f9c3040b036cd8c2cc2010378d11dee26a"><code class="docutils literal notranslate"><span class="pre">48cdc8f</span></code></a>)</p></li>
-<li><p>Drag and drop file line entry widgets now all working. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/7fe3e2d448cbf5acdfb7f9ea30768df5b2522de8"><code class="docutils literal notranslate"><span class="pre">7fe3e2d</span></code></a>)</p></li>
-<li><p>Abstracted the file line selection widget (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/1364400e63ce706e073d16a4e67c3472583fb2ef"><code class="docutils literal notranslate"><span class="pre">1364400</span></code></a>)</p></li>
-<li><p>Adding a reusable file-line selection widget with drag and drop (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/9ef410aeb8c9bbd0b7c52cb0df5a91f82ffb886a"><code class="docutils literal notranslate"><span class="pre">9ef410a</span></code></a>)</p></li>
-<li><p>bug resolved with spaces in filenames. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/e36b7eeaa27b68980bbe74bd632247e2a7806290"><code class="docutils literal notranslate"><span class="pre">e36b7ee</span></code></a>)</p></li>
-<li><p>Trying to get drag and drop working in the file tabulation widget (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/5dc689c22615951ea9a297e10a4ae8bd9d9df9ca"><code class="docutils literal notranslate"><span class="pre">5dc689c</span></code></a>)</p></li>
-<li><p>Updates… (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/dd65ab4d74057a55b4e644563f537b2b5b650598"><code class="docutils literal notranslate"><span class="pre">dd65ab4</span></code></a>)</p></li>
-<li><p>separated the file selection table for optimization and histogramming (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/90da9e6e225080d362cc1c007bc564864a34fe33"><code class="docutils literal notranslate"><span class="pre">90da9e6</span></code></a>)</p></li>
-<li><p>setting previously used directories for user convenience (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/07316469bc8feeaec549b178be181503614a6b1e"><code class="docutils literal notranslate"><span class="pre">0731646</span></code></a>)</p></li>
-<li><p>cleanup (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/dfbfe610c26aefc5b51cc001c48a3ea3e50c8348"><code class="docutils literal notranslate"><span class="pre">dfbfe61</span></code></a>)</p></li>
-<li><p>editor now functional for multipart yamls (needed for histogramming) (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/1e7f061d4d102bfbad42c991e9d273524a14d9bd"><code class="docutils literal notranslate"><span class="pre">1e7f061</span></code></a>)</p></li>
-<li><p>Getting there.. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/e9224e19dc1794778861d6c4c8f0e9ba4d9a3140"><code class="docutils literal notranslate"><span class="pre">e9224e1</span></code></a>)</p></li>
-<li><p>updates. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/2948074e1b3cf6b384e89661ea936dd0ebc2608a"><code class="docutils literal notranslate"><span class="pre">2948074</span></code></a>)</p></li>
-<li><p>Somewhat functional, processes cannot be killed yet, however. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/8e2a449945f2c3eed1ea0a7330451fd5e6e63067"><code class="docutils literal notranslate"><span class="pre">8e2a449</span></code></a>)</p></li>
-<li><p>Now can run and show a test optimization (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/983f12c44059e9ae3bfa0dd6081651e29e1354c6"><code class="docutils literal notranslate"><span class="pre">983f12c</span></code></a>)</p></li>
-<li><p>Setting up test runs in run_settings tab. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/30f50338e9ca8306de518189706b8c93bde24079"><code class="docutils literal notranslate"><span class="pre">30f5033</span></code></a>)</p></li>
-<li><p>updating run settings (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/73b8279f28535de04e7da75036b88c67cc1c0256"><code class="docutils literal notranslate"><span class="pre">73b8279</span></code></a>)</p></li>
-<li><p>Updates to data loading, I think it works for now. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/be9fd1775814de9f43494f08e97eb4c9603f2b93"><code class="docutils literal notranslate"><span class="pre">be9fd17</span></code></a>)</p></li>
-<li><p>upgrades (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/24cae6dfff2fd65aaeb4a3872f712a47b9769613"><code class="docutils literal notranslate"><span class="pre">24cae6d</span></code></a>)</p></li>
-<li><p>working ok now. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/3b4334421909c860cd475e39d15984025407eb96"><code class="docutils literal notranslate"><span class="pre">3b43344</span></code></a>)</p></li>
-<li><p>data loading tab starting to look like something useful now. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/8a4e925f6d5615f968887bbba41ec9a544d30a7e"><code class="docutils literal notranslate"><span class="pre">8a4e925</span></code></a>)</p></li>
-<li><p>Now loads and plots (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/0d7dc3cbda5e39a58c8e673a43f10f50283d02e0"><code class="docutils literal notranslate"><span class="pre">0d7dc3c</span></code></a>)</p></li>
-<li><p>minimal change in naming. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/3859dcd1f01f27d0cab3181b52fae126d34a2e18"><code class="docutils literal notranslate"><span class="pre">3859dcd</span></code></a>)</p></li>
-<li><p>Updated main window naming (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/20b0063c5cb92ad4090784545f6c61424052e819"><code class="docutils literal notranslate"><span class="pre">20b0063</span></code></a>)</p></li>
-<li><p>Drafted the optimization tab contents (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/d3b1e89feb88e1bcbcfddf9ee4da907d7315b83e"><code class="docutils literal notranslate"><span class="pre">d3b1e89</span></code></a>)</p></li>
-<li><p>some additions, but nothing working yet (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/41acbd8b07b5ac7b037caa601943db774e51129b"><code class="docutils literal notranslate"><span class="pre">41acbd8</span></code></a>)</p></li>
-<li><p>sasmodels automatically interpreted (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/b11ae9753576468414fccf8ced6f10708aa94e56"><code class="docutils literal notranslate"><span class="pre">b11ae97</span></code></a>)</p></li>
-<li><p>run config now working with central yaml editor. editor has syntax highlighting and syntax error tooltips. (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/1d02a85c4505a4f8a5ebf168b8f7e37c49481a64"><code class="docutils literal notranslate"><span class="pre">1d02a85</span></code></a>)</p></li>
-<li><p>Centralizing the yaml editor widget (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/8cc27612dbebd744f506298368fc3475e1c86a70"><code class="docutils literal notranslate"><span class="pre">8cc2761</span></code></a>)</p></li>
-<li><p>sort of working (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/0bfbf07bc2780e5cec404b8915434b2996dcde27"><code class="docutils literal notranslate"><span class="pre">0bfbf07</span></code></a>)</p></li>
-<li><p>first commit (<a class="reference external" href="https://github.com/ibresslerBAM/McSAS3GUI/commit/5fcbc09d9be2d84324c4bbc48caa1d5eee7e77df"><code class="docutils literal notranslate"><span class="pre">5fcbc09</span></code></a>)</p></li>
+<li><p>0.1.1 (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/29a34cc454885061f918336042de2ab032ac5afa"><code class="docutils literal notranslate"><span class="pre">29a34cc</span></code></a>)</p></li>
+<li><p>Last example: RR dataset 3 (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/210889e1ac642cfa78eb3059d7fdd24db760f056"><code class="docutils literal notranslate"><span class="pre">210889e</span></code></a>)</p></li>
+<li><p>will work on 3.10 as well. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/4ed299edb749589b7a340f0b13af91e606351350"><code class="docutils literal notranslate"><span class="pre">4ed299e</span></code></a>)</p></li>
+<li><p>modern numpy now works as well, removing restriction on python 3.13 (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/86cf44b0e8dbf16a45203a2935eb6da1b93c2e23"><code class="docutils literal notranslate"><span class="pre">86cf44b</span></code></a>)</p></li>
+<li><p>Extra explanation (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/400c602cdc51987e59cc574bc3f74d299184d743"><code class="docutils literal notranslate"><span class="pre">400c602</span></code></a>)</p></li>
+<li><p>Updates to the examples (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/bb33ec86c63a5970f41d18fe73edadba9b766c0b"><code class="docutils literal notranslate"><span class="pre">bb33ec8</span></code></a>)</p></li>
+<li><p>Adjustment to the advanced nexus demo (highlighting logRandom), and addition of the round robin 1 demo (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/6fa5d84cc3a746a8b1371b2321493d568d11a756"><code class="docutils literal notranslate"><span class="pre">6fa5d84</span></code></a>)</p></li>
+<li><p>adding logo (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/49e14dae7fc0f70679a69371027d6da7d9555a7b"><code class="docutils literal notranslate"><span class="pre">49e14da</span></code></a>)</p></li>
+<li><p>improved structure of eventFilter. Still allows internal drag and drops though. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/d9e0025c2d72588bffb4cc25c2856f762bb7a6c5"><code class="docutils literal notranslate"><span class="pre">d9e0025</span></code></a>)</p></li>
+<li><p>Fixing table highlight color (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/02a7232d5d8be148c73b07d1737ebbdcba2af330"><code class="docutils literal notranslate"><span class="pre">02a7232</span></code></a>)</p></li>
+<li><p>Drag and drop fix for the file table widgets. This was hard. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/28036dad7596bac08abcec02c47ffa3781ec63d2"><code class="docutils literal notranslate"><span class="pre">28036da</span></code></a>)</p></li>
+<li><p>Add drag-and-drop support for files into the tables. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/02b80098cca0be226a478c901026f942bf8d287b"><code class="docutils literal notranslate"><span class="pre">02b8009</span></code></a>)</p></li>
+<li><p>last one (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/3014af06cded75b2d23dcdf46f80196e10eb95d4"><code class="docutils literal notranslate"><span class="pre">3014af0</span></code></a>)</p></li>
+<li><p>Ok, windows is a pain in the butt. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/800965ff2a59fafb97c1ad0717bbc4c01f7adef7"><code class="docutils literal notranslate"><span class="pre">800965f</span></code></a>)</p></li>
+<li><p>Applying some style to override Window’s dark defaults. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/20572e91b5470c372327a29494e4ad6d3aadcbda"><code class="docutils literal notranslate"><span class="pre">20572e9</span></code></a>)</p></li>
+<li><p>Stopped messing around with fonts as they’re not consistent cross-platform. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/0ba0b0912222ce30bd0db7f9c793b5751fe48033"><code class="docutils literal notranslate"><span class="pre">0ba0b09</span></code></a>)</p></li>
+<li><p>minifix. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/3281589709ba3c11446fc502619743515a5211d3"><code class="docutils literal notranslate"><span class="pre">3281589</span></code></a>)</p></li>
+<li><p>Changing debug levels (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/0f2cd55ad1111717052f5aee541aecdf07663604"><code class="docutils literal notranslate"><span class="pre">0f2cd55</span></code></a>)</p></li>
+<li><p>Improving the text on the three examples. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/166ee4f45d8fe6e2d60cbc3c218c96cda53e13f9"><code class="docutils literal notranslate"><span class="pre">166ee4f</span></code></a>)</p></li>
+<li><p>New nexus example, and an update to the configuration files (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/9d67def732be0f613859e1851e989e44aa09b558"><code class="docutils literal notranslate"><span class="pre">9d67def</span></code></a>)</p></li>
+<li><p>Update order and text. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/d049a3602474c867997eed693efeb93bc233547f"><code class="docutils literal notranslate"><span class="pre">d049a36</span></code></a>)</p></li>
+<li><p>showing the test histogram PDF, even on Windows (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/2b7119fd12bb8a4ae32f577a77bb53b052059a21"><code class="docutils literal notranslate"><span class="pre">2b7119f</span></code></a>)</p></li>
+<li><p>Trying to get the PDF to show on Windows. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/0cd38899a94ada933fe7cc6591d974efe9df7256"><code class="docutils literal notranslate"><span class="pre">0cd3889</span></code></a>)</p></li>
+<li><p>Bug fixes for windows (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/1d21d518ad5197c4608f2a263272b21b88b4a3b8"><code class="docutils literal notranslate"><span class="pre">1d21d51</span></code></a>)</p></li>
+<li><p>making sure we can plot the test histogram also in windows (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/4fa9b371e365a1aad851368e7a12f2b3150b389b"><code class="docutils literal notranslate"><span class="pre">4fa9b37</span></code></a>)</p></li>
+<li><p>minifix (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/519335e04fd9cc9145d002ed3fbf45a8aca1077a"><code class="docutils literal notranslate"><span class="pre">519335e</span></code></a>)</p></li>
+<li><p>Can load prefabricated examples from a single yaml (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/6dcdc12768557f790b7078ac90d321611f911d89"><code class="docutils literal notranslate"><span class="pre">6dcdc12</span></code></a>)</p></li>
+<li><p>Removing too challenging nexus data from the test data. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/6e6a379b80a8307ec6277659f1e507f233861765"><code class="docutils literal notranslate"><span class="pre">6e6a379</span></code></a>)</p></li>
+<li><p>updating getting started. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/e0a138eddb0c639d370238dcba0e9c639c56728b"><code class="docutils literal notranslate"><span class="pre">e0a138e</span></code></a>)</p></li>
+<li><p>correcting file extension of processed files to .hdf5 (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/606d5d1b82f408fd1fa3347e190b43da52faef36"><code class="docutils literal notranslate"><span class="pre">606d5d1</span></code></a>)</p></li>
+<li><p>fixing a path issue on windows (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/d6c6783a657595214e8ce25e047569bc0d60e8b5"><code class="docutils literal notranslate"><span class="pre">d6c6783</span></code></a>)</p></li>
+<li><p>prevent breaking on windows with empty model name (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/75c0cb3b661baba02e8e261139d4cf1e4a23a76a"><code class="docutils literal notranslate"><span class="pre">75c0cb3</span></code></a>)</p></li>
+<li><p>Ensure that the default configurations are loaded from the correct path (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/b87a922e98ffd57b385f09b749fcc3cda86da534"><code class="docutils literal notranslate"><span class="pre">b87a922</span></code></a>)</p></li>
+<li><p>fixed annoying window repositioning issue (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/5446eaf405a5c2daa1612d943571c7752a4215d2"><code class="docutils literal notranslate"><span class="pre">5446eaf</span></code></a>)</p></li>
+<li><p>Fixing small usability issue - launch with python -m mcsas3gui (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/7b56ae637fd53f2935e6d4f481544d8353ca1b60"><code class="docutils literal notranslate"><span class="pre">7b56ae6</span></code></a>)</p></li>
+<li><p>Change the way mcsas3 is launched to avoid command-line scripts. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/008f094812f386df1b180f762d2fd63287d4a60e"><code class="docutils literal notranslate"><span class="pre">008f094</span></code></a>)</p></li>
+<li><p>enforcing posix paths on CLI (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/2f3c3ee15874d4ba5e2bd6e917b2080a2450f24e"><code class="docutils literal notranslate"><span class="pre">2f3c3ee</span></code></a>)</p></li>
+<li><p>Updated pyproject fixing bug (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/a44d9227daf0a341a3b0cdc0e548c6282c08ecf7"><code class="docutils literal notranslate"><span class="pre">a44d922</span></code></a>)</p></li>
+<li><p>small update (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/02b6018ed1dbaea46e3e84daa49801a880d909c8"><code class="docutils literal notranslate"><span class="pre">02b6018</span></code></a>)</p></li>
+<li><p>pyinstaller –name McSAS3GUI –windowed src/mcsas3gui/main.py # not yet fully functional executable (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/7986876ac6c8822689e6d7468c9acd4b3e69ed32"><code class="docutils literal notranslate"><span class="pre">7986876</span></code></a>)</p></li>
+<li><p>updated pyproject towards build (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/34128cdb70ffc23e2fc037c3c1daacd920e08c24"><code class="docutils literal notranslate"><span class="pre">34128cd</span></code></a>)</p></li>
+<li><p>reorganisation to enable pip installability, resulting in command-line m3gui (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/63a0795a10fffeb9d3e6a974827be0ac735233e2"><code class="docutils literal notranslate"><span class="pre">63a0795</span></code></a>)</p></li>
+<li><p>connecting signals to set saved config files in the optimization and histogramming tabs (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/411d120fd89b2fa388aa48b624740c451a9f3af7"><code class="docutils literal notranslate"><span class="pre">411d120</span></code></a>)</p></li>
+<li><p>Updating pulldown menus on save (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/ab2a492725630fc731b6d89d9023f3ae392bd05c"><code class="docutils literal notranslate"><span class="pre">ab2a492</span></code></a>)</p></li>
+<li><p>A readme and a license (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/477e819ee5886bdbfaf542999fd06d90819d6907"><code class="docutils literal notranslate"><span class="pre">477e819</span></code></a>)</p></li>
+<li><p>updated requirements to remove particular mcsas3 commit (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/36546740980b9a533f608d66e7331358c79d2a09"><code class="docutils literal notranslate"><span class="pre">3654674</span></code></a>)</p></li>
+<li><p>handling of IEmin in data settings tab (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/16a2b558fae752795bc38a1975ac37dba7ad4815"><code class="docutils literal notranslate"><span class="pre">16a2b55</span></code></a>)</p></li>
+<li><p>Minor edits for readability (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/5aa460b50ac60dc6edc0fda4921d716aed914de4"><code class="docutils literal notranslate"><span class="pre">5aa460b</span></code></a>)</p></li>
+<li><p>Adjusting the yaml display and saving with a custom dumper (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/967be910dd17abad581f77b4ed083bc012840db5"><code class="docutils literal notranslate"><span class="pre">967be91</span></code></a>)</p></li>
+<li><p>Fleshing out the “Getting Started” helpful bits. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/e109fd65981cd3d3cc77e0e9b36d5a3da5e9aaba"><code class="docutils literal notranslate"><span class="pre">e109fd6</span></code></a>)</p></li>
+<li><p>Clearer plotting when using omit (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/2d5639ebb1ada7d7d59a8214a38ad378e6a2bd4c"><code class="docutils literal notranslate"><span class="pre">2d5639e</span></code></a>)</p></li>
+<li><p>Test histogram now opens PDF automatically. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/c815eebfb7b6e05a7784fac0301b6df278e69dcf"><code class="docutils literal notranslate"><span class="pre">c815eeb</span></code></a>)</p></li>
+<li><p>Histogramming works and editor works.. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/1f9afb0dc07d4f0d03f224b9699d502ea5bf95de"><code class="docutils literal notranslate"><span class="pre">1f9afb0</span></code></a>)</p></li>
+<li><p>fix file extensions (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/48cdc8f9c3040b036cd8c2cc2010378d11dee26a"><code class="docutils literal notranslate"><span class="pre">48cdc8f</span></code></a>)</p></li>
+<li><p>Drag and drop file line entry widgets now all working. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/7fe3e2d448cbf5acdfb7f9ea30768df5b2522de8"><code class="docutils literal notranslate"><span class="pre">7fe3e2d</span></code></a>)</p></li>
+<li><p>Abstracted the file line selection widget (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/1364400e63ce706e073d16a4e67c3472583fb2ef"><code class="docutils literal notranslate"><span class="pre">1364400</span></code></a>)</p></li>
+<li><p>Adding a reusable file-line selection widget with drag and drop (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/9ef410aeb8c9bbd0b7c52cb0df5a91f82ffb886a"><code class="docutils literal notranslate"><span class="pre">9ef410a</span></code></a>)</p></li>
+<li><p>bug resolved with spaces in filenames. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/e36b7eeaa27b68980bbe74bd632247e2a7806290"><code class="docutils literal notranslate"><span class="pre">e36b7ee</span></code></a>)</p></li>
+<li><p>Trying to get drag and drop working in the file tabulation widget (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/5dc689c22615951ea9a297e10a4ae8bd9d9df9ca"><code class="docutils literal notranslate"><span class="pre">5dc689c</span></code></a>)</p></li>
+<li><p>Updates… (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/dd65ab4d74057a55b4e644563f537b2b5b650598"><code class="docutils literal notranslate"><span class="pre">dd65ab4</span></code></a>)</p></li>
+<li><p>separated the file selection table for optimization and histogramming (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/90da9e6e225080d362cc1c007bc564864a34fe33"><code class="docutils literal notranslate"><span class="pre">90da9e6</span></code></a>)</p></li>
+<li><p>setting previously used directories for user convenience (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/07316469bc8feeaec549b178be181503614a6b1e"><code class="docutils literal notranslate"><span class="pre">0731646</span></code></a>)</p></li>
+<li><p>cleanup (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/dfbfe610c26aefc5b51cc001c48a3ea3e50c8348"><code class="docutils literal notranslate"><span class="pre">dfbfe61</span></code></a>)</p></li>
+<li><p>editor now functional for multipart yamls (needed for histogramming) (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/1e7f061d4d102bfbad42c991e9d273524a14d9bd"><code class="docutils literal notranslate"><span class="pre">1e7f061</span></code></a>)</p></li>
+<li><p>Getting there.. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/e9224e19dc1794778861d6c4c8f0e9ba4d9a3140"><code class="docutils literal notranslate"><span class="pre">e9224e1</span></code></a>)</p></li>
+<li><p>updates. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/2948074e1b3cf6b384e89661ea936dd0ebc2608a"><code class="docutils literal notranslate"><span class="pre">2948074</span></code></a>)</p></li>
+<li><p>Somewhat functional, processes cannot be killed yet, however. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/8e2a449945f2c3eed1ea0a7330451fd5e6e63067"><code class="docutils literal notranslate"><span class="pre">8e2a449</span></code></a>)</p></li>
+<li><p>Now can run and show a test optimization (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/983f12c44059e9ae3bfa0dd6081651e29e1354c6"><code class="docutils literal notranslate"><span class="pre">983f12c</span></code></a>)</p></li>
+<li><p>Setting up test runs in run_settings tab. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/30f50338e9ca8306de518189706b8c93bde24079"><code class="docutils literal notranslate"><span class="pre">30f5033</span></code></a>)</p></li>
+<li><p>updating run settings (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/73b8279f28535de04e7da75036b88c67cc1c0256"><code class="docutils literal notranslate"><span class="pre">73b8279</span></code></a>)</p></li>
+<li><p>Updates to data loading, I think it works for now. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/be9fd1775814de9f43494f08e97eb4c9603f2b93"><code class="docutils literal notranslate"><span class="pre">be9fd17</span></code></a>)</p></li>
+<li><p>upgrades (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/24cae6dfff2fd65aaeb4a3872f712a47b9769613"><code class="docutils literal notranslate"><span class="pre">24cae6d</span></code></a>)</p></li>
+<li><p>working ok now. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/3b4334421909c860cd475e39d15984025407eb96"><code class="docutils literal notranslate"><span class="pre">3b43344</span></code></a>)</p></li>
+<li><p>data loading tab starting to look like something useful now. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/8a4e925f6d5615f968887bbba41ec9a544d30a7e"><code class="docutils literal notranslate"><span class="pre">8a4e925</span></code></a>)</p></li>
+<li><p>Now loads and plots (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/0d7dc3cbda5e39a58c8e673a43f10f50283d02e0"><code class="docutils literal notranslate"><span class="pre">0d7dc3c</span></code></a>)</p></li>
+<li><p>minimal change in naming. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/3859dcd1f01f27d0cab3181b52fae126d34a2e18"><code class="docutils literal notranslate"><span class="pre">3859dcd</span></code></a>)</p></li>
+<li><p>Updated main window naming (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/20b0063c5cb92ad4090784545f6c61424052e819"><code class="docutils literal notranslate"><span class="pre">20b0063</span></code></a>)</p></li>
+<li><p>Drafted the optimization tab contents (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/d3b1e89feb88e1bcbcfddf9ee4da907d7315b83e"><code class="docutils literal notranslate"><span class="pre">d3b1e89</span></code></a>)</p></li>
+<li><p>some additions, but nothing working yet (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/41acbd8b07b5ac7b037caa601943db774e51129b"><code class="docutils literal notranslate"><span class="pre">41acbd8</span></code></a>)</p></li>
+<li><p>sasmodels automatically interpreted (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/b11ae9753576468414fccf8ced6f10708aa94e56"><code class="docutils literal notranslate"><span class="pre">b11ae97</span></code></a>)</p></li>
+<li><p>run config now working with central yaml editor. editor has syntax highlighting and syntax error tooltips. (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/1d02a85c4505a4f8a5ebf168b8f7e37c49481a64"><code class="docutils literal notranslate"><span class="pre">1d02a85</span></code></a>)</p></li>
+<li><p>Centralizing the yaml editor widget (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/8cc27612dbebd744f506298368fc3475e1c86a70"><code class="docutils literal notranslate"><span class="pre">8cc2761</span></code></a>)</p></li>
+<li><p>sort of working (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/0bfbf07bc2780e5cec404b8915434b2996dcde27"><code class="docutils literal notranslate"><span class="pre">0bfbf07</span></code></a>)</p></li>
+<li><p>first commit (<a class="reference external" href="https://github.com/BAMresearch/McSAS3GUI/commit/5fcbc09d9be2d84324c4bbc48caa1d5eee7e77df"><code class="docutils literal notranslate"><span class="pre">5fcbc09</span></code></a>)</p></li>
 </ul>
 </section>
 </section>
@@ -527,7 +542,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on Aug 15, 2025 (git 4f431e2)</div>
+              Last updated on Sep 05, 2025 (git 0d99433)</div>
           </div>
           <div class="right-details">
             
@@ -549,25 +564,30 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">CHANGELOG</a><ul>
-<li><a class="reference internal" href="#v0-1-4-2025-08-15">v0.1.4 (2025-08-15)</a><ul>
+<li><a class="reference internal" href="#v0-1-5-2025-09-05">v0.1.5 (2025-09-05)</a><ul>
 <li><a class="reference internal" href="#bug-fixes">Bug fixes</a></li>
+<li><a class="reference internal" href="#unknown-scope">Unknown Scope</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#v0-1-4-2025-08-15">v0.1.4 (2025-08-15)</a><ul>
+<li><a class="reference internal" href="#id1">Bug fixes</a></li>
 <li><a class="reference internal" href="#code-style">Code style</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-1-3-2025-08-14">v0.1.3 (2025-08-14)</a><ul>
-<li><a class="reference internal" href="#id1">Bug fixes</a></li>
+<li><a class="reference internal" href="#id2">Bug fixes</a></li>
 <li><a class="reference internal" href="#continuous-integration">Continuous integration</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-1-2-2025-08-13">v0.1.2 (2025-08-13)</a><ul>
-<li><a class="reference internal" href="#id2">Bug fixes</a></li>
-<li><a class="reference internal" href="#id3">Code style</a></li>
-<li><a class="reference internal" href="#id4">Continuous integration</a></li>
-<li><a class="reference internal" href="#unknown-scope">Unknown Scope</a></li>
+<li><a class="reference internal" href="#id3">Bug fixes</a></li>
+<li><a class="reference internal" href="#id4">Code style</a></li>
+<li><a class="reference internal" href="#id5">Continuous integration</a></li>
+<li><a class="reference internal" href="#id6">Unknown Scope</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-1-1-2025-08-12">v0.1.1 (2025-08-12)</a><ul>
-<li><a class="reference internal" href="#id5">Unknown Scope</a></li>
+<li><a class="reference internal" href="#id7">Unknown Scope</a></li>
 </ul>
 </li>
 </ul>
@@ -581,7 +601,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=fd825880"></script>
+</div><script src="_static/documentation_options.js?v=59fadc99"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

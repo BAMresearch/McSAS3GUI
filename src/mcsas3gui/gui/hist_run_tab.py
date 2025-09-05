@@ -76,15 +76,4 @@ class HistRunTab(QWidget, TaskRunnerMixin):
 
         files_in_out = {infn: make_out_path(infn, self._temp_dir) for infn in files}
         extra_keywords = {"hist_config": hist_config}
-        self.run_tasks(files_in_out, command_template, extra_keywords)
-
-        # selected_files = self.file_selection_widget.get_selected_files()
-        # if not selected_files:
-        #     QMessageBox.warning(self, "Run Histogramming", "No files selected.")
-        #     return
-
-        # for idx, file in enumerate(selected_files):
-        #     # Placeholder: Update status dynamically and handle subprocess calls
-        #     self.file_selection_widget.set_status_by_file_name(file, "Processing")
-        #     self.progress_bar.setValue(int((idx + 1) / len(selected_files) * 100))
-        #     self.file_selection_widget.set_status_by_file_name(file, "Complete")
+        self.run_tasks(files, command_template, extra_keywords)

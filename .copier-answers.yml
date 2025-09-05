@@ -10,7 +10,7 @@ docs_url: https://BAMresearch.github.io/mcsas3gui
 license: MIT
 project_description: A graphical user interface for the McSAS3 software.
 project_name: McSAS3GUI
-pypi_host: test.pypi.org
+pypi_host: pypi.org
 python_versions:
 - '3.12'
 release_date_question: 24-10-31

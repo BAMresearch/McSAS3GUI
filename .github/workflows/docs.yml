@@ -45,10 +45,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --progress-bar=off -r ci/requirements.txt
 
-      - name: Check
-        shell: sh
-        run: tox -e check -v
-
       - name: Generate documentation
         shell: sh
         run: tox -e docs -v

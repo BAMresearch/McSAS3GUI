@@ -72,6 +72,10 @@ jobs:
           tox --version
           pip list --format=freeze
 
+      - name: Check
+        shell: sh
+        run: tox -e check -v
+
       - name: Run tests
         shell: sh
         run: |

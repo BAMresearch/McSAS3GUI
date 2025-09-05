@@ -1,11 +1,11 @@
 # McSAS3GUI (v0.1.6)
 
-[![PyPI Package latest release](https://img.shields.io/pypi/v/mcsas3gui.svg)](https://test.pypi.org/project/mcsas3gui)
+[![PyPI Package latest release](https://img.shields.io/pypi/v/mcsas3gui.svg)](https://pypi.org/project/mcsas3gui)
 [![Commits since latest release](https://img.shields.io/github/commits-since/BAMresearch/mcsas3gui/v0.1.6.svg)](https://github.com/BAMresearch/mcsas3gui/compare/v0.1.6...main)
 [![License](https://img.shields.io/pypi/l/mcsas3gui.svg)](https://en.wikipedia.org/wiki/MIT_license)
-[![Supported versions](https://img.shields.io/pypi/pyversions/mcsas3gui.svg)](https://test.pypi.org/project/mcsas3gui)
-[![PyPI Wheel](https://img.shields.io/pypi/wheel/mcsas3gui.svg)](https://test.pypi.org/project/mcsas3gui#files)
-[![Weekly PyPI downloads](https://img.shields.io/pypi/dw/mcsas3gui.svg)](https://test.pypi.org/project/mcsas3gui/)
+[![Supported versions](https://img.shields.io/pypi/pyversions/mcsas3gui.svg)](https://pypi.org/project/mcsas3gui)
+[![PyPI Wheel](https://img.shields.io/pypi/wheel/mcsas3gui.svg)](https://pypi.org/project/mcsas3gui#files)
+[![Weekly PyPI downloads](https://img.shields.io/pypi/dw/mcsas3gui.svg)](https://pypi.org/project/mcsas3gui/)
 [![Continuous Integration and Deployment Status](https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml)
 [![Coverage report](https://img.shields.io/endpoint?url=https://BAMresearch.github.io/mcsas3gui/coverage-report/cov.json)](https://BAMresearch.github.io/mcsas3gui/coverage-report/)
 

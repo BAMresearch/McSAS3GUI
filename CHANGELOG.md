@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.1.6 (2025-09-05)
+
+### Bug fixes
+
+* **RunSettingsTab**: show helpful info for simulation model ([`2b72793`](https://github.com/BAMresearch/McSAS3GUI/commit/2b72793a4054c395422ce39f028949983200af50))
+
+### Unknown Scope
+
+* enhancement(PreFab): Added an example using simulated base model data. ([`1948f8d`](https://github.com/BAMresearch/McSAS3GUI/commit/1948f8d3a2660046a19db5abf1f825fe150cbfd1))
+
 ## v0.1.5 (2025-09-05)
 
 ### Bug fixes

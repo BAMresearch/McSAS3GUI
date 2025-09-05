@@ -31,7 +31,7 @@ html_description: |
           <ul>
               <li>Measurements were performed at the SAXS beamline at the PTB.</li>
               <li>The model is a special "sim"-type, which requires the simulated arrays for Q, I and I_sigma to be specified in the model description.</li>
-              <li>This model should include a (flat) Guinier region at the start, and a porod region at the end. It is extrapolated between 0<Q<Q_min by the value of I(Q_min), and between Q_max<Q<infinity by a Q^-4 (porod) slope.</li>
+              <li>This model should include a (flat) Guinier region at the start, and a porod region at the end. It is extrapolated between 0<Q<Q_min by the value of I(Q_min), and between Q_max<Q<infinity by a Q^-4 (porod) slope modeled using extrapY0 + Q ** (-4) * extrapScaling.</li>
               <li>The result is a scaling factor, under the assumption that a uniform scaling of the object results in a volume-squared intensity scaling and an inverse Q-axis scaling.</li>
               <li>The faceted cube data was simulated using the SPONGE, a software tool for simulating scattering from complex structures using the Debye equation. The model was an STL file of a faceted cube with a face-to-face distance of 1 nm. This means the scaling factors in the final histogram are identical to the object size distribution in nm. </li>
               <li>This can work in absolute units if the model is supplied in absolute units.</li>

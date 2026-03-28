@@ -47,25 +47,19 @@ class DataLoadingTab(QWidget):
         self.config_dropdown.currentTextChanged.connect(self.handle_dropdown_change)
 
         # YAML Editor for data loading configuration
-        self.yaml_editor_widget = YAMLEditorWidget(
-            directory=self.config_path, parent=self, multipart=False
-        )
+        self.yaml_editor_widget = YAMLEditorWidget(directory=self.config_path, parent=self, multipart=False)
         layout.addWidget(QLabel("Data Loading Configuration (YAML):"))
         layout.addWidget(self.yaml_editor_widget)
 
         # Monitor changes in the YAML editor to detect custom changes
         self.yaml_editor_widget.yaml_editor.textChanged.connect(self.on_yaml_editor_change)
-        self.yaml_editor_widget.fileSaved.connect(
-            self.refresh_config_dropdown
-        )  # Refresh dropdown after save
+        self.yaml_editor_widget.fileSaved.connect(self.refresh_config_dropdown)  # Refresh dropdown after save
 
         # Reusable file selection widget
         self.file_line_selection_widget = FileLineSelectionWidget(
             placeholder_text="Select test data file", file_types="All Files (*.*)"
         )
-        self.file_line_selection_widget.fileSelected.connect(
-            self.load_file
-        )  # Handle file selection
+        self.file_line_selection_widget.fileSelected.connect(self.load_file)  # Handle file selection
 
         layout.addWidget(self.file_line_selection_widget)
 
@@ -80,9 +74,7 @@ class DataLoadingTab(QWidget):
             """
         )
         self.error_message_display.setReadOnly(True)  # Make the display non-editable
-        self.error_message_display.setWordWrapMode(
-            QTextOption.WrapMode.WordWrap
-        )  # Enable word wrap
+        self.error_message_display.setWordWrapMode(QTextOption.WrapMode.WordWrap)  # Enable word wrap
         self.error_message_display.setPlaceholderText("Messages will be displayed here.")
         # self.error_message_display.setStyleSheet("color: darkgreen;")  # Display messages in green
         layout.addWidget(self.error_message_display)
@@ -107,9 +99,7 @@ class DataLoadingTab(QWidget):
         self.error_message_display.moveCursor(QTextCursor.MoveOperation.Start)
         logger.error(message)
 
-    def refresh_config_dropdown(
-        self, savedName: str | None = None
-    ):  # optional args to match signal signature
+    def refresh_config_dropdown(self, savedName: str | None = None):  # optional args to match signal signature
         """Populate or refresh the configuration dropdown list."""
         self.config_dropdown.clear()
         self.default_configs = get_default_config_files(directory=self.config_path)

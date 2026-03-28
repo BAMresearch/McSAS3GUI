@@ -35,9 +35,7 @@ class HistRunTab(QWidget, TaskRunnerMixin):
             placeholder_text="Select histogramming configuration file",
             file_types="YAML hist config Files (*.yaml)",
         )
-        self.histogram_config_selector.fileSelected.connect(
-            self.load_hist_config_file
-        )  # Handle file selection
+        self.histogram_config_selector.fileSelected.connect(self.load_hist_config_file)  # Handle file selection
 
         layout.addWidget(self.histogram_config_selector)
 

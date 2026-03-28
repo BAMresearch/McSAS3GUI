@@ -44,17 +44,13 @@ class HistogramSettingsTab(QWidget):
         self.config_dropdown.currentTextChanged.connect(self.handle_dropdown_change)
 
         # YAML Editor for histogram settings
-        self.yaml_editor_widget = YAMLEditorWidget(
-            directory=self.config_path, parent=self, multipart=True
-        )
+        self.yaml_editor_widget = YAMLEditorWidget(directory=self.config_path, parent=self, multipart=True)
         layout.addWidget(QLabel("Histogramming Configuration (YAML):"))
         layout.addWidget(self.yaml_editor_widget)
 
         # Monitor changes in the YAML editor to detect custom changes
         self.yaml_editor_widget.yaml_editor.textChanged.connect(self.on_yaml_editor_change)
-        self.yaml_editor_widget.fileSaved.connect(
-            self.refresh_config_dropdown
-        )  # Refresh dropdown after save
+        self.yaml_editor_widget.fileSaved.connect(self.refresh_config_dropdown)  # Refresh dropdown after save
 
         # File Selection for Test Datafile
         self.test_file_selector = FileLineSelectionWidget(
@@ -143,9 +139,7 @@ class HistogramSettingsTab(QWidget):
                     QMessageBox.warning(self, "Error", f"File not found: {file_path}")
             except Exception as e:
                 logger.error(f"Error loading histogramming configuration: {e}")
-                QMessageBox.critical(
-                    self, "Error", f"Error loading histogramming configuration: {e}"
-                )
+                QMessageBox.critical(self, "Error", f"Error loading histogramming configuration: {e}")
 
     def on_yaml_editor_change(self):
         """Mark the dropdown as <Custom...> if the YAML content is modified by the user."""
@@ -172,9 +166,7 @@ class HistogramSettingsTab(QWidget):
             # Store the yaml content in a temporary file
             yaml_file = Path(gettempdir()) / "hist_config_temp_ui.yaml"
             with open(yaml_file, "w") as file:
-                yaml.dump_all(
-                    yaml_content, file, default_flow_style=False
-                )  # Use dump_all for multi-document YAML
+                yaml.dump_all(yaml_content, file, default_flow_style=False)  # Use dump_all for multi-document YAML
 
             logger.debug("Launching histogramming test.")
             self.info_field.append("Launching histogramming test...")

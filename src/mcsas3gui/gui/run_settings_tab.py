@@ -51,9 +51,7 @@ class RunSettingsTab(QWidget):
 
         # Monitor changes in the YAML editor to detect custom changes
         self.yaml_editor_widget.yaml_editor.textChanged.connect(self.on_yaml_editor_change)
-        self.yaml_editor_widget.fileSaved.connect(
-            self.refresh_config_dropdown
-        )  # Refresh dropdown after save
+        self.yaml_editor_widget.fileSaved.connect(self.refresh_config_dropdown)  # Refresh dropdown after save
 
         # Test Run Button
         test_run_button = QPushButton("Test single repetition on loaded Test Data")
@@ -79,9 +77,7 @@ class RunSettingsTab(QWidget):
             self.config_dropdown.setCurrentIndex(0)
             self.load_selected_default_config()
 
-    def refresh_config_dropdown(
-        self, savedName: str | None = None
-    ):  # args is a dummy argument to handle signals
+    def refresh_config_dropdown(self, savedName: str | None = None):  # args is a dummy argument to handle signals
         """Populate or refresh the configuration dropdown list."""
         self.config_dropdown.clear()
         self.default_configs = get_default_config_files(directory=self.config_path)
@@ -221,9 +217,7 @@ class RunSettingsTab(QWidget):
                 combined_yaml_content = {}
                 for doc in yaml_content:
                     if not isinstance(doc, dict):
-                        self.info_field.setPlainText(
-                            "One or more YAML documents are not valid configurations."
-                        )
+                        self.info_field.setPlainText("One or more YAML documents are not valid configurations.")
                         return
                     combined_yaml_content.update(doc)
                 yaml_content = combined_yaml_content
@@ -243,24 +237,12 @@ class RunSettingsTab(QWidget):
 
             with h5py.File(self.tempFileName, "r") as h5f:
                 fitQ = h5f["/analyses/MCResult1/mcdata/measData/Q"][()].flatten()  # model Q
-                fitI = h5f["/analyses/MCResult1/optimization/repetition0/modelI"][
-                    ()
-                ]  # model intensity
-                acceptedGofs = h5f["/analyses/MCResult1/optimization/repetition0/acceptedGofs"][
-                    ()
-                ]  # list of GOFs
-                acceptedSteps = h5f["/analyses/MCResult1/optimization/repetition0/acceptedSteps"][
-                    ()
-                ]  # steps accepted
-                maxIter = h5f["/analyses/MCResult1/optimization/repetition0/maxIter"][
-                    ()
-                ]  # max iterations
-                maxAccept = h5f["/analyses/MCResult1/optimization/repetition0/maxAccept"][
-                    ()
-                ]  # max accepts
-                x0 = h5f["/analyses/MCResult1/optimization/repetition0/x0"][
-                    ()
-                ]  # scaling and background
+                fitI = h5f["/analyses/MCResult1/optimization/repetition0/modelI"][()]  # model intensity
+                acceptedGofs = h5f["/analyses/MCResult1/optimization/repetition0/acceptedGofs"][()]  # list of GOFs
+                acceptedSteps = h5f["/analyses/MCResult1/optimization/repetition0/acceptedSteps"][()]  # steps accepted
+                maxIter = h5f["/analyses/MCResult1/optimization/repetition0/maxIter"][()]  # max iterations
+                maxAccept = h5f["/analyses/MCResult1/optimization/repetition0/maxAccept"][()]  # max accepts
+                x0 = h5f["/analyses/MCResult1/optimization/repetition0/x0"][()]  # scaling and background
 
             self._plot_fit(
                 fit_q=fitQ,
@@ -339,9 +321,7 @@ class RunSettingsTab(QWidget):
                 or self.metrics_dialog is None
                 or not self.metrics_dialog.isVisible()
             ):
-                self.metrics_dialog = (
-                    QDialog()
-                )  # do not use self or it'll end up on the main window
+                self.metrics_dialog = QDialog()  # do not use self or it'll end up on the main window
                 self.metrics_dialog.setWindowTitle("Optimization Metrics")
                 self.metrics_dialog.setMinimumSize(700, 500)
                 layout = QVBoxLayout(self.metrics_dialog)

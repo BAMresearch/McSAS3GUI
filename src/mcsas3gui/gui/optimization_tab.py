@@ -47,9 +47,7 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
             placeholder_text="Select data load configuration file",
             file_types="YAML data config Files (*.yaml)",
         )
-        self.data_config_selector.fileSelected.connect(
-            self.load_data_config_file
-        )  # Handle file selection
+        self.data_config_selector.fileSelected.connect(self.load_data_config_file)  # Handle file selection
         # self.data_loading_tab.yaml_editor_widget.yaml_editor.fileSaved.\
         # connect(self.data_config_selector.set_file_path)  # Handle file save
 
@@ -60,9 +58,7 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
             placeholder_text="Select run configuration file",
             file_types="YAML run config Files (*.yaml)",
         )
-        self.run_config_selector.fileSelected.connect(
-            self.load_run_config_file
-        )  # Handle file selection
+        self.run_config_selector.fileSelected.connect(self.load_run_config_file)  # Handle file selection
         # self.run_settings_tab.yaml_editor_widget.yaml_editor.fileSaved.\
         # connect(self.run_config_selector.set_file_path)  # Handle file save
 
@@ -112,8 +108,7 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
         run_config = self.run_config_selector.get_file_path()
 
         command_template = (
-            str(Path(sys.executable).as_posix())
-            + " "
+            str(Path(sys.executable).as_posix()) + " "
             "-m mcsas3.mcsas3_cli_runner -f {input_file} -F {data_config} "
             "-r {result_file} -R {run_config} -i 1 -d"
         )

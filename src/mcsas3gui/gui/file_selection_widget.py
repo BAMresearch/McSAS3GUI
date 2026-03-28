@@ -118,9 +118,7 @@ class FileSelectionWidget(QWidget):
 
     def get_selected_files(self):
         """Retrieve the list of selected files from the table."""
-        return [
-            Path(self.file_table.item(row, 0).text()) for row in range(self.file_table.rowCount())
-        ]
+        return [Path(self.file_table.item(row, 0).text()) for row in range(self.file_table.rowCount())]
 
     def set_status_by_row(self, row: int = None, status: str = "Pending"):
         """Set the status for a specific file."""
@@ -164,8 +162,7 @@ class FileSelectionWidget(QWidget):
                     file_path = Path(url.toLocalFile())
 
                     if "*.*" in self.acceptable_file_types or any(
-                        file_path.suffix.lower() == ft.lower().lstrip("*")
-                        for ft in self.acceptable_file_types.split()
+                        file_path.suffix.lower() == ft.lower().lstrip("*") for ft in self.acceptable_file_types.split()
                     ):
                         logging.debug(f"Adding file to table: {file_path}")
                         self.add_file_to_table(str(file_path.as_posix()))

@@ -37,14 +37,10 @@ def write_hist_yaml_block(hist_configs, filepath):
                 for i, block in enumerate(hist_configs):
                     # if i > 0:
                     f.write("---\n")
-                    yaml.dump(
-                        block, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False
-                    )
+                    yaml.dump(block, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
         else:
             # fallback for single dict passed instead of a list
-            yaml.dump(
-                hist_configs, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False
-            )
+            yaml.dump(hist_configs, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
 
 
 class GettingStartedTab(QWidget):
@@ -100,8 +96,7 @@ class GettingStartedTab(QWidget):
 
         # Load HTML content
         html_content = (
-            "<h1>Welcome to McSAS3</h1> - "
-            "select a template from the dropdown menu above to start exploring!"
+            "<h1>Welcome to McSAS3</h1> - " "select a template from the dropdown menu above to start exploring!"
         )
         self.info_viewer.setHtml(html_content)
 
@@ -192,34 +187,26 @@ class GettingStartedTab(QWidget):
         if selected_file:
             try:
                 yaml_content = self.load_template(self.config_path / selected_file)
-                self.info_viewer.setHtml(
-                    yaml_content.get("html_description", "<p>No description available.</p>")
-                )
+                self.info_viewer.setHtml(yaml_content.get("html_description", "<p>No description available.</p>"))
 
                 # Apply data reading settings
                 file_dict = yaml_content.get("configurations", {})
                 if self.data_loading_tab and "read_configuration_file" in file_dict:
-                    self.apply_yaml_to_tab_pulldown(
-                        self.data_loading_tab, file_dict["read_configuration_file"]
-                    )
+                    self.apply_yaml_to_tab_pulldown(self.data_loading_tab, file_dict["read_configuration_file"])
                     self.optimization_tab.data_config_selector.set_file_path(
                         str((self.main_path / file_dict["read_configuration_file"]).as_posix())
                     )
 
                 # Apply run settings
                 if self.run_settings_tab and "run_configuration_file" in file_dict:
-                    self.apply_yaml_to_tab_pulldown(
-                        self.run_settings_tab, file_dict["run_configuration_file"]
-                    )
+                    self.apply_yaml_to_tab_pulldown(self.run_settings_tab, file_dict["run_configuration_file"])
                     self.optimization_tab.run_config_selector.set_file_path(
                         str((self.main_path / file_dict["run_configuration_file"]).as_posix())
                     )
 
                 # Apply hist settings
                 if self.hist_settings_tab and "hist_configuration_file" in file_dict:
-                    self.apply_yaml_to_tab_pulldown(
-                        self.hist_settings_tab, file_dict["hist_configuration_file"]
-                    )
+                    self.apply_yaml_to_tab_pulldown(self.hist_settings_tab, file_dict["hist_configuration_file"])
                     self.histogramming_tab.histogram_config_selector.set_file_path(
                         str((self.main_path / file_dict["hist_configuration_file"]).as_posix())
                     )
@@ -241,16 +228,12 @@ class GettingStartedTab(QWidget):
                 # Lastly, fill the files into the optimization tab and histogramming run tab
                 if self.optimization_tab and "optimization_files" in yaml_content:
                     for file_path in yaml_content["optimization_files"]:
-                        self.optimization_tab.file_selection_widget.add_file_to_table(
-                            str(self.main_path / file_path)
-                        )
+                        self.optimization_tab.file_selection_widget.add_file_to_table(str(self.main_path / file_path))
 
                 # Lastly, fill the files into the optimization tab and histogramming run tab
                 if self.histogramming_tab and "histogramming_files" in yaml_content:
                     for file_path in yaml_content["histogramming_files"]:
-                        self.histogramming_tab.file_selection_widget.add_file_to_table(
-                            str(self.main_path / file_path)
-                        )
+                        self.histogramming_tab.file_selection_widget.add_file_to_table(str(self.main_path / file_path))
 
             except Exception as e:
                 self.info_viewer.setHtml(f"<p>Error loading template: {e}</p>")

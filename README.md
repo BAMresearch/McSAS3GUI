@@ -69,4 +69,3 @@ are installed:
 
     pip install copier jinja2-time
     copier update --trust --skip-answered
-

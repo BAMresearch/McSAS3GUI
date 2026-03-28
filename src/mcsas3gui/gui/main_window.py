@@ -59,9 +59,5 @@ class McSAS3MainWindow(QMainWindow):
         HSTab.yaml_editor_widget.fileSaved.connect(HRTab.histogram_config_selector.set_file_path)
         # when a data load settigns file is saved in the data settings tab,
         # set this to the current file in the optimization run tab
-        DLTab.yaml_editor_widget.fileSaved.connect(
-            ORTab.data_config_selector.set_file_path
-        )  # Handle file save
-        RSTab.yaml_editor_widget.fileSaved.connect(
-            ORTab.run_config_selector.set_file_path
-        )  # Handle file save
+        DLTab.yaml_editor_widget.fileSaved.connect(ORTab.data_config_selector.set_file_path)  # Handle file save
+        RSTab.yaml_editor_widget.fileSaved.connect(ORTab.run_config_selector.set_file_path)  # Handle file save

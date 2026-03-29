@@ -11,7 +11,7 @@ from sasmodels.core import load_model_info
 
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
-from .mcsas3_bridge import run_test_optimization as run_test_optimization_preview
+from .optimization_worker import PreviewOptimizationWorker
 from .yaml_editor_widget import YAMLEditorWidget
 
 logger = logging.getLogger("McSAS3")
@@ -22,6 +22,7 @@ class RunSettingsTab(QWidget):
 
     default_configs = []  # List to hold default configuration files
     _temp_dir = None  # provided by __main__
+    _running_button_style = "QPushButton { background-color: #c65a3a; color: white; font-weight: bold; }"
 
     def __init__(self, parent=None, data_loading_tab=None, temp_dir: Path = None):
         super().__init__(parent)
@@ -33,6 +34,7 @@ class RunSettingsTab(QWidget):
         self.update_timer = QTimer(self)  # Timer for debouncing updates
         self.update_timer.setSingleShot(True)
         self.update_timer.timeout.connect(self.update_info_field)
+        self.preview_worker: PreviewOptimizationWorker | None = None
 
         layout = QVBoxLayout()
 
@@ -54,9 +56,10 @@ class RunSettingsTab(QWidget):
         self.yaml_editor_widget.fileSaved.connect(self.refresh_config_dropdown)  # Refresh dropdown after save
 
         # Test Run Button
-        test_run_button = QPushButton("Test single repetition on loaded Test Data")
-        test_run_button.clicked.connect(self.run_test_optimization)
-        layout.addWidget(test_run_button)
+        self.test_run_button = QPushButton("Test single repetition on loaded Test Data")
+        self._default_test_run_button_style = self.test_run_button.styleSheet()
+        self.test_run_button.clicked.connect(self.handle_test_run_button_clicked)
+        layout.addWidget(self.test_run_button)
 
         # Info text field for model parameters
         self.info_field = QTextEdit()
@@ -196,6 +199,41 @@ class RunSettingsTab(QWidget):
 
         self.info_field.setPlainText(info_text)
 
+    def handle_test_run_button_clicked(self):
+        if self.preview_worker is not None and self.preview_worker.isRunning():
+            self.request_preview_stop()
+            return
+        self.run_test_optimization()
+
+    def _set_test_run_button_running_state(self, is_running: bool) -> None:
+        if is_running:
+            self.test_run_button.setText("Running... Click to abort.")
+            self.test_run_button.setStyleSheet(self._running_button_style)
+            return
+
+        self.test_run_button.setText("Test single repetition on loaded Test Data")
+        self.test_run_button.setStyleSheet(self._default_test_run_button_style)
+
+    def _combined_yaml_content(self):
+        yaml_content = self.yaml_editor_widget.get_yaml_content()
+        if not yaml_content:
+            return None
+        if not isinstance(yaml_content, list):
+            return yaml_content
+
+        combined_yaml_content = {}
+        for doc in yaml_content:
+            if not isinstance(doc, dict):
+                raise TypeError("One or more YAML documents are not valid configurations.")
+            combined_yaml_content.update(doc)
+        return combined_yaml_content
+
+    def request_preview_stop(self):
+        if self.preview_worker is None or not self.preview_worker.isRunning():
+            return
+        logger.info("Abort requested from run settings preview button.")
+        self.preview_worker.request_stop()
+
     def run_test_optimization(self):
         """Run a single optimization repetition on the loaded test data."""
         try:
@@ -206,47 +244,48 @@ class RunSettingsTab(QWidget):
                 return
 
             # Parse the YAML configuration for the optimizer
-            yaml_content = self.yaml_editor_widget.get_yaml_content()
+            yaml_content = self._combined_yaml_content()
             if not yaml_content:
                 self.info_field.setPlainText("Invalid or missing run configuration.")
                 return
-
-            # Ensure YAML content is a dictionary for the optimizer
-            if isinstance(yaml_content, list):
-                # Combine all documents into a single dictionary, overriding keys if repeated
-                combined_yaml_content = {}
-                for doc in yaml_content:
-                    if not isinstance(doc, dict):
-                        self.info_field.setPlainText("One or more YAML documents are not valid configurations.")
-                        return
-                    combined_yaml_content.update(doc)
-                yaml_content = combined_yaml_content
 
             # Create a temporary file to save data for the optimizer
             temp_file = self._temp_dir / "test_data.hdf5"
             self.tempFileName = temp_file
             logger.debug(f"Temporary HDF5 file created at: {self.tempFileName}")
-
-            preview = run_test_optimization_preview(processing, self.tempFileName, yaml_content, result_index=1)
-
-            self.info_field.setPlainText("Optimization completed successfully.")
-
-            self._plot_fit(
-                fit_q=preview.fit_q,
-                fit_intensity=preview.fit_intensity,
-                accepted_gofs=preview.accepted_gofs,
-                accepted_steps=preview.accepted_steps,
-                max_iter=preview.max_iter,
-                max_accept=preview.max_accept,
-                x0=preview.x0,
+            self.preview_worker = PreviewOptimizationWorker(
+                processing=processing,
+                result_file=self.tempFileName,
+                run_config=yaml_content,
+                result_index=1,
             )
+            self.preview_worker.preview_ready_signal.connect(self._on_preview_ready)
+            self.preview_worker.finished_signal.connect(self._on_preview_finished)
+            self._set_test_run_button_running_state(True)
+            self.info_field.setPlainText("Preview optimization running...")
+            self.preview_worker.start()
 
         except Exception as e:
             logger.error(f"Error during test optimization: {e}")
             self.info_field.setPlainText(f"Error during test optimization: {e}")
-        finally:
-            if hasattr(self, "tempFileName") and self.tempFileName.exists():
-                self.tempFileName.unlink()
+
+    def _on_preview_ready(self, preview) -> None:
+        self._plot_fit(
+            fit_q=preview.fit_q,
+            fit_intensity=preview.fit_intensity,
+            accepted_gofs=preview.accepted_gofs,
+            accepted_steps=preview.accepted_steps,
+            max_iter=preview.max_iter,
+            max_accept=preview.max_accept,
+            x0=preview.x0,
+        )
+
+    def _on_preview_finished(self, stopped: bool, message: str) -> None:
+        self._set_test_run_button_running_state(False)
+        self.info_field.setPlainText(message)
+        self.preview_worker = None
+        if hasattr(self, "tempFileName") and self.tempFileName.exists():
+            self.tempFileName.unlink()
 
     def _plot_fit(
         self,

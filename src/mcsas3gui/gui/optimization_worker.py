@@ -22,6 +22,12 @@ def _load_mcsas3_runtime():
     return McHat, optimize_processing_data, prepare_1d_processing_data_from_file
 
 
+def _load_bridge_runtime():
+    from .mcsas3_bridge import load_optimization_preview
+
+    return load_optimization_preview
+
+
 class OptimizationWorker(QThread):
     progress_signal = pyqtSignal(int)
     status_signal = pyqtSignal(int, str)
@@ -128,3 +134,65 @@ class OptimizationWorker(QThread):
         if not isinstance(loaded, dict):
             raise TypeError(f"{label.capitalize()} configuration file must contain a single YAML mapping.")
         return loaded
+
+
+class PreviewOptimizationWorker(QThread):
+    preview_ready_signal = pyqtSignal(object)
+    finished_signal = pyqtSignal(bool, str)
+
+    def __init__(
+        self,
+        *,
+        processing,
+        result_file: Path,
+        run_config: Mapping[str, Any],
+        result_index: int = 1,
+    ):
+        super().__init__()
+        self.processing = processing
+        self.result_file = result_file
+        self.run_config = dict(run_config)
+        self.result_index = result_index
+        self._stop_requested = False
+        self._active_hat = None
+
+    def request_stop(self) -> None:
+        self._stop_requested = True
+        if self._active_hat is not None:
+            logger.info("Stop requested for active McSAS3 preview optimization.")
+            self._active_hat.request_stop()
+
+    def run(self) -> None:
+        McHat, optimize_file_processing, _prepare_file_processing = _load_mcsas3_runtime()
+        load_preview = _load_bridge_runtime()
+        try:
+            if self.result_file.is_file():
+                self.result_file.unlink()
+
+            run_kwargs = dict(self.run_config)
+            run_kwargs["nRep"] = 1
+            self._active_hat = McHat(resultIndex=self.result_index, **run_kwargs)
+            optimize_file_processing(
+                self.processing,
+                self.result_file,
+                result_index=self.result_index,
+                hat=self._active_hat,
+            )
+
+            if self._stop_requested or self._active_hat.lastRunStopped:
+                self.finished_signal.emit(True, "Preview optimization stopped.")
+                return
+
+            preview = load_preview(
+                self.result_file,
+                self.processing,
+                result_index=self.result_index,
+                repetition=0,
+            )
+            self.preview_ready_signal.emit(preview)
+            self.finished_signal.emit(False, "Optimization completed successfully.")
+        except Exception as exc:
+            logger.exception("Preview optimization failed")
+            self.finished_signal.emit(False, f"Error during test optimization: {exc}")
+        finally:
+            self._active_hat = None

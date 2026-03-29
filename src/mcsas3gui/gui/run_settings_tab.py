@@ -3,16 +3,15 @@ import re
 from pathlib import Path
 from typing import Sequence
 
-import h5py
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from mcsas3.mc_hat import McHat
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QPushButton, QTextEdit, QVBoxLayout, QWidget
 from sasmodels.core import load_model_info
 
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
+from .mcsas3_bridge import run_test_optimization as run_test_optimization_preview
 from .yaml_editor_widget import YAMLEditorWidget
 
 logger = logging.getLogger("McSAS3")
@@ -26,7 +25,8 @@ class RunSettingsTab(QWidget):
 
     def __init__(self, parent=None, data_loading_tab=None, temp_dir: Path = None):
         super().__init__(parent)
-        assert temp_dir.is_dir(), f"Given temp dir '{temp_dir}' does not exist!"
+        if temp_dir is None or not temp_dir.is_dir():
+            raise FileNotFoundError(f"Given temp dir '{temp_dir}' does not exist!")
         self._temp_dir = temp_dir
         self.data_loading_tab = data_loading_tab
         self.config_path = get_main_path() / "configurations/run"
@@ -200,8 +200,8 @@ class RunSettingsTab(QWidget):
         """Run a single optimization repetition on the loaded test data."""
         try:
             # Retrieve data from the DataLoadingTab
-            mds = self.data_loading_tab.mds
-            if not mds:
+            processing = self.data_loading_tab.processing
+            if processing is None:
                 self.info_field.setPlainText("No data loaded in the Data Loading tab.")
                 return
 
@@ -224,42 +224,29 @@ class RunSettingsTab(QWidget):
 
             # Create a temporary file to save data for the optimizer
             temp_file = self._temp_dir / "test_data.hdf5"
-            self.tempFileName = Path(temp_file.name)
+            self.tempFileName = temp_file
             logger.debug(f"Temporary HDF5 file created at: {self.tempFileName}")
 
-            mds.store(self.tempFileName)
-            yaml_content.update({"nRep": 1})  # Update configuration for single repetition
-
-            mh = McHat(**yaml_content)
-            mh.run(mds.measData.copy(), self.tempFileName)
+            preview = run_test_optimization_preview(processing, self.tempFileName, yaml_content, result_index=1)
 
             self.info_field.setPlainText("Optimization completed successfully.")
 
-            with h5py.File(self.tempFileName, "r") as h5f:
-                fitQ = h5f["/analyses/MCResult1/mcdata/measData/Q"][()].flatten()  # model Q
-                fitI = h5f["/analyses/MCResult1/optimization/repetition0/modelI"][()]  # model intensity
-                acceptedGofs = h5f["/analyses/MCResult1/optimization/repetition0/acceptedGofs"][()]  # list of GOFs
-                acceptedSteps = h5f["/analyses/MCResult1/optimization/repetition0/acceptedSteps"][()]  # steps accepted
-                maxIter = h5f["/analyses/MCResult1/optimization/repetition0/maxIter"][()]  # max iterations
-                maxAccept = h5f["/analyses/MCResult1/optimization/repetition0/maxAccept"][()]  # max accepts
-                x0 = h5f["/analyses/MCResult1/optimization/repetition0/x0"][()]  # scaling and background
-
             self._plot_fit(
-                fit_q=fitQ,
-                fit_intensity=fitI,
-                accepted_gofs=acceptedGofs,
-                accepted_steps=acceptedSteps,
-                max_iter=maxIter,
-                max_accept=maxAccept,
-                x0=x0,
+                fit_q=preview.fit_q,
+                fit_intensity=preview.fit_intensity,
+                accepted_gofs=preview.accepted_gofs,
+                accepted_steps=preview.accepted_steps,
+                max_iter=preview.max_iter,
+                max_accept=preview.max_accept,
+                x0=preview.x0,
             )
-
-            # Clean up the temporary file
-            self.tempFileName.unlink()
 
         except Exception as e:
             logger.error(f"Error during test optimization: {e}")
             self.info_field.setPlainText(f"Error during test optimization: {e}")
+        finally:
+            if hasattr(self, "tempFileName") and self.tempFileName.exists():
+                self.tempFileName.unlink()
 
     def _plot_fit(
         self,
@@ -288,7 +275,7 @@ class RunSettingsTab(QWidget):
             # Retrieve the data plot from the DataLoadingTab
             data_tab = self.data_loading_tab
 
-            ax = data_tab.show_plot_popup(self.data_loading_tab.mds)
+            ax = data_tab.show_plot_popup()
 
             # Plot the fit on the existing data plot with zorder for proper layering
             scaled_fit_intensity = x0[0] * fit_intensity + x0[1]

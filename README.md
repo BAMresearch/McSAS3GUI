@@ -21,6 +21,16 @@ You can also install the in-development version with:
 
 ## Running the Application
 
+After activating the environment, the preferred launch commands are:
+
+    mcsas3gui
+
+or the short alias:
+
+    m3gui
+
+The module form also works:
+
     python3 -m mcsas3gui
 
 ## Documentation

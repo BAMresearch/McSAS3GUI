@@ -5,10 +5,8 @@ from pathlib import Path
 
 import h5py
 import matplotlib.pyplot as plt
-import numpy as np
 import yaml
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from mcsas3.mc_data_1d import McData1D
 from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QTextCursor, QTextOption  # Import QTextOption for word wrapping
 from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QMessageBox, QTextEdit, QVBoxLayout, QWidget
@@ -16,6 +14,7 @@ from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QMessageBox, QTextEdit, 
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
 from .file_line_selection_widget import FileLineSelectionWidget
+from .mcsas3_bridge import prepare_processing_from_file, processing_frames_from_processing
 from .yaml_editor_widget import YAMLEditorWidget
 
 # from .drag_and_drop_mixin import DragAndDropMixin
@@ -35,7 +34,9 @@ class DataLoadingTab(QWidget):
         self.update_timer.setSingleShot(True)
         self.update_timer.timeout.connect(self.update_and_plot)  # Trigger plot after delay
         self.pdi = []
-        self.mds = None
+        self.processing = None
+        self.processing_frames = None
+        self.selected_file = None
 
         layout = QVBoxLayout()
 
@@ -192,7 +193,7 @@ class DataLoadingTab(QWidget):
         # Parse the YAML configuration from the editor
         try:
             yaml_content = self.yaml_editor_widget.yaml_editor.toPlainText()
-            yaml_config = yaml.safe_load(yaml_content)
+            yaml_config = yaml.safe_load(yaml_content) or {}
         except yaml.YAMLError as e:
             self.display_error(f"YAML Error: {e}")
             self.clear_plot()
@@ -200,19 +201,13 @@ class DataLoadingTab(QWidget):
 
         # Load data and update the plot
         try:
-            self.mds = McData1D(
-                filename=Path(file_path),
-                nbins=int(yaml_config.get("nbins", 100)),
-                csvargs=yaml_config.get("csvargs", {}),
-                pathDict=yaml_config.get("pathDict", None),
-                IEmin=float(yaml_config.get("IEmin", 0.01)),
-                dataRange=yaml_config.get("dataRange", [-np.inf, np.inf]),
-                omitQRanges=yaml_config.get("omitQRanges", []),
-                resultIndex=int(yaml_config.get("resultIndex", 1)),
-            )
+            self.processing = prepare_processing_from_file(Path(file_path), yaml_config)
+            self.processing_frames = processing_frames_from_processing(self.processing)
             logger.debug(f"Loaded data file: {file_path}")
             self.show_plot_popup()  # Display the plot in a popup window
         except Exception as e:
+            self.processing = None
+            self.processing_frames = None
             self.display_error(f"Error loading file {file_path}: {e}")
             self.clear_plot()
 
@@ -222,10 +217,12 @@ class DataLoadingTab(QWidget):
             self.ax.clear()
             self.ax.figure.canvas.draw()
 
-    def show_plot_popup(self, mds=None):
+    def show_plot_popup(self, frames=None):
         """Display a popup window with the loaded data plot."""
-        if not mds:
-            mds = self.mds
+        if frames is None:
+            frames = self.processing_frames
+        if frames is None:
+            raise ValueError("No processed data is available for plotting.")
         # If a plot window is already open, update it
         if self.plot_dialog is None or not self.plot_dialog.isVisible():
             self.plot_dialog = QDialog()  # self removed to avoid constant placement on top of main
@@ -244,9 +241,10 @@ class DataLoadingTab(QWidget):
 
         # Clear the previous plot and redraw
         self.ax.clear()  # how to maintain position?
-        self.plot_dialog.setWindowTitle(f"Data Plot for {mds.filename.name}")
-        mds.rawData.plot("Q", "I", yerr="ISigma", ax=self.ax, label="As provided data")
-        mds.clippedData.plot(
+        title_name = Path(self.selected_file).name if self.selected_file else "selected data"
+        self.plot_dialog.setWindowTitle(f"Data Plot for {title_name}")
+        frames.raw.plot("Q", "I", yerr="ISigma", ax=self.ax, label="As provided data")
+        frames.clipped.plot(
             "Q",
             "I",
             yerr="ISigma",
@@ -256,7 +254,7 @@ class DataLoadingTab(QWidget):
             ax=self.ax,
             label="Clipped data",
         )
-        mds.binnedData.plot(
+        frames.binned.plot(
             x="Q",
             y="I",
             yerr="ISigma",
@@ -267,17 +265,15 @@ class DataLoadingTab(QWidget):
             capsize=1,  # Optionally, add capsize for the error bars
             elinewidth=1,  # Set error bar line width if needed
         )
-        # mds.binnedData.plot('Q', 'I', yerr='ISigma', linestyle=None,
-        #                     linewidth=0, marker='.', ax=self.ax, label='Binned data')
         self.ax.set_yscale("log")
         self.ax.set_xscale("log")
         self.ax.set_xlabel("Q (1/nm)")
         self.ax.set_ylabel("I (1/(m sr))")
 
         # Add vertical dashed lines for the clipped data boundaries
-        if not self.mds.clippedData.empty:
-            xmin = self.mds.clippedData["Q"].min()
-            xmax = self.mds.clippedData["Q"].max()
+        if not frames.clipped.empty:
+            xmin = frames.clipped["Q"].min()
+            xmax = frames.clipped["Q"].max()
             self.ax.axvline(x=xmin, color="red", linestyle=":", label="Clipped boundary min")
             self.ax.axvline(x=xmax, color="red", linestyle=":", label="Clipped boundary max")
 

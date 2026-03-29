@@ -95,9 +95,7 @@ class GettingStartedTab(QWidget):
         )
 
         # Load HTML content
-        html_content = (
-            "<h1>Welcome to McSAS3</h1> - " "select a template from the dropdown menu above to start exploring!"
-        )
+        html_content = "<h1>Welcome to McSAS3</h1> - select a template from the dropdown menu above to start exploring!"
         self.info_viewer.setHtml(html_content)
 
         layout.addWidget(self.info_viewer)

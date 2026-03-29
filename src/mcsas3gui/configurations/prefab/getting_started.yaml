@@ -27,15 +27,15 @@ html_description: |
           <div class="friendly-text">Don't Panic</div>
 
           <h1>Welcome to McSAS3 GUI</h1>
-          
+
           <p>It's been a long time coming, but now it's here: the graphical user interface to help you use McSAS3. </p>
 
           <h3> Get started quickly!!! </h3>
           <p><i>If you cannot wait to get McSASing, you can get started quickly by loading the "Quick Start demo" prefab template from the pulldown menu at the top of this tab. This will pre-populate the fields with a test datafile (the OG from the original McSAS), which you can use directly to run a simple optimization, a 10-repetition optimization and some histogramming. </i></p>
 
           <h2> McWho? </h2>
-          <p> McSAS3 (and its older sibling, McSAS) is a program to analyse small-angle scattering patterns using a Monte Carlo approach. If used right, with the appropriate model, it will fit your data perfectly, that is to say, to within the uncertainty of your datapoints. 
-          Underneath, it superimposes a set (300 or so) of identical model instances. 
+          <p> McSAS3 (and its older sibling, McSAS) is a program to analyse small-angle scattering patterns using a Monte Carlo approach. If used right, with the appropriate model, it will fit your data perfectly, that is to say, to within the uncertainty of your datapoints.
+          Underneath, it superimposes a set (300 or so) of identical model instances.
           The Monte Carlo optimization algorithm then uses an acceptance-rejection method to optimize one parameter on these model instances. In the end, it arrives at a set of parameter values that works best within the constraints given for your data. This can be histogrammed to give parameter distributions. </p>
           <p> Usually, McSAS is used to extract form-free <b><i>size</i></b> distributions and volume fractions assuming, say, spherical scatterers. But it's good that you now understand it's not limited to that. Choose well, and it will make you happy. </p>
 
@@ -61,8 +61,8 @@ html_description: |
           <p>For ascii/csv files, you can use the "csvargs" section to specify the keyword-value combinations that pandas.read_csv needs to work. For example, you can tell it how many lines to skip, what the separator is, and so on. </p>
           <p>Data units and unit conversions will be implemented before the v1 release (maybe, if I can free up the time). </p>
           <p>You can change the data limits you want to fit by adjusting the "dataRange" in the YAML, and you can use the "omitRanges" list of ranges to skip over data segments you don't want to fit, such as peaks.</p>
-          <p>You can set the minimum possible inter-datapoint uncertainty limit for your data using "IEmin", which is a fraction of the intensity, default set to 1%. nBins sets the number of (log-spaced) bins to rebin your data into. 100 bins per decade or two is usually more than sufficient, and ensures proper speed. </p> 
-          
+          <p>You can set the minimum possible inter-datapoint uncertainty limit for your data using "IEmin", which is a fraction of the intensity, default set to 1%. nBins sets the number of (log-spaced) bins to rebin your data into. 100 bins per decade or two is usually more than sufficient, and ensures proper speed. </p>
+
           <h3> The "Run Settings"-tab </h3>
           <p>In this tab, you can configure how McSAS3 will run. You can choose a template from the pulldown menu at the top, which will load a template into the YAML editor widget. The YAML editor widget does syntax highlighting and validation for you, and you can load and save YAML files with the two buttons underneath the YAML editor field. Remember to save the configuration once you have tuned it to your wishes, as you'll need the saved run configuration file later. </p>
           <p>In the YAML, you can set the number of iterations to run, the number of model instances to use, and the number of threads to use. It also configures which sasmodel to use, though not all options and combinations are avaiable (more precisely, you are limited only to models that specify a volume...). Once you construct a model name, the information panel will show the possible parameters to enter. Only one should be chosen as a fit parameter, the rest should be static parameters. Undefined parameters are filled with their default values. </p>

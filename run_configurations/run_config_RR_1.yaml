@@ -1,0 +1,14 @@
+modelName: sphere
+nContrib: 300
+modelDType: default
+fitParameterLimits:
+  radius: auto
+staticParameters:
+  sld: 33.4
+  sld_solvent: 0
+  background: 0
+maxIter: 50000
+maxAccept: 5000
+convCrit: 1
+nRep: 10
+nCores: 10

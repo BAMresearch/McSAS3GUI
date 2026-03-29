@@ -1,0 +1,9 @@
+nbins: 100
+dataRange: [0.0, 4.0]
+IEmin: 0.01
+pathDict:
+  Q: /datamerge/result/Q
+  I: /datamerge/result/I
+  ISigma: /datamerge/result/IError
+omitQRanges:
+  - [0.07, 0.2]

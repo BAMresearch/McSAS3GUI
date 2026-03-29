@@ -1,0 +1,7 @@
+nbins: 100
+dataRange: [0.0, .inf]
+IEmin: 0.01
+csvargs:
+  sep: \s+
+  header: null
+  names: [Q, I, ISigma]

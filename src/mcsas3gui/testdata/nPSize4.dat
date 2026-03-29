@@ -1,4 +1,4 @@
-# HDF: fcm_2020kw28_00032  
+# HDF: fcm_2020kw28_00032
 # Energy (eV)=8000 Distance (m)=4.5457  Normalization factor =0.013588496  Center=(463.865,554.51)  Binsize (nm-1)=0.0015340208
 # Normalized by solid angle (1/distance^2), time (PilatusAcqTime) and intensity (Keysight1)
 # Detector quantum efficiency = 96.36% Monitor sensitivity (ph/s/A) = 3.268e+15 Sample thickness (mm) =1 Direct beam(photons * sr) = 14.1

@@ -1,5 +1,6 @@
 *.py[cod]
 __pycache__
+uv.lock
 
 # C extensions
 *.so

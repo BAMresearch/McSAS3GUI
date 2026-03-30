@@ -9,29 +9,80 @@
 [![Continuous Integration and Deployment Status](https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml)
 [![Coverage report](https://img.shields.io/endpoint?url=https://BAMresearch.github.io/mcsas3gui/coverage-report/cov.json)](https://BAMresearch.github.io/mcsas3gui/coverage-report/)
 
-A graphical user interface for the McSAS3 software.
+A graphical user interface for the canonical McSAS3 workflow.
+
+McSAS3GUI is a thin desktop client over the maintained McSAS3 public API. It loads data through
+the canonical `ProcessingData` workflow, previews fits, runs optimizations, and launches
+histogramming without depending on removed legacy McSAS3 internals.
 
 ## Installation
 
-    pip install mcsas3gui
+```bash
+pip install mcsas3gui
+```
 
 You can also install the in-development version with:
 
-    pip install git+https://github.com/BAMresearch/mcsas3gui.git@main
+```bash
+pip install git+https://github.com/BAMresearch/mcsas3gui.git@main
+```
 
 ## Running the Application
 
 After activating the environment, the preferred launch commands are:
 
-    mcsas3gui
+```bash
+mcsas3gui
+```
 
 or the short alias:
 
-    m3gui
+```bash
+m3gui
+```
 
 The module form also works:
 
-    python3 -m mcsas3gui
+```bash
+python -m mcsas3gui
+```
+
+## Quick Start
+
+1. Open the **Getting Started** tab and choose one of the shipped prefab workflows, or configure
+   the tabs manually.
+2. In **Data Loading**, choose a read-configuration YAML and a test dataset.
+3. In **Run Settings**, choose a run configuration and preview a single repetition.
+4. In **McSAS3 Optimization**, launch the full optimization for one or more files.
+5. In **Histogram Settings** and **Run Histogramming**, configure and run histogram generation on
+   the result files.
+
+The shipped example configurations live under:
+
+- `src/mcsas3gui/configurations/readdata`
+- `src/mcsas3gui/configurations/run`
+- `src/mcsas3gui/configurations/histogram`
+- `src/mcsas3gui/configurations/prefab`
+
+The shipped example datasets live under:
+
+- `src/mcsas3gui/testdata`
+
+Both optimization buttons are abortable. While running, they change to
+`Running... Click to abort.` and forward a stop request to the core McSAS3 runner.
+
+## Structure
+
+The GUI is organized into:
+
+- `gui/main_window.py` for tab assembly
+- `gui/*_tab.py` modules for tab-specific UI behavior
+- `gui/mcsas3_bridge.py` for canonical McSAS3 integration
+- `gui/optimization_worker.py` and `utils/base_worker.py` for background execution
+- shared GUI helpers in `gui/*_helpers.py` and `utils/task_runner_mixin.py`
+
+The generated dependency overview is documented in
+[the tracked GUI dependency diagram](https://bamresearch.github.io/mcsas3gui/generated_module_dependencies.html).
 
 ## Documentation
 
@@ -59,7 +110,9 @@ Run a specific test only:
 
 Run all tests with:
 
-    tox -e py
+```bash
+tox -e py
+```
 
 ### Package Version
 

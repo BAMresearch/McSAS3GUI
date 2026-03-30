@@ -22,11 +22,16 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx.ext.graphviz",
     "myst_parser",
+    "sphinxcontrib.mermaid",
 ]
 inheritance_edge_attrs = dict(color="gray")  # readable in darkmode too
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 templates_path = ["_templates"]
-source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+myst_fence_as_directive = ["mermaid"]
 master_doc = "index"
 project = "McSAS3GUI"
 year = "2024-2025"
@@ -74,6 +79,9 @@ html_short_title = "%s-%s" % (project, version)
 napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False
+suppress_warnings = [
+    "myst.xref_missing",
+]
 
 linkcheck_ignore = [
     join(

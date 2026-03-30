@@ -137,10 +137,10 @@ class FileSelectionWidget(QWidget):
                 break
 
     def eventFilter(self, source, event):
-        """
-        Handle drag-and-drop events.
-        TODO: table still accepts internal drag-and-drop events,
-              which should be disabled as they overwrite the file name in the other entries.
+        """Handle drag-and-drop events for the file table viewport.
+
+        The table still accepts internal drag-and-drop events, which should eventually be disabled
+        because they can overwrite file names in other rows.
         """
 
         if source != self.file_table.viewport():

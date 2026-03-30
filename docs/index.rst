@@ -6,8 +6,11 @@ Contents
    :maxdepth: 2
 
    readme
+   quickstart
    installation
    usage
+   structure
+   generated_module_dependencies
    reference/index
    contributing
    authors

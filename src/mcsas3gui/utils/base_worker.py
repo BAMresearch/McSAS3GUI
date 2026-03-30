@@ -8,26 +8,34 @@ from PyQt6.QtCore import QThread, pyqtSignal
 
 logger = logging.getLogger("McSAS3")
 CommandBuilder = Callable[[Path, Path, Mapping[str, Any]], list[str]]
+FileMap = Mapping[Path, Path]
 
 
 class BaseWorker(QThread):
+    """Run external commands sequentially for a mapping of input/result files."""
+
     progress_signal = pyqtSignal(int)
     status_signal = pyqtSignal(int, str)
     finished_signal = pyqtSignal(bool, str)
 
-    def __init__(self, files_in_out, command_builder: CommandBuilder, extra_keywords=None):
+    def __init__(
+        self,
+        files_in_out: FileMap,
+        command_builder: CommandBuilder,
+        extra_keywords: Mapping[str, Any] | None = None,
+    ) -> None:
         """
         Args:
-            files_in_out (dict): Pairs for {input:output} file paths to process.
+            files_in_out: Pairs for `{input: output}` file paths to process.
             command_builder: Callable that returns a subprocess argument list for each file.
-            extra_keywords (dict): Additional keywords for replacing in the command template.
+            extra_keywords: Additional keywords forwarded to the command builder.
         """
         super().__init__()
-        self.files_in_out = files_in_out
+        self.files_in_out = dict(files_in_out)
         self.command_builder = command_builder
-        self.extra_keywords = extra_keywords or {}
+        self.extra_keywords = dict(extra_keywords or {})
 
-    def run(self):
+    def run(self) -> None:
         """Run commands sequentially."""
         total_files = len(self.files_in_out)
         failed_files: list[Path] = []
@@ -37,7 +45,7 @@ class BaseWorker(QThread):
 
             command = self.command_builder(Path(file_name), Path(result_file), self.extra_keywords)
 
-            logger.info(f"Running command: {command}")
+            logger.info("Running command: %s", command)
 
             try:
                 self.status_signal.emit(row, "Running")

@@ -5,6 +5,8 @@ RUNNING_BUTTON_STYLE = "QPushButton { background-color: #c65a3a; color: white; f
 
 
 class AbortableButton(Protocol):
+    """Minimal button interface needed for shared run/abort state handling."""
+
     def setText(self, text: str) -> None: ...
 
     def setStyleSheet(self, style: str) -> None: ...

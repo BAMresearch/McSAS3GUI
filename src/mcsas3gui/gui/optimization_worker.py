@@ -20,6 +20,7 @@ LoadPreviewFn = Callable[..., Any]
 
 
 def _load_mcsas3_runtime() -> tuple[McHatFactory, OptimizeProcessingFn, PrepareFileProcessingFn]:
+    """Import the core McSAS3 runtime lazily so GUI startup stays lightweight."""
     from mcsas3.mc_hat import McHat
     from mcsas3.workflows import optimize_processing_data, prepare_1d_processing_data_from_file
 
@@ -27,12 +28,14 @@ def _load_mcsas3_runtime() -> tuple[McHatFactory, OptimizeProcessingFn, PrepareF
 
 
 def _load_bridge_runtime() -> LoadPreviewFn:
+    """Import the GUI bridge lazily to avoid import cycles during module initialization."""
     from .mcsas3_bridge import load_optimization_preview
 
     return load_optimization_preview
 
 
 def _load_yaml_mapping(config_file: Path, label: str) -> dict[str, Any]:
+    """Load a single-document YAML mapping from a configuration file."""
     with open(config_file, "r", encoding="utf-8") as handle:
         loaded = yaml.safe_load(handle) or {}
     if not isinstance(loaded, dict):
@@ -41,15 +44,18 @@ def _load_yaml_mapping(config_file: Path, label: str) -> dict[str, Any]:
 
 
 def _unlink_if_exists(path: Path) -> None:
+    """Remove a file if it already exists."""
     if path.is_file():
         path.unlink()
 
 
 def _run_was_stopped(stop_requested: bool, hat: Any) -> bool:
+    """Return whether a run should be treated as stopped by GUI cancellation."""
     return stop_requested or bool(getattr(hat, "lastRunStopped", False))
 
 
 def _preview_run_config(run_config: Mapping[str, Any]) -> dict[str, Any]:
+    """Coerce a run configuration to the single-repetition preview shape."""
     preview_config = dict(run_config)
     preview_config["nRep"] = 1
     return preview_config
@@ -65,6 +71,7 @@ def _execute_hat_run(
     run_config: Mapping[str, Any],
     processing_metadata: Mapping[str, Any] | None = None,
 ) -> Any:
+    """Execute a McSAS3 optimization run through a caller-supplied `McHat` factory."""
     _unlink_if_exists(result_file)
     hat = hat_factory(resultIndex=result_index, **dict(run_config))
     optimize_kwargs: dict[str, Any] = {
@@ -78,6 +85,8 @@ def _execute_hat_run(
 
 
 class OptimizationWorker(QThread):
+    """Background worker that runs canonical McSAS3 optimizations for multiple input files."""
+
     progress_signal = pyqtSignal(int)
     status_signal = pyqtSignal(int, str)
     finished_signal = pyqtSignal(bool, str)
@@ -175,6 +184,8 @@ class OptimizationWorker(QThread):
 
 
 class PreviewOptimizationWorker(QThread):
+    """Background worker for the single-repetition preview optimization in the run-settings tab."""
+
     preview_ready_signal = pyqtSignal(object)
     finished_signal = pyqtSignal(bool, str)
 

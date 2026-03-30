@@ -12,7 +12,11 @@ def histogram_command(
     result_index: int = 1,
     python_executable: str | Path | None = None,
 ) -> list[str]:
-    """Build the maintained McSAS3 histogram CLI command for the current environment."""
+    """Build the maintained histogram CLI command for the current environment.
+
+    Prefer the installed `mcsas3-histogrammer` entry point when available and fall back to
+    `python -m mcsas3.mcsas3_cli_histogrammer` otherwise.
+    """
 
     if result_index < 1:
         raise ValueError("result_index must be >= 1.")

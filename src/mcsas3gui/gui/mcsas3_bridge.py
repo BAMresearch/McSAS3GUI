@@ -21,6 +21,8 @@ from mcsas3.workflows import optimize_processing_data, prepare_1d_processing_dat
 
 @dataclass(frozen=True)
 class ProcessingFrames1D:
+    """Pandas plotting frames for the raw, clipped, and binned 1D processing stages."""
+
     raw: pd.DataFrame
     clipped: pd.DataFrame
     binned: pd.DataFrame
@@ -28,6 +30,8 @@ class ProcessingFrames1D:
 
 @dataclass(frozen=True)
 class OptimizationPreview1D:
+    """Preview-fit arrays and optimizer traces loaded from a single repetition result."""
+
     fit_q: np.ndarray
     fit_intensity: np.ndarray
     accepted_gofs: np.ndarray
@@ -93,10 +97,12 @@ def load_optimization_preview(
 
 
 def _optimization_repetition_path(result_index: int, repetition: int) -> PurePosixPath:
+    """Return the canonical HDF5 path for a stored optimization repetition."""
     return ResultIndex(result_index).nxsEntryPoint / "optimization" / f"repetition{repetition}"
 
 
 def _fit_q_from_bundle(bundle: DataBundle | Mapping[str, BaseData]) -> np.ndarray:
+    """Extract the 1D fit coordinate array from a canonical analysis bundle."""
     q_arrays, _intensity, _sigma = fit_arrays_from_bundle(bundle)
     if len(q_arrays) != 1:
         raise ValueError("GUI optimization preview plotting currently supports only 1D analysis bundles.")
@@ -104,6 +110,7 @@ def _fit_q_from_bundle(bundle: DataBundle | Mapping[str, BaseData]) -> np.ndarra
 
 
 def _frame_from_1d_bundle(bundle: DataBundle | Mapping[str, BaseData]) -> pd.DataFrame:
+    """Convert a canonical 1D analysis bundle into a plotting dataframe."""
     frame = frame_from_bundle(bundle)
     if "Q" not in frame.columns:
         raise ValueError("GUI plotting currently supports only 1D analysis bundles.")

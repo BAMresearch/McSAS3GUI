@@ -1,12 +1,19 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any
+
 from PyQt6.QtWidgets import QMessageBox
 
-from .base_worker import BaseWorker
+from .base_worker import BaseWorker, CommandBuilder, FileMap
 
 
 class TaskRunnerMixin:
+    """Shared worker/progress wiring for file-oriented GUI task tabs."""
+
     task_dialog_title = "Run Tasks"
 
-    def start_worker(self, worker) -> None:
+    def start_worker(self, worker: BaseWorker) -> None:
         """Connect a worker to the shared progress/status/result handlers and start it."""
         self.worker = worker
         self.worker.progress_signal.connect(self.update_progress)
@@ -17,14 +24,19 @@ class TaskRunnerMixin:
         self._set_task_running_state(True)
         self.worker.start()
 
-    def run_tasks(self, files_in_out, command_builder, extra_keywords=None):
+    def run_tasks(
+        self,
+        files_in_out: FileMap,
+        command_builder: CommandBuilder,
+        extra_keywords: Mapping[str, Any] | None = None,
+    ) -> None:
         """
         Run tasks with the provided command template and files.
 
         Args:
-            files_in_out (dict): Pairs for {input:output} file paths to process.
+            files_in_out: Pairs for `{input: output}` file paths to process.
             command_builder: Callable that returns a subprocess argument list for each file.
-            extra_keywords (dict): Additional keywords forwarded to the command builder.
+            extra_keywords: Additional keywords forwarded to the command builder.
         """
         if not files_in_out:
             QMessageBox.warning(self, self.task_dialog_title, "No files selected.")
@@ -37,11 +49,11 @@ class TaskRunnerMixin:
         """Apply the default enabled/disabled run-button state while a worker is active."""
         self.run_button.setEnabled(not is_running)
 
-    def update_progress(self, progress):
+    def update_progress(self, progress: int) -> None:
         """Update the progress bar."""
         self.progress_bar.setValue(progress)
 
-    def update_file_status(self, row, status):
+    def update_file_status(self, row: int, status: str) -> None:
         """Update the status of a file in the table."""
         self.file_selection_widget.set_status_by_row(row, status)
 

@@ -12,6 +12,7 @@ from sasmodels.core import load_model_info
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
 from .optimization_worker import PreviewOptimizationWorker
+from .run_control_helpers import set_abortable_button_state, worker_is_running
 from .yaml_editor_widget import YAMLEditorWidget
 
 logger = logging.getLogger("McSAS3")
@@ -22,7 +23,6 @@ class RunSettingsTab(QWidget):
 
     default_configs = []  # List to hold default configuration files
     _temp_dir = None  # provided by __main__
-    _running_button_style = "QPushButton { background-color: #c65a3a; color: white; font-weight: bold; }"
 
     def __init__(self, parent=None, data_loading_tab=None, temp_dir: Path = None):
         super().__init__(parent)
@@ -200,19 +200,18 @@ class RunSettingsTab(QWidget):
         self.info_field.setPlainText(info_text)
 
     def handle_test_run_button_clicked(self):
-        if self.preview_worker is not None and self.preview_worker.isRunning():
+        if worker_is_running(self.preview_worker):
             self.request_preview_stop()
             return
         self.run_test_optimization()
 
     def _set_test_run_button_running_state(self, is_running: bool) -> None:
-        if is_running:
-            self.test_run_button.setText("Running... Click to abort.")
-            self.test_run_button.setStyleSheet(self._running_button_style)
-            return
-
-        self.test_run_button.setText("Test single repetition on loaded Test Data")
-        self.test_run_button.setStyleSheet(self._default_test_run_button_style)
+        set_abortable_button_state(
+            self.test_run_button,
+            is_running=is_running,
+            default_text="Test single repetition on loaded Test Data",
+            default_style=self._default_test_run_button_style,
+        )
 
     def _combined_yaml_content(self):
         yaml_content = self.yaml_editor_widget.get_yaml_content()
@@ -229,7 +228,7 @@ class RunSettingsTab(QWidget):
         return combined_yaml_content
 
     def request_preview_stop(self):
-        if self.preview_worker is None or not self.preview_worker.isRunning():
+        if not worker_is_running(self.preview_worker):
             return
         logger.info("Abort requested from run settings preview button.")
         self.preview_worker.request_stop()

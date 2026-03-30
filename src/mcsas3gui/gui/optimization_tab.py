@@ -9,6 +9,7 @@ from .file_line_selection_widget import FileLineSelectionWidget
 from .file_selection_helpers import load_existing_selector_file
 from .file_selection_widget import FileSelectionWidget
 from .optimization_worker import OptimizationWorker
+from .run_control_helpers import set_abortable_button_state, worker_is_running
 
 logger = logging.getLogger("McSAS3")
 
@@ -17,7 +18,6 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
     last_used_directory = Path("~").expanduser()
     task_dialog_title = "McSAS3 Optimization"
     _temp_dir = None  # provided by __main__, for testdata results, out-of-source
-    _running_button_style = "QPushButton { background-color: #c65a3a; color: white; font-weight: bold; }"
 
     def __init__(
         self,
@@ -95,19 +95,18 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
             self.histogramming_tab.file_selection_widget.add_file_to_table(str(outpath))
 
     def handle_run_button_clicked(self):
-        if self.worker is not None and self.worker.isRunning():
+        if worker_is_running(self.worker):
             self.request_stop()
             return
         self.start_optimizations()
 
     def _set_task_running_state(self, is_running: bool) -> None:
-        if is_running:
-            self.run_button.setText("Running... Click to abort.")
-            self.run_button.setStyleSheet(self._running_button_style)
-            return
-
-        self.run_button.setText("Run McSAS3 Optimization ...")
-        self.run_button.setStyleSheet(self._default_run_button_style)
+        set_abortable_button_state(
+            self.run_button,
+            is_running=is_running,
+            default_text="Run McSAS3 Optimization ...",
+            default_style=self._default_run_button_style,
+        )
 
     def start_optimizations(self):
         files = self.file_selection_widget.get_selected_files()
@@ -135,7 +134,7 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
         self.start_worker(self.worker)
 
     def request_stop(self):
-        if self.worker is None or not self.worker.isRunning():
+        if not worker_is_running(self.worker):
             return
         logger.info("Abort requested from optimization tab.")
         self.worker.request_stop()

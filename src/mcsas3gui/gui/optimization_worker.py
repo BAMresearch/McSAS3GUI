@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
 
@@ -13,19 +13,68 @@ from mcsas3gui._bootstrap import ensure_compatible_mcsas3
 ensure_compatible_mcsas3()
 
 logger = logging.getLogger("McSAS3")
+McHatFactory = Callable[..., Any]
+OptimizeProcessingFn = Callable[..., Any]
+PrepareFileProcessingFn = Callable[..., Any]
+LoadPreviewFn = Callable[..., Any]
 
 
-def _load_mcsas3_runtime():
+def _load_mcsas3_runtime() -> tuple[McHatFactory, OptimizeProcessingFn, PrepareFileProcessingFn]:
     from mcsas3.mc_hat import McHat
     from mcsas3.workflows import optimize_processing_data, prepare_1d_processing_data_from_file
 
     return McHat, optimize_processing_data, prepare_1d_processing_data_from_file
 
 
-def _load_bridge_runtime():
+def _load_bridge_runtime() -> LoadPreviewFn:
     from .mcsas3_bridge import load_optimization_preview
 
     return load_optimization_preview
+
+
+def _load_yaml_mapping(config_file: Path, label: str) -> dict[str, Any]:
+    with open(config_file, "r", encoding="utf-8") as handle:
+        loaded = yaml.safe_load(handle) or {}
+    if not isinstance(loaded, dict):
+        raise TypeError(f"{label.capitalize()} configuration file must contain a single YAML mapping.")
+    return loaded
+
+
+def _unlink_if_exists(path: Path) -> None:
+    if path.is_file():
+        path.unlink()
+
+
+def _run_was_stopped(stop_requested: bool, hat: Any) -> bool:
+    return stop_requested or bool(getattr(hat, "lastRunStopped", False))
+
+
+def _preview_run_config(run_config: Mapping[str, Any]) -> dict[str, Any]:
+    preview_config = dict(run_config)
+    preview_config["nRep"] = 1
+    return preview_config
+
+
+def _execute_hat_run(
+    *,
+    hat_factory: McHatFactory,
+    optimize_processing: OptimizeProcessingFn,
+    processing: Any,
+    result_file: Path,
+    result_index: int,
+    run_config: Mapping[str, Any],
+    processing_metadata: Mapping[str, Any] | None = None,
+) -> Any:
+    _unlink_if_exists(result_file)
+    hat = hat_factory(resultIndex=result_index, **dict(run_config))
+    optimize_kwargs: dict[str, Any] = {
+        "result_index": result_index,
+        "hat": hat,
+    }
+    if processing_metadata is not None:
+        optimize_kwargs["processing_metadata"] = processing_metadata
+    optimize_processing(processing, result_file, **optimize_kwargs)
+    return hat
 
 
 class OptimizationWorker(QThread):
@@ -60,8 +109,8 @@ class OptimizationWorker(QThread):
 
     def run(self) -> None:
         try:
-            read_config = self._load_yaml_mapping(self.data_config_file, "data")
-            run_config = self._load_yaml_mapping(self.run_config_file, "run")
+            read_config = _load_yaml_mapping(self.data_config_file, "data")
+            run_config = _load_yaml_mapping(self.run_config_file, "run")
         except Exception as exc:
             self.finished_signal.emit(False, f"Optimization setup failed: {exc}")
             return
@@ -78,9 +127,6 @@ class OptimizationWorker(QThread):
 
             self._active_row = row
             try:
-                if result_file.is_file():
-                    result_file.unlink()
-
                 self.status_signal.emit(row, "Running")
                 processing = prepare_file_processing(
                     input_file,
@@ -90,19 +136,19 @@ class OptimizationWorker(QThread):
                 processing_metadata = dict(read_config)
                 processing_metadata["filename"] = input_file
 
-                self._active_hat = McHat(resultIndex=self.result_index, **run_config)
-                optimize_file_processing(
-                    processing,
-                    result_file,
+                self._active_hat = _execute_hat_run(
+                    hat_factory=McHat,
+                    optimize_processing=optimize_file_processing,
+                    processing=processing,
+                    result_file=result_file,
                     result_index=self.result_index,
+                    run_config=run_config,
                     processing_metadata=processing_metadata,
-                    hat=self._active_hat,
                 )
 
-                if self._stop_requested or self._active_hat.lastRunStopped:
+                if _run_was_stopped(self._stop_requested, self._active_hat):
                     self.status_signal.emit(row, "Aborted")
                     stopped = True
-                    self.progress_signal.emit(int((row + 1) / total_files * 100))
                     break
 
                 self.status_signal.emit(row, "Complete")
@@ -127,14 +173,6 @@ class OptimizationWorker(QThread):
             message = "All optimizations are complete."
         self.finished_signal.emit(stopped, message)
 
-    @staticmethod
-    def _load_yaml_mapping(config_file: Path, label: str) -> dict[str, Any]:
-        with open(config_file, "r", encoding="utf-8") as handle:
-            loaded = yaml.safe_load(handle) or {}
-        if not isinstance(loaded, dict):
-            raise TypeError(f"{label.capitalize()} configuration file must contain a single YAML mapping.")
-        return loaded
-
 
 class PreviewOptimizationWorker(QThread):
     preview_ready_signal = pyqtSignal(object)
@@ -143,7 +181,7 @@ class PreviewOptimizationWorker(QThread):
     def __init__(
         self,
         *,
-        processing,
+        processing: Any,
         result_file: Path,
         run_config: Mapping[str, Any],
         result_index: int = 1,
@@ -166,20 +204,16 @@ class PreviewOptimizationWorker(QThread):
         McHat, optimize_file_processing, _prepare_file_processing = _load_mcsas3_runtime()
         load_preview = _load_bridge_runtime()
         try:
-            if self.result_file.is_file():
-                self.result_file.unlink()
-
-            run_kwargs = dict(self.run_config)
-            run_kwargs["nRep"] = 1
-            self._active_hat = McHat(resultIndex=self.result_index, **run_kwargs)
-            optimize_file_processing(
-                self.processing,
-                self.result_file,
+            self._active_hat = _execute_hat_run(
+                hat_factory=McHat,
+                optimize_processing=optimize_file_processing,
+                processing=self.processing,
+                result_file=self.result_file,
                 result_index=self.result_index,
-                hat=self._active_hat,
+                run_config=_preview_run_config(self.run_config),
             )
 
-            if self._stop_requested or self._active_hat.lastRunStopped:
+            if _run_was_stopped(self._stop_requested, self._active_hat):
                 self.finished_signal.emit(True, "Preview optimization stopped.")
                 return
 

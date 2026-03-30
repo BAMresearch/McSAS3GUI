@@ -204,7 +204,6 @@ class YAMLEditorWidget(QWidget):
                         parsed_content = [
                             i for i in list(yaml.safe_load_all(yaml_content)) if i
                         ]  # Validate multipart YAML
-                        print(parsed_content)
                         yaml.dump_all(
                             parsed_content,
                             file,

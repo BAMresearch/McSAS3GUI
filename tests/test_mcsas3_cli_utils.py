@@ -4,7 +4,11 @@ from mcsas3gui.utils import mcsas3_cli
 
 
 def test_histogram_command_prefers_installed_entrypoint(monkeypatch):
-    monkeypatch.setattr(mcsas3_cli, "which", lambda name: "/tmp/mcsas3-histogrammer" if name == "mcsas3-histogrammer" else None)
+    monkeypatch.setattr(
+        mcsas3_cli,
+        "which",
+        lambda name: "/tmp/mcsas3-histogrammer" if name == "mcsas3-histogrammer" else None,
+    )
 
     command = mcsas3_cli.histogram_command(Path("result.nxs"), Path("hist.yaml"), result_index=2)
 

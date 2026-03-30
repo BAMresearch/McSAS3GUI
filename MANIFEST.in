@@ -8,14 +8,35 @@ include .editorconfig
 include .pre-commit-config.yaml
 include .copier-answers.yml
 include tox.ini
+include *.spec
 include templates/*.j2
 include notebooks/*.ipynb
+recursive-include read_configurations *.yaml
+recursive-include run_configurations *.yaml
 
 include README.md
 include CHANGELOG.md
 include AUTHORS.rst
 include CONTRIBUTING.rst
 include LICENSE
+
+exclude src/mcsas3gui/configurations/histogram/hist_config_dual_KJ.yaml
+exclude src/mcsas3gui/configurations/histogram/hist_config_dual_kuanode.yaml
+exclude src/mcsas3gui/configurations/histogram/hist_dual_tomek.yaml
+exclude src/mcsas3gui/configurations/readdata/read_kuehns_nxs_data.yaml
+exclude src/mcsas3gui/configurations/readdata/read_Pauls_base_mats_dat.yaml
+exclude src/mcsas3gui/configurations/readdata/read_Pauls_kuanode_kapton_dat.yaml
+exclude src/mcsas3gui/configurations/readdata/read_Pauls_kuanode_kapton_nxs.yaml
+exclude src/mcsas3gui/configurations/readdata/read_tomeks_csv.yaml
+exclude src/mcsas3gui/configurations/run/run_config_kuanode.yaml
+exclude src/mcsas3gui/configurations/run/run_config_kuehn.yaml
+exclude src/mcsas3gui/configurations/run/run_config_pauls_base.yaml
+exclude src/mcsas3gui/configurations/run/run_config_pauls_base_moar.yaml
+exclude src/mcsas3gui/configurations/run/run_config_tomek.yaml
+exclude read_configurations/Moeez_S171.yaml
+exclude read_configurations/Moeez_csv.yaml
+exclude run_configurations/run_config_Moeez.yaml
+exclude run_configurations/run_config_Moeez_longcyl.yaml
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib .DS_Store */.ipynb_checkpoints/* .*.kate-swp
 global-exclude *.afdesign

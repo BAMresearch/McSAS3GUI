@@ -4,6 +4,19 @@ from .base_worker import BaseWorker
 
 
 class TaskRunnerMixin:
+    task_dialog_title = "Run Tasks"
+
+    def start_worker(self, worker) -> None:
+        """Connect a worker to the shared progress/status/result handlers and start it."""
+        self.worker = worker
+        self.worker.progress_signal.connect(self.update_progress)
+        self.worker.status_signal.connect(self.update_file_status)
+        self.worker.finished_signal.connect(self.tasks_finished)
+
+        self.progress_bar.setValue(0)
+        self._set_task_running_state(True)
+        self.worker.start()
+
     def run_tasks(self, files_in_out, command_builder, extra_keywords=None):
         """
         Run tasks with the provided command template and files.
@@ -14,17 +27,15 @@ class TaskRunnerMixin:
             extra_keywords (dict): Additional keywords forwarded to the command builder.
         """
         if not files_in_out:
-            QMessageBox.warning(self, "Run Tasks", "No files selected.")
+            QMessageBox.warning(self, self.task_dialog_title, "No files selected.")
             return
 
-        self.worker = BaseWorker(files_in_out, command_builder, extra_keywords)
-        self.worker.progress_signal.connect(self.update_progress)
-        self.worker.status_signal.connect(self.update_file_status)
-        self.worker.finished_signal.connect(self.tasks_finished)
+        worker = BaseWorker(files_in_out, command_builder, extra_keywords)
+        self.start_worker(worker)
 
-        self.run_button.setEnabled(False)
-        self.progress_bar.setValue(0)
-        self.worker.start()
+    def _set_task_running_state(self, is_running: bool) -> None:
+        """Apply the default enabled/disabled run-button state while a worker is active."""
+        self.run_button.setEnabled(not is_running)
 
     def update_progress(self, progress):
         """Update the progress bar."""
@@ -36,8 +47,9 @@ class TaskRunnerMixin:
 
     def tasks_finished(self, failed: bool, message: str):
         """Re-enable the run button and report the overall task result."""
-        self.run_button.setEnabled(True)
+        self._set_task_running_state(False)
+        self.worker = None
         if failed:
-            QMessageBox.warning(self, "Run Tasks", message)
+            QMessageBox.warning(self, self.task_dialog_title, message)
             return
-        QMessageBox.information(self, "Run Tasks", message)
+        QMessageBox.information(self, self.task_dialog_title, message)

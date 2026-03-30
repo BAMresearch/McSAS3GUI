@@ -4,6 +4,7 @@ from pathlib import Path
 from PyQt6.QtWidgets import QMessageBox, QProgressBar, QPushButton, QVBoxLayout, QWidget
 
 from ..utils.file_utils import make_out_path
+from ..utils.task_runner_mixin import TaskRunnerMixin
 from .file_line_selection_widget import FileLineSelectionWidget
 from .file_selection_helpers import load_existing_selector_file
 from .file_selection_widget import FileSelectionWidget
@@ -12,8 +13,9 @@ from .optimization_worker import OptimizationWorker
 logger = logging.getLogger("McSAS3")
 
 
-class OptimizationRunTab(QWidget):
+class OptimizationRunTab(QWidget, TaskRunnerMixin):
     last_used_directory = Path("~").expanduser()
+    task_dialog_title = "McSAS3 Optimization"
     _temp_dir = None  # provided by __main__, for testdata results, out-of-source
     _running_button_style = "QPushButton { background-color: #c65a3a; color: white; font-weight: bold; }"
 
@@ -98,7 +100,7 @@ class OptimizationRunTab(QWidget):
             return
         self.start_optimizations()
 
-    def _set_run_button_running_state(self, is_running: bool) -> None:
+    def _set_task_running_state(self, is_running: bool) -> None:
         if is_running:
             self.run_button.setText("Running... Click to abort.")
             self.run_button.setStyleSheet(self._running_button_style)
@@ -130,13 +132,7 @@ class OptimizationRunTab(QWidget):
             run_config_file=Path(run_config),
             result_index=1,
         )
-        self.worker.progress_signal.connect(self.update_progress)
-        self.worker.status_signal.connect(self.update_file_status)
-        self.worker.finished_signal.connect(self.tasks_finished)
-
-        self.progress_bar.setValue(0)
-        self._set_run_button_running_state(True)
-        self.worker.start()
+        self.start_worker(self.worker)
 
     def request_stop(self):
         if self.worker is None or not self.worker.isRunning():
@@ -144,14 +140,7 @@ class OptimizationRunTab(QWidget):
         logger.info("Abort requested from optimization tab.")
         self.worker.request_stop()
 
-    def update_progress(self, progress):
-        self.progress_bar.setValue(progress)
-
-    def update_file_status(self, row, status):
-        self.file_selection_widget.set_status_by_row(row, status)
-
     def tasks_finished(self, stopped: bool, message: str):
-        self._set_run_button_running_state(False)
+        self._set_task_running_state(False)
         self.worker = None
-        title = "McSAS3 Optimization"
-        QMessageBox.information(self, title, message)
+        QMessageBox.information(self, self.task_dialog_title, message)

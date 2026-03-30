@@ -15,6 +15,7 @@ logger = logging.getLogger("McSAS3")
 
 class HistRunTab(QWidget, TaskRunnerMixin):
     last_used_directory = Path("~").expanduser()
+    task_dialog_title = "Histogramming"
 
     def __init__(self, hist_settings_tab, parent=None, temp_dir: Path = None):
         super().__init__(parent)

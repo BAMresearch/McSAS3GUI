@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import yaml
@@ -11,18 +12,19 @@ from .yaml_editor_widget import CustomDumper
 
 CustomDumper.add_representer(dict, CustomDumper.represent_dict)
 CustomDumper.add_representer(list, CustomDumper.represent_list)
+logger = logging.getLogger("McSAS3")
 
 
-def write_yaml_file(data, filepath):
+def write_yaml_file(data: object, filepath: Path) -> None:
+    """Write a single YAML document to disk using the GUI dumper."""
+
     with open(filepath, "w", encoding="utf-8") as f:
         yaml.dump(data, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
 
 
-def write_hist_yaml_block(hist_configs, filepath):
-    """
-    Write histogram block(s) to YAML. If a single block: plain YAML.
-    If multiple: separate documents using '---'.
-    """
+def write_hist_yaml_block(hist_configs: object, filepath: Path) -> None:
+    """Write one or more histogram YAML documents to disk."""
+
     with open(filepath, "w", encoding="utf-8") as f:
         if isinstance(hist_configs, list):
             if len(hist_configs) == 1:
@@ -57,7 +59,8 @@ class GettingStartedTab(QWidget):
         temp_dir: Path = None,
     ):
         super().__init__(parent)
-        assert temp_dir.is_dir(), f"Given temp dir '{temp_dir}' does not exist!"
+        if temp_dir is None or not temp_dir.is_dir():
+            raise FileNotFoundError(f"Given temp dir '{temp_dir}' does not exist!")
         self._temp_dir = temp_dir
         self.data_loading_tab = data_loading_tab
         self.run_settings_tab = run_settings_tab
@@ -119,7 +122,7 @@ class GettingStartedTab(QWidget):
                 yaml_content = load_yaml_file(self.main_path / config_path_rel)
                 tab.yaml_editor_widget.set_yaml_content(yaml_content)
             except Exception as e:
-                print(f"[WARNING] Failed to load YAML content for {list_name}: {e}")
+                logger.warning("Failed to load YAML content for %s: %s", list_name, e)
 
     def refresh_config_dropdown(
         self, savedName: str | None = "getting_started.yaml"
@@ -172,7 +175,7 @@ class GettingStartedTab(QWidget):
             if isinstance(hist_config, list):
                 write_hist_yaml_block(hist_config, hist_config_path)
             else:
-                print("[WARNING] 'hist_configuration' must be a list of dicts.")
+                logger.warning("'hist_configuration' must be a list of dicts.")
             # update hist configuration file to point at the temp file
             template["configurations"]["hist_configuration_file"] = str(hist_config_path)
 

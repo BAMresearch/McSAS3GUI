@@ -34,7 +34,10 @@ class TaskRunnerMixin:
         """Update the status of a file in the table."""
         self.file_selection_widget.set_status_by_row(row, status)
 
-    def tasks_finished(self):
-        """Re-enable the run button after tasks are complete."""
+    def tasks_finished(self, failed: bool, message: str):
+        """Re-enable the run button and report the overall task result."""
         self.run_button.setEnabled(True)
-        QMessageBox.information(self, "Run Tasks", "All tasks are complete.")
+        if failed:
+            QMessageBox.warning(self, "Run Tasks", message)
+            return
+        QMessageBox.information(self, "Run Tasks", message)

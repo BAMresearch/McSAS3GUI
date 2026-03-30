@@ -61,3 +61,12 @@ class McSAS3MainWindow(QMainWindow):
         # set this to the current file in the optimization run tab
         DLTab.yaml_editor_widget.fileSaved.connect(ORTab.data_config_selector.set_file_path)  # Handle file save
         RSTab.yaml_editor_widget.fileSaved.connect(ORTab.run_config_selector.set_file_path)  # Handle file save
+
+    def closeEvent(self, event) -> None:  # noqa: N802
+        """Close any standalone auxiliary windows before the main window exits."""
+        for tab_index in range(self.tabs.count()):
+            tab = self.tabs.widget(tab_index)
+            close_auxiliary_windows = getattr(tab, "close_auxiliary_windows", None)
+            if callable(close_auxiliary_windows):
+                close_auxiliary_windows()
+        super().closeEvent(event)

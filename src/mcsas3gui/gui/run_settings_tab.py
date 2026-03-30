@@ -86,6 +86,17 @@ class RunSettingsTab(QWidget):
             self.config_dropdown.setCurrentIndex(0)
             self.load_selected_default_config()
 
+    def close_auxiliary_windows(self) -> None:
+        """Close any standalone preview/plot windows owned by this tab."""
+        if hasattr(self, "metrics_dialog") and self.metrics_dialog is not None:
+            self.metrics_dialog.close()
+            self.metrics_dialog = None
+        if hasattr(self, "metrics_fig") and self.metrics_fig is not None:
+            plt.close(self.metrics_fig)
+            self.metrics_fig = None
+        if hasattr(self, "metrics_ax"):
+            self.metrics_ax = None
+
     def refresh_config_dropdown(self, savedName: str | None = None):  # args is a dummy argument to handle signals
         """Populate or refresh the configuration dropdown list."""
         self.config_dropdown.clear()

@@ -89,6 +89,17 @@ class DataLoadingTab(QWidget):
             self.config_dropdown.setCurrentIndex(0)
             self.load_selected_default_config()
 
+    def close_auxiliary_windows(self) -> None:
+        """Close any standalone plotting windows owned by this tab."""
+        if self.plot_dialog is not None:
+            self.plot_dialog.close()
+            self.plot_dialog = None
+        if hasattr(self, "fig") and self.fig is not None:
+            plt.close(self.fig)
+            self.fig = None
+        if hasattr(self, "ax"):
+            self.ax = None
+
     def display_error(self, message):
         """Display the error message in the logger and on the tab."""
         # Optionally truncate the message if needed

@@ -13,6 +13,11 @@ from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
 from .optimization_worker import PreviewOptimizationWorker
 from .run_control_helpers import set_abortable_button_state, worker_is_running
+from .run_settings_helpers import (
+    cleanup_preview_result_file,
+    combine_run_configuration_documents,
+    preview_result_file_path,
+)
 from .yaml_editor_widget import YAMLEditorWidget
 
 logger = logging.getLogger("McSAS3")
@@ -35,6 +40,7 @@ class RunSettingsTab(QWidget):
         self.update_timer.setSingleShot(True)
         self.update_timer.timeout.connect(self.update_info_field)
         self.preview_worker: PreviewOptimizationWorker | None = None
+        self.preview_result_file = preview_result_file_path(self._temp_dir)
 
         layout = QVBoxLayout()
 
@@ -214,18 +220,7 @@ class RunSettingsTab(QWidget):
         )
 
     def _combined_yaml_content(self):
-        yaml_content = self.yaml_editor_widget.get_yaml_content()
-        if not yaml_content:
-            return None
-        if not isinstance(yaml_content, list):
-            return yaml_content
-
-        combined_yaml_content = {}
-        for doc in yaml_content:
-            if not isinstance(doc, dict):
-                raise TypeError("One or more YAML documents are not valid configurations.")
-            combined_yaml_content.update(doc)
-        return combined_yaml_content
+        return combine_run_configuration_documents(self.yaml_editor_widget.get_yaml_content())
 
     def request_preview_stop(self):
         if not worker_is_running(self.preview_worker):
@@ -233,36 +228,47 @@ class RunSettingsTab(QWidget):
         logger.info("Abort requested from run settings preview button.")
         self.preview_worker.request_stop()
 
+    def _loaded_processing(self):
+        processing = self.data_loading_tab.processing
+        if processing is None:
+            self.info_field.setPlainText("No data loaded in the Data Loading tab.")
+            return None
+        return processing
+
+    def _run_configuration(self):
+        run_config = self._combined_yaml_content()
+        if not run_config:
+            self.info_field.setPlainText("Invalid or missing run configuration.")
+            return None
+        return run_config
+
+    def _start_preview_worker(self, processing, run_config) -> None:
+        cleanup_preview_result_file(self.preview_result_file)
+        logger.debug("Temporary HDF5 file created at: %s", self.preview_result_file)
+        self.preview_worker = PreviewOptimizationWorker(
+            processing=processing,
+            result_file=self.preview_result_file,
+            run_config=run_config,
+            result_index=1,
+        )
+        self.preview_worker.preview_ready_signal.connect(self._on_preview_ready)
+        self.preview_worker.finished_signal.connect(self._on_preview_finished)
+        self._set_test_run_button_running_state(True)
+        self.info_field.setPlainText("Preview optimization running...")
+        self.preview_worker.start()
+
     def run_test_optimization(self):
         """Run a single optimization repetition on the loaded test data."""
         try:
-            # Retrieve data from the DataLoadingTab
-            processing = self.data_loading_tab.processing
+            processing = self._loaded_processing()
             if processing is None:
-                self.info_field.setPlainText("No data loaded in the Data Loading tab.")
                 return
 
-            # Parse the YAML configuration for the optimizer
-            yaml_content = self._combined_yaml_content()
-            if not yaml_content:
-                self.info_field.setPlainText("Invalid or missing run configuration.")
+            run_config = self._run_configuration()
+            if run_config is None:
                 return
 
-            # Create a temporary file to save data for the optimizer
-            temp_file = self._temp_dir / "test_data.hdf5"
-            self.tempFileName = temp_file
-            logger.debug(f"Temporary HDF5 file created at: {self.tempFileName}")
-            self.preview_worker = PreviewOptimizationWorker(
-                processing=processing,
-                result_file=self.tempFileName,
-                run_config=yaml_content,
-                result_index=1,
-            )
-            self.preview_worker.preview_ready_signal.connect(self._on_preview_ready)
-            self.preview_worker.finished_signal.connect(self._on_preview_finished)
-            self._set_test_run_button_running_state(True)
-            self.info_field.setPlainText("Preview optimization running...")
-            self.preview_worker.start()
+            self._start_preview_worker(processing, run_config)
 
         except Exception as e:
             logger.error(f"Error during test optimization: {e}")
@@ -283,8 +289,7 @@ class RunSettingsTab(QWidget):
         self._set_test_run_button_running_state(False)
         self.info_field.setPlainText(message)
         self.preview_worker = None
-        if hasattr(self, "tempFileName") and self.tempFileName.exists():
-            self.tempFileName.unlink()
+        cleanup_preview_result_file(self.preview_result_file)
 
     def _plot_fit(
         self,

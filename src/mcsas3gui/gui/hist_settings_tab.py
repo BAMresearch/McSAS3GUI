@@ -19,6 +19,7 @@ from PyQt6.QtWidgets import (
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.mcsas3_cli import histogram_command
 from .file_line_selection_widget import FileLineSelectionWidget
+from .file_selection_helpers import load_existing_selector_file
 from .yaml_editor_widget import YAMLEditorWidget
 
 logger = logging.getLogger("McSAS3")
@@ -88,14 +89,7 @@ class HistogramSettingsTab(QWidget):
 
     def load_test_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            self.test_file_selector.set_file_path(self.selected_file)
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+        load_existing_selector_file(self, self.test_file_selector, file_path)
 
     def refresh_config_dropdown(self, savedName: str | None = None):  # args added to handle signal
         """Populate or refresh the histogramming configuration dropdown."""

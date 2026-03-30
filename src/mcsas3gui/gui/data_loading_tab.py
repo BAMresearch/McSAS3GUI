@@ -9,11 +9,12 @@ import yaml
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QTextCursor, QTextOption  # Import QTextOption for word wrapping
-from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QMessageBox, QTextEdit, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QTextEdit, QVBoxLayout, QWidget
 
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
 from .file_line_selection_widget import FileLineSelectionWidget
+from .file_selection_helpers import load_existing_selector_file
 from .mcsas3_bridge import prepare_processing_from_file, processing_frames_from_processing
 from .yaml_editor_widget import YAMLEditorWidget
 
@@ -141,17 +142,20 @@ class DataLoadingTab(QWidget):
 
     def load_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            # Check for specific file types and list paths if applicable
-            if file_path.lower().endswith((".hdf5", ".h5", ".nxs")):
-                self.list_hdf5_paths_and_dimensions(file_path)
+
+        def on_loaded(path: Path) -> None:
+            self.pdi = []
+            self.selected_file = str(path)
+            if path.suffix.lower() in {".hdf5", ".h5", ".nxs"}:
+                self.list_hdf5_paths_and_dimensions(str(path))
             self.update_and_plot()
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+
+        load_existing_selector_file(
+            self,
+            self.file_line_selection_widget,
+            file_path,
+            on_loaded=on_loaded,
+        )
 
     def list_hdf5_paths_and_dimensions(self, file_name: str) -> None:
         """List paths and dimensions of datasets in an HDF5/Nexus file."""

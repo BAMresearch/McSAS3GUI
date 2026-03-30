@@ -7,6 +7,7 @@ from ..utils.file_utils import make_out_path
 from ..utils.mcsas3_cli import histogram_command
 from ..utils.task_runner_mixin import TaskRunnerMixin
 from .file_line_selection_widget import FileLineSelectionWidget
+from .file_selection_helpers import load_existing_selector_file
 from .file_selection_widget import FileSelectionWidget
 
 logger = logging.getLogger("McSAS3")
@@ -51,14 +52,7 @@ class HistRunTab(QWidget, TaskRunnerMixin):
 
     def load_hist_config_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            self.histogram_config_selector.set_file_path(self.selected_file)
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+        load_existing_selector_file(self, self.histogram_config_selector, file_path)
 
     def run_histogramming(self):
         """Run histogramming on the selected files."""

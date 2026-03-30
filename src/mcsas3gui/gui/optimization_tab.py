@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QMessageBox, QProgressBar, QPushButton, QVBoxLayout,
 
 from ..utils.file_utils import make_out_path
 from .file_line_selection_widget import FileLineSelectionWidget
+from .file_selection_helpers import load_existing_selector_file
 from .file_selection_widget import FileSelectionWidget
 from .optimization_worker import OptimizationWorker
 
@@ -79,25 +80,11 @@ class OptimizationRunTab(QWidget):
 
     def load_data_config_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            self.data_config_selector.set_file_path(self.selected_file)
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+        load_existing_selector_file(self, self.data_config_selector, file_path)
 
     def load_run_config_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            self.run_config_selector.set_file_path(self.selected_file)
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+        load_existing_selector_file(self, self.run_config_selector, file_path)
 
     def _set_expected_output(self, outpath):
         if self.hist_settings_tab:

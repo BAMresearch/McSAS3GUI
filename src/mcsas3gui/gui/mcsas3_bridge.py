@@ -6,7 +6,14 @@ from typing import Any, Mapping
 
 import numpy as np
 import pandas as pd
-from mcsas3.data_adapters import STAGE_BINNED, STAGE_CLIPPED, STAGE_RAW, selected_bundle_from_processing
+from mcsas3.data_adapters import (
+    STAGE_BINNED,
+    STAGE_CLIPPED,
+    STAGE_RAW,
+    fit_arrays_from_bundle,
+    frame_from_bundle,
+    selected_bundle_from_processing,
+)
 from mcsas3.data_model import BaseData, DataBundle, ProcessingData
 from mcsas3.mc_hdf import ResultIndex, loadKV
 from mcsas3.workflows import optimize_processing_data, prepare_1d_processing_data_from_file
@@ -90,30 +97,14 @@ def _optimization_repetition_path(result_index: int, repetition: int) -> PurePos
 
 
 def _fit_q_from_bundle(bundle: DataBundle | Mapping[str, BaseData]) -> np.ndarray:
-    if "Q" not in bundle:
+    q_arrays, _intensity, _sigma = fit_arrays_from_bundle(bundle)
+    if len(q_arrays) != 1:
         raise ValueError("GUI optimization preview plotting currently supports only 1D analysis bundles.")
-    return np.asarray(bundle["Q"].signal, dtype=float).reshape(-1)
+    return q_arrays[0].copy()
 
 
 def _frame_from_1d_bundle(bundle: DataBundle | Mapping[str, BaseData]) -> pd.DataFrame:
-    if "Q" not in bundle:
+    frame = frame_from_bundle(bundle)
+    if "Q" not in frame.columns:
         raise ValueError("GUI plotting currently supports only 1D analysis bundles.")
-
-    frame = pd.DataFrame(
-        {
-            "Q": np.asarray(bundle["Q"].signal, dtype=float).reshape(-1),
-            "I": np.asarray(bundle["signal"].signal, dtype=float).reshape(-1),
-            "ISigma": _combined_uncertainty(bundle["signal"]),
-        }
-    )
     return frame
-
-
-def _combined_uncertainty(data: BaseData) -> np.ndarray:
-    if not data.uncertainties:
-        return np.zeros_like(np.asarray(data.signal, dtype=float).reshape(-1), dtype=float)
-
-    variance = np.zeros_like(np.asarray(data.signal, dtype=float).reshape(-1), dtype=float)
-    for uncertainty in data.uncertainties.values():
-        variance += np.asarray(uncertainty, dtype=float).reshape(-1) ** 2
-    return np.sqrt(variance)

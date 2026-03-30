@@ -1,7 +1,6 @@
 import logging
 import os
 import subprocess
-import sys
 from pathlib import Path
 from sys import platform
 from tempfile import gettempdir
@@ -18,6 +17,7 @@ from PyQt6.QtWidgets import (
 )
 
 from ..utils.file_utils import get_default_config_files, get_main_path
+from ..utils.mcsas3_cli import histogram_command
 from .file_line_selection_widget import FileLineSelectionWidget
 from .yaml_editor_widget import YAMLEditorWidget
 
@@ -172,18 +172,7 @@ class HistogramSettingsTab(QWidget):
             self.info_field.append("Launching histogramming test...")
 
             # Construct the command
-            command = [
-                str(Path(sys.executable).as_posix()),
-                "-m",
-                "mcsas3.mcsas3_cli_histogrammer",
-                "-r",
-                test_file,
-                "-H",
-                str(yaml_file),
-                "-i",
-                "1",
-                # "-v", "-d"
-            ]
+            command = histogram_command(Path(test_file), yaml_file, result_index=1)
 
             # Specify the working directory (replace 'desired_directory' with the actual path)
             working_directory = Path(".").resolve()  # Set the directory where the script exists

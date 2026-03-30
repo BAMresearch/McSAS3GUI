@@ -1,11 +1,13 @@
 import logging
-import shlex
 import subprocess
+from collections.abc import Callable, Mapping
 from pathlib import Path
+from typing import Any
 
 from PyQt6.QtCore import QThread, pyqtSignal
 
 logger = logging.getLogger("McSAS3")
+CommandBuilder = Callable[[Path, Path, Mapping[str, Any]], list[str]]
 
 
 class BaseWorker(QThread):
@@ -13,23 +15,17 @@ class BaseWorker(QThread):
     status_signal = pyqtSignal(int, str)
     finished_signal = pyqtSignal()
 
-    def __init__(self, files_in_out, command_template, extra_keywords=None):
+    def __init__(self, files_in_out, command_builder: CommandBuilder, extra_keywords=None):
         """
         Args:
             files_in_out (dict): Pairs for {input:output} file paths to process.
-            command_template (str): Command template with placeholders for replacement.
+            command_builder: Callable that returns a subprocess argument list for each file.
             extra_keywords (dict): Additional keywords for replacing in the command template.
         """
         super().__init__()
         self.files_in_out = files_in_out
-        self.command_template = command_template
+        self.command_builder = command_builder
         self.extra_keywords = extra_keywords or {}
-
-    def quote_path(self, path):
-        """Ensure the path is properly quoted for safe command-line usage."""
-        if isinstance(path, Path):
-            path = str(path.as_posix())
-        return f'"{path}"' if " " in path else path
 
     def run(self):
         """Run commands sequentially."""
@@ -38,15 +34,7 @@ class BaseWorker(QThread):
             if result_file.is_file():
                 result_file.unlink()
 
-            # Add file-specific keywords, quoting paths
-            keywords = {
-                "input_file": self.quote_path(Path(file_name)),
-                "result_file": self.quote_path(Path(result_file)),
-                **{key: self.quote_path(value) for key, value in self.extra_keywords.items()},
-            }
-
-            # Replace placeholders in the command template
-            command = shlex.split(self.command_template.format(**keywords))
+            command = self.command_builder(Path(file_name), Path(result_file), self.extra_keywords)
 
             logger.info(f"Running command: {command}")
 

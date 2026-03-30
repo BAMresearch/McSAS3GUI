@@ -88,6 +88,8 @@ flowchart LR
   module_gui_run_settings_tab --> module_utils_yaml_utils
   module_main --> module___main__
   module_main --> module__bootstrap
+  module_utils_base_worker --> module_utils_mcsas3_cli
+  module_utils_mcsas3_cli --> module__bootstrap
   module_utils_task_runner_mixin --> module_utils_base_worker
   classDef entry fill:#e7f0ff,stroke:#3a66b3,color:#1d2b45;
   classDef tabs fill:#fff2df,stroke:#b06a00,color:#4d3200;

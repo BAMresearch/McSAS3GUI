@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import (
 )
 
 from ..utils.file_utils import get_default_config_files, get_main_path
-from ..utils.mcsas3_cli import histogram_command
+from ..utils.mcsas3_cli import histogram_subprocess_spec
 from .file_line_selection_widget import FileLineSelectionWidget
 from .file_selection_helpers import load_existing_selector_file
 from .yaml_editor_widget import YAMLEditorWidget
@@ -166,7 +166,8 @@ class HistogramSettingsTab(QWidget):
             self.info_field.append("Launching histogramming test...")
 
             # Construct the command
-            command = histogram_command(Path(test_file), yaml_file, result_index=1)
+            command_spec = histogram_subprocess_spec(Path(test_file), yaml_file, result_index=1)
+            command = command_spec.args
 
             # Specify the working directory (replace 'desired_directory' with the actual path)
             working_directory = Path(".").resolve()  # Set the directory where the script exists
@@ -183,6 +184,7 @@ class HistogramSettingsTab(QWidget):
                 cwd=working_directory,  # Run the command from the specified directory
                 capture_output=True,  # Capture stdout and stderr
                 text=True,  # Decode output as text
+                env=command_spec.merged_env(),
             )
 
             # Handle the output

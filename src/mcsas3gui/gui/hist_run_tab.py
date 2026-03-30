@@ -4,7 +4,7 @@ from pathlib import Path
 from PyQt6.QtWidgets import QMessageBox, QProgressBar, QPushButton, QVBoxLayout, QWidget
 
 from ..utils.file_utils import make_out_path
-from ..utils.mcsas3_cli import histogram_command
+from ..utils.mcsas3_cli import histogram_subprocess_spec
 from ..utils.task_runner_mixin import TaskRunnerMixin
 from .file_line_selection_widget import FileLineSelectionWidget
 from .file_selection_helpers import load_existing_selector_file
@@ -69,6 +69,6 @@ class HistRunTab(QWidget, TaskRunnerMixin):
 
         def command_builder(input_file: Path, result_file: Path, extra_keywords):
             _ = result_file, extra_keywords
-            return histogram_command(input_file, hist_config_path, result_index=1)
+            return histogram_subprocess_spec(input_file, hist_config_path, result_index=1)
 
         self.run_tasks(files_in_out, command_builder)

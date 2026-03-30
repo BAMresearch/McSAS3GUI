@@ -6,8 +6,10 @@ from typing import Any
 
 from PyQt6.QtCore import QThread, pyqtSignal
 
+from .mcsas3_cli import SubprocessSpec
+
 logger = logging.getLogger("McSAS3")
-CommandBuilder = Callable[[Path, Path, Mapping[str, Any]], list[str]]
+CommandBuilder = Callable[[Path, Path, Mapping[str, Any]], list[str] | SubprocessSpec]
 FileMap = Mapping[Path, Path]
 
 
@@ -43,13 +45,19 @@ class BaseWorker(QThread):
             if result_file.is_file():
                 result_file.unlink()
 
-            command = self.command_builder(Path(file_name), Path(result_file), self.extra_keywords)
+            command_spec = self.command_builder(Path(file_name), Path(result_file), self.extra_keywords)
+            if isinstance(command_spec, SubprocessSpec):
+                command = command_spec.args
+                env = command_spec.merged_env()
+            else:
+                command = command_spec
+                env = None
 
             logger.info("Running command: %s", command)
 
             try:
                 self.status_signal.emit(row, "Running")
-                subprocess.run(command, check=True)
+                subprocess.run(command, check=True, env=env)
                 self.status_signal.emit(row, "Complete")
             except subprocess.CalledProcessError:
                 logger.exception("Task command failed for %s", file_name)

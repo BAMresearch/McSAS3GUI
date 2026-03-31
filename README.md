@@ -94,7 +94,7 @@ The GUI is organized into:
 - shared GUI helpers in `gui/*_helpers.py` and `utils/task_runner_mixin.py`
 
 The generated dependency overview is documented in
-[the tracked GUI dependency diagram](https://bamresearch.github.io/mcsas3gui/generated_module_dependencies.html).
+[the GUI structure page](https://bamresearch.github.io/mcsas3gui/structure.html).
 
 ## Documentation
 

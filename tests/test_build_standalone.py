@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 import types
 from pathlib import Path
@@ -28,3 +29,24 @@ def test_histogrammer_hidden_imports_include_pdf_backend():
 
     assert "--hidden-import" in args
     assert "matplotlib.backends.backend_pdf" in args
+
+
+def test_write_build_info_records_bundle_and_helper_paths(tmp_path):
+    module = _load_build_standalone_module()
+    bundle_root = tmp_path / "darwin-arm64"
+    bundle_root.mkdir()
+    gui_bundle = bundle_root / "McSAS3GUI.app"
+    archive_path = tmp_path / "mcsas3gui-standalone-darwin-arm64.zip"
+
+    (gui_bundle / "Contents" / "MacOS").mkdir(parents=True)
+    (gui_bundle / "Contents" / "Resources" / "helpers" / module.HISTOGRAMMER_NAME).mkdir(parents=True)
+
+    module._write_build_info(bundle_root, gui_bundle, archive_path)
+
+    payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
+    assert payload["archive_name"] == archive_path.name
+    assert payload["gui_bundle"] == "McSAS3GUI.app"
+    assert payload["gui_executable"].endswith("Contents/MacOS/McSAS3GUI")
+    assert payload["bundled_histogrammer"].endswith(
+        f"Contents/Resources/helpers/{module.HISTOGRAMMER_NAME}/{module.HISTOGRAMMER_NAME}"
+    )

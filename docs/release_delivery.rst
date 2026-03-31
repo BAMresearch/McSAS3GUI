@@ -70,3 +70,11 @@ The repo includes ``.github/workflows/standalone.yml`` which builds standalone a
 
 The workflow checks out the sibling ``McSAS3`` and ``MoDaCor`` repositories explicitly and passes
 their source roots into the standalone build step.
+
+After the build succeeds, the workflow also verifies the generated standalone manifest and artifact
+layout by checking:
+
+- ``dist/standalone/<platform-tag>/build_info.json``
+- ``dist/standalone/<platform-tag>/README_STANDALONE.txt``
+- ``dist/standalone/mcsas3gui-standalone-<platform-tag>.zip``
+- the GUI executable and bundled ``mcsas3-histogrammer`` path recorded in ``build_info.json``

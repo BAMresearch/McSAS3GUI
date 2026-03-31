@@ -293,12 +293,16 @@ def _write_bundle_readme(bundle_root: Path) -> None:
     (bundle_root / "README_STANDALONE.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def _write_build_info(bundle_root: Path) -> None:
+def _write_build_info(bundle_root: Path, gui_bundle: Path, archive_path: Path) -> None:
     payload = {
         "platform": _platform_tag(),
         "system": platform.system(),
         "machine": platform.machine(),
         "artifacts": [GUI_APP_NAME, HISTOGRAMMER_NAME],
+        "archive_name": archive_path.name,
+        "gui_bundle": str(gui_bundle.relative_to(bundle_root)),
+        "gui_executable": str(_gui_executable_path(gui_bundle).relative_to(bundle_root)),
+        "bundled_histogrammer": str(_bundled_histogrammer_path(gui_bundle).relative_to(bundle_root)),
     }
     (bundle_root / "build_info.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
@@ -372,8 +376,8 @@ def main() -> None:
     output_gui_bundle = _copy_gui_bundle_to_output(gui_bundle, bundle_root)
 
     _write_bundle_readme(bundle_root)
-    _write_build_info(bundle_root)
     archive_path = _archive_bundle(bundle_root)
+    _write_build_info(bundle_root, output_gui_bundle, archive_path)
     _run_smoke_test(output_gui_bundle)
     print(f"Standalone GUI bundle created at {output_gui_bundle}")
     print(f"Standalone archive created at {archive_path}")

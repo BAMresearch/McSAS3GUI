@@ -7,6 +7,7 @@ on:
 jobs:
   standalone:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -37,34 +38,83 @@ jobs:
           cache: pip
           cache-dependency-path: |
             ci/requirements.txt
+            pyproject.toml
+            tox.ini
 
       - name: Install required system packages
-        shell: sh
+        shell: bash
         run: |
+          set -euxo pipefail
           PLATFORM="$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')"
-          REQFN="ci/requirements_$PLATFORM.txt"
-          if [ "$PLATFORM" = "linux" ] && [ -f "$REQFN" ]; then
-            sudo apt-get update
-            sudo apt-get -y install $(sed -e '/^\s*#/d' "$REQFN")
-          elif [ "$PLATFORM" = "windows" ] && [ -f "$REQFN" ]; then
-            choco install $(sed -e '/^\s*#/d' "$REQFN")
+          REQFN="ci/requirements_${PLATFORM}.txt"
+          if [[ "$PLATFORM" == "linux" && -f "$REQFN" ]]; then
+            mapfile -t packages < <(grep -vE '^\s*(#|$)' "$REQFN")
+            if [[ "${#packages[@]}" -gt 0 ]]; then
+              sudo apt-get update
+              sudo apt-get -y install "${packages[@]}"
+            fi
           else
             echo "No extra standalone system packages declared for $PLATFORM."
           fi
 
       - name: Install dependencies
-        shell: sh
+        shell: bash
         run: |
-          [ -d "/c/miniconda" ] && /c/miniconda/condabin/activate.bat
+          set -euxo pipefail
           python -m pip install --upgrade pip
           python -m pip install --progress-bar=off -r ci/requirements.txt
 
       - name: Build standalone GUI bundle
-        shell: sh
+        shell: bash
         env:
           MCSAS3GUI_MCSAS3_SRC: ${{ github.workspace }}/McSAS3/src
           MCSAS3GUI_MODACOR_SRC: ${{ github.workspace }}/MoDaCor/src
         run: tox -e standalone -v
+
+      - name: Verify standalone bundle manifest
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import json
+          import platform
+          from pathlib import Path
+
+          system = platform.system().lower()
+          machine = platform.machine().lower().replace("x86_64", "amd64")
+          platform_tag = f"{system}-{machine}"
+          bundle_root = Path("dist") / "standalone" / platform_tag
+          build_info = bundle_root / "build_info.json"
+          readme = bundle_root / "README_STANDALONE.txt"
+          archive = Path("dist") / "standalone" / f"mcsas3gui-standalone-{platform_tag}.zip"
+
+          if not bundle_root.is_dir():
+              raise SystemExit(f"Missing standalone bundle root: {bundle_root}")
+          if not readme.is_file():
+              raise SystemExit(f"Missing bundle README: {readme}")
+          if not build_info.is_file():
+              raise SystemExit(f"Missing build manifest: {build_info}")
+          if not archive.is_file():
+              raise SystemExit(f"Missing standalone archive: {archive}")
+
+          payload = json.loads(build_info.read_text(encoding="utf-8"))
+          expected_platform = platform_tag
+          if payload["platform"] != expected_platform:
+              raise SystemExit(
+                  f"Build manifest platform mismatch: {payload['platform']} != {expected_platform}"
+              )
+
+          gui_bundle = bundle_root / payload["gui_bundle"]
+          gui_executable = bundle_root / payload["gui_executable"]
+          histogrammer = bundle_root / payload["bundled_histogrammer"]
+
+          if not gui_bundle.exists():
+              raise SystemExit(f"Missing GUI bundle: {gui_bundle}")
+          if not gui_executable.is_file():
+              raise SystemExit(f"Missing GUI executable: {gui_executable}")
+          if not histogrammer.is_file():
+              raise SystemExit(f"Missing bundled histogram helper: {histogrammer}")
+          PY
 
       - name: Upload standalone artifacts
         uses: actions/upload-artifact@v4

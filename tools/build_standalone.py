@@ -106,6 +106,22 @@ def _hidden_import_args() -> list[str]:
     return args
 
 
+def _histogrammer_hidden_import_args() -> list[str]:
+    hidden_imports = [
+        "modacor",
+        "modacor.units",
+        "modacor.dataclasses.basedata",
+        "modacor.dataclasses.databundle",
+        "modacor.dataclasses.processing_data",
+        # Result-card export writes PDF output, which lazily imports this backend.
+        "matplotlib.backends.backend_pdf",
+    ]
+    args: list[str] = []
+    for module_name in hidden_imports:
+        args.extend(["--hidden-import", module_name])
+    return args
+
+
 def _runtime_hooks_dir() -> Path:
     hooks_dir = ROOT / "tools" / "pyinstaller_hooks"
     hooks_dir.mkdir(parents=True, exist_ok=True)
@@ -203,22 +219,13 @@ def _histogrammer_pyinstaller_args(helper_dist: Path) -> list[str]:
         str(BUILD_ROOT / "work-hist"),
         "--specpath",
         str(BUILD_ROOT / "spec-hist"),
-        "--hidden-import",
-        "modacor",
-        "--hidden-import",
-        "modacor.units",
-        "--hidden-import",
-        "modacor.dataclasses.basedata",
-        "--hidden-import",
-        "modacor.dataclasses.databundle",
-        "--hidden-import",
-        "modacor.dataclasses.processing_data",
         "--add-data",
         _add_data_arg(core_root / "example_configurations", "example_configurations"),
         "--add-data",
         _add_data_arg(core_root / "testdata" / "quickstartdemo1.csv", "testdata"),
         str(helper_script),
     ]
+    args.extend(_histogrammer_hidden_import_args())
     return args
 
 

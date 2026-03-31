@@ -1,5 +1,6 @@
 import argparse
 import logging
+import multiprocessing
 import os
 import sys
 import tempfile
@@ -58,4 +59,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     sys.exit(main())

@@ -43,6 +43,11 @@ changelog = "https://BAMresearch.github.io/mcsas3gui/changelog.html"
 mcsas3gui = "mcsas3gui.main:main"
 m3gui = "mcsas3gui.main:main"
 
+[project.optional-dependencies]
+standalone = [
+    "pyinstaller>=6.19",
+]
+
 [build-system]
 requires = [
     "setuptools>=40.6",

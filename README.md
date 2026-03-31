@@ -47,6 +47,18 @@ The module form also works:
 python -m mcsas3gui
 ```
 
+## Standalone GUI bundles
+
+A standalone build path is available for local packaging and CI:
+
+```bash
+tox -e standalone
+```
+
+This produces a platform-specific standalone bundle under `dist/standalone/`, including the
+windowed `McSAS3GUI` app and the bundled `mcsas3-histogrammer` helper used by the histogramming
+tabs.
+
 ## Quick Start
 
 1. Open the **Getting Started** tab and choose one of the shipped prefab workflows, or configure

@@ -10,6 +10,7 @@ Contents
    installation
    usage
    structure
+   release_delivery
    generated_module_dependencies
    reference/index
    contributing

@@ -42,6 +42,31 @@ def _pythonpath_override(source_root: Path) -> dict[str, str]:
     return {"PYTHONPATH": f"{source_value}{os.pathsep}{current}"}
 
 
+def _histogrammer_executable_name() -> str:
+    """Return the platform-specific histogrammer executable name."""
+    suffix = ".exe" if os.name == "nt" else ""
+    return f"mcsas3-histogrammer{suffix}"
+
+
+def _bundled_histogrammer_path() -> Path | None:
+    """Return a bundled histogrammer executable when running from a frozen GUI build."""
+    if not getattr(sys, "frozen", False):
+        return None
+
+    executable = Path(sys.executable).resolve()
+    helper_name = _histogrammer_executable_name()
+    roots = [executable.parent, *executable.parents]
+    for root in roots:
+        candidates = (
+            root / "helpers" / "mcsas3-histogrammer" / helper_name,
+            root / "Resources" / "helpers" / "mcsas3-histogrammer" / helper_name,
+        )
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate
+    return None
+
+
 def histogram_subprocess_spec(
     result_file: Path,
     hist_config: Path,
@@ -72,6 +97,20 @@ def histogram_subprocess_spec(
         "-i",
         str(result_index),
     ]
+
+    bundled_histogrammer = _bundled_histogrammer_path()
+    if bundled_histogrammer is not None:
+        return SubprocessSpec(
+            [
+                bundled_histogrammer.as_posix(),
+                "-r",
+                str(result_file),
+                "-H",
+                str(hist_config),
+                "-i",
+                str(result_index),
+            ]
+        )
 
     source_root = _compatible_source_checkout()
     if source_root is not None:

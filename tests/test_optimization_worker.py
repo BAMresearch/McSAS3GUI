@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import yaml
@@ -169,3 +170,33 @@ def test_preview_optimization_worker_forces_single_repetition(tmp_path, monkeypa
     assert previews == [{"preview": True}]
     assert captured["preview"] == (result_file, {"processing": True}, 2, 0)
     assert finished == [(False, "Optimization completed successfully.")]
+
+
+def test_preview_optimization_worker_emits_live_progress_messages(tmp_path, monkeypatch):
+    result_file = tmp_path / "preview.h5"
+
+    def fake_optimize(processing, target_file: Path, *, result_index: int, hat):
+        _ = processing, target_file, result_index, hat
+        logging.getLogger("mcsas3.mc_core").info("Optimization of repetition 0 started.")
+        logging.getLogger("mcsas3.mc_core").info("chiSqr: 1.23, N accepted: 4 / 500")
+
+    monkeypatch.setattr(
+        optimization_worker,
+        "_load_mcsas3_runtime",
+        lambda: (_FakeHat, fake_optimize, lambda *args, **kwargs: None),
+    )
+    monkeypatch.setattr(optimization_worker, "_load_bridge_runtime", lambda: lambda *args, **kwargs: {"ok": True})
+
+    progress_messages: list[str] = []
+    worker = optimization_worker.PreviewOptimizationWorker(
+        processing={"processing": True},
+        result_file=result_file,
+        run_config={"modelName": "sphere"},
+        result_index=1,
+    )
+    worker.progress_text_signal.connect(progress_messages.append)
+
+    worker.run()
+
+    assert "Optimization of repetition 0 started." in progress_messages
+    assert "chiSqr: 1.23, N accepted: 4 / 500" in progress_messages

@@ -16,6 +16,8 @@ from .run_control_helpers import set_abortable_button_state, worker_is_running
 from .run_settings_helpers import (
     cleanup_preview_result_file,
     combine_run_configuration_documents,
+    format_preview_progress_message,
+    format_preview_status_header,
     preview_result_file_path,
 )
 from .yaml_editor_widget import YAMLEditorWidget
@@ -41,6 +43,7 @@ class RunSettingsTab(QWidget):
         self.update_timer.timeout.connect(self.update_info_field)
         self.preview_worker: PreviewOptimizationWorker | None = None
         self.preview_result_file = preview_result_file_path(self._temp_dir)
+        self._preview_run_config: dict | None = None
 
         layout = QVBoxLayout()
 
@@ -99,18 +102,22 @@ class RunSettingsTab(QWidget):
 
     def refresh_config_dropdown(self, savedName: str | None = None):  # args is a dummy argument to handle signals
         """Populate or refresh the configuration dropdown list."""
-        self.config_dropdown.clear()
-        self.default_configs = get_default_config_files(directory=self.config_path)
-        self.config_dropdown.addItems(self.default_configs)
-        self.config_dropdown.addItem("<Custom...>")
-        if savedName is not None:
-            listName = str(Path(savedName).name)
-            if listName in self.default_configs:
-                self.config_dropdown.setCurrentText(listName)
+        self.config_dropdown.blockSignals(True)
+        try:
+            self.config_dropdown.clear()
+            self.default_configs = get_default_config_files(directory=self.config_path)
+            self.config_dropdown.addItems(self.default_configs)
+            self.config_dropdown.addItem("<Custom...>")
+            if savedName is not None:
+                listName = str(Path(savedName).name)
+                if listName in self.default_configs:
+                    self.config_dropdown.setCurrentText(listName)
+                else:
+                    self.config_dropdown.setCurrentText("<Custom...>")
             else:
                 self.config_dropdown.setCurrentText("<Custom...>")
-        else:
-            self.config_dropdown.setCurrentText("<Custom...>")
+        finally:
+            self.config_dropdown.blockSignals(False)
 
     def handle_dropdown_change(self):
         """Handle dropdown changes and load the selected configuration."""
@@ -256,16 +263,18 @@ class RunSettingsTab(QWidget):
     def _start_preview_worker(self, processing, run_config) -> None:
         cleanup_preview_result_file(self.preview_result_file)
         logger.debug("Temporary HDF5 file created at: %s", self.preview_result_file)
+        self._preview_run_config = dict(run_config)
         self.preview_worker = PreviewOptimizationWorker(
             processing=processing,
             result_file=self.preview_result_file,
             run_config=run_config,
             result_index=1,
         )
+        self.preview_worker.progress_text_signal.connect(self._on_preview_progress)
         self.preview_worker.preview_ready_signal.connect(self._on_preview_ready)
         self.preview_worker.finished_signal.connect(self._on_preview_finished)
         self._set_test_run_button_running_state(True)
-        self.info_field.setPlainText("Preview optimization running...")
+        self.info_field.setPlainText(format_preview_status_header(run_config))
         self.preview_worker.start()
 
     def run_test_optimization(self):
@@ -298,9 +307,19 @@ class RunSettingsTab(QWidget):
 
     def _on_preview_finished(self, stopped: bool, message: str) -> None:
         self._set_test_run_button_running_state(False)
-        self.info_field.setPlainText(message)
+        self.info_field.append(message)
         self.preview_worker = None
+        self._preview_run_config = None
         cleanup_preview_result_file(self.preview_result_file)
+
+    def _on_preview_progress(self, message: str) -> None:
+        if not message:
+            return
+        formatted_message = format_preview_progress_message(
+            message,
+            run_config=self._preview_run_config,
+        )
+        self.info_field.append(formatted_message)
 
     def _plot_fit(
         self,

@@ -5,6 +5,8 @@ import pytest
 from mcsas3gui.gui.run_settings_helpers import (
     cleanup_preview_result_file,
     combine_run_configuration_documents,
+    format_preview_progress_message,
+    format_preview_status_header,
     preview_result_file_path,
 )
 
@@ -43,3 +45,30 @@ def test_cleanup_preview_result_file_removes_existing_file(tmp_path):
 
 def test_cleanup_preview_result_file_ignores_missing_file(tmp_path):
     cleanup_preview_result_file(Path(tmp_path / "missing.hdf5"))
+
+
+def test_format_preview_status_header_includes_run_limits():
+    header = format_preview_status_header({"maxIter": 5000, "maxAccept": 125, "convCrit": 1.0})
+
+    assert "Preview optimization running..." in header
+    assert "Max Iter: 5000" in header
+    assert "Max Accept: 125" in header
+    assert "Convergence Criterion: 1.0" in header
+
+
+def test_format_preview_progress_message_formats_live_progress():
+    message = format_preview_progress_message(
+        "chiSqr: 1.23, N accepted: 4 / 500",
+        run_config={"maxIter": 5000, "maxAccept": 125},
+    )
+
+    assert message == "Reduced chi-square: 1.23 | Accepted: 4/125 | Attempts: 500/5000"
+
+
+def test_format_preview_progress_message_formats_final_summary():
+    message = format_preview_progress_message(
+        "Final chiSqr: 0.98, N accepted: 37",
+        run_config={"maxIter": 5000, "maxAccept": 125},
+    )
+
+    assert message == "Final reduced chi-square: 0.98 | Accepted: 37/125"

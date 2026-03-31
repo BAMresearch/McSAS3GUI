@@ -114,18 +114,22 @@ class DataLoadingTab(QWidget):
 
     def refresh_config_dropdown(self, savedName: str | None = None):  # optional args to match signal signature
         """Populate or refresh the configuration dropdown list."""
-        self.config_dropdown.clear()
-        self.default_configs = get_default_config_files(directory=self.config_path)
-        self.config_dropdown.addItems(self.default_configs)
-        self.config_dropdown.addItem("<Custom...>")
-        if savedName is not None:
-            listName = str(Path(savedName).name)
-            if listName in self.default_configs:
-                self.config_dropdown.setCurrentText(listName)
+        self.config_dropdown.blockSignals(True)
+        try:
+            self.config_dropdown.clear()
+            self.default_configs = get_default_config_files(directory=self.config_path)
+            self.config_dropdown.addItems(self.default_configs)
+            self.config_dropdown.addItem("<Custom...>")
+            if savedName is not None:
+                listName = str(Path(savedName).name)
+                if listName in self.default_configs:
+                    self.config_dropdown.setCurrentText(listName)
+                else:
+                    self.config_dropdown.setCurrentText("<Custom...>")
             else:
                 self.config_dropdown.setCurrentText("<Custom...>")
-        else:
-            self.config_dropdown.setCurrentText("<Custom...>")
+        finally:
+            self.config_dropdown.blockSignals(False)
 
     def handle_dropdown_change(self):
         """Handle dropdown changes and load the selected configuration."""

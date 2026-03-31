@@ -54,6 +54,33 @@ def _run_was_stopped(stop_requested: bool, hat: Any) -> bool:
     return stop_requested or bool(getattr(hat, "lastRunStopped", False))
 
 
+class _SignalLogHandler(logging.Handler):
+    """Forward McSAS3 log records into a Qt signal emitter."""
+
+    def __init__(self, emit_message: Callable[[str], None]) -> None:
+        super().__init__(level=logging.INFO)
+        self._emit_message = emit_message
+        self.setFormatter(logging.Formatter("%(message)s"))
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            message = self.format(record).strip()
+            if message:
+                self._emit_message(message)
+        except Exception:
+            self.handleError(record)
+
+
+def _attach_progress_log_handler(emit_message: Callable[[str], None]) -> tuple[logging.Logger, logging.Handler, int]:
+    """Attach a temporary McSAS3 log handler used for live GUI progress updates."""
+    logger_namespace = logging.getLogger("mcsas3")
+    handler = _SignalLogHandler(emit_message)
+    previous_level = logger_namespace.level
+    logger_namespace.addHandler(handler)
+    logger_namespace.setLevel(logging.INFO)
+    return logger_namespace, handler, previous_level
+
+
 def _preview_run_config(run_config: Mapping[str, Any]) -> dict[str, Any]:
     """Coerce a run configuration to the single-repetition preview shape."""
     preview_config = dict(run_config)
@@ -186,6 +213,7 @@ class OptimizationWorker(QThread):
 class PreviewOptimizationWorker(QThread):
     """Background worker for the single-repetition preview optimization in the run-settings tab."""
 
+    progress_text_signal = pyqtSignal(str)
     preview_ready_signal = pyqtSignal(object)
     finished_signal = pyqtSignal(bool, str)
 
@@ -214,7 +242,13 @@ class PreviewOptimizationWorker(QThread):
     def run(self) -> None:
         McHat, optimize_file_processing, _prepare_file_processing = _load_mcsas3_runtime()
         load_preview = _load_bridge_runtime()
+        progress_logger = None
+        progress_handler = None
+        progress_logger_level = logging.NOTSET
         try:
+            progress_logger, progress_handler, progress_logger_level = _attach_progress_log_handler(
+                self.progress_text_signal.emit
+            )
             self._active_hat = _execute_hat_run(
                 hat_factory=McHat,
                 optimize_processing=optimize_file_processing,
@@ -240,4 +274,8 @@ class PreviewOptimizationWorker(QThread):
             logger.exception("Preview optimization failed")
             self.finished_signal.emit(False, f"Error during test optimization: {exc}")
         finally:
+            if progress_logger is not None and progress_handler is not None:
+                progress_logger.removeHandler(progress_handler)
+                progress_handler.close()
+                progress_logger.setLevel(progress_logger_level)
             self._active_hat = None

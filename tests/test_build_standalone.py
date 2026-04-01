@@ -46,7 +46,7 @@ def test_write_build_info_records_bundle_and_helper_paths(tmp_path):
     payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
     assert payload["archive_name"] == archive_path.name
     assert payload["gui_bundle"] == "McSAS3GUI.app"
-    assert payload["gui_executable"].endswith("Contents/MacOS/McSAS3GUI")
-    assert payload["bundled_histogrammer"].endswith(
-        f"Contents/Resources/helpers/{module.HISTOGRAMMER_NAME}/{module.HISTOGRAMMER_NAME}"
+    assert payload["gui_executable"] == str(module._gui_executable_path(gui_bundle).relative_to(bundle_root))
+    assert payload["bundled_histogrammer"] == str(
+        module._bundled_histogrammer_path(gui_bundle).relative_to(bundle_root)
     )

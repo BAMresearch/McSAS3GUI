@@ -6,6 +6,7 @@ from mcsas3gui.utils import mcsas3_cli
 def test_histogram_subprocess_prefers_sibling_source_checkout(monkeypatch, tmp_path):
     source_root = tmp_path / "McSAS3" / "src"
     source_root.mkdir(parents=True)
+    monkeypatch.delenv("PYTHONPATH", raising=False)
     monkeypatch.setattr(mcsas3_cli, "_compatible_source_checkout", lambda: source_root)
     monkeypatch.setattr(
         mcsas3_cli,
@@ -36,7 +37,8 @@ def test_histogram_subprocess_prefers_sibling_source_checkout(monkeypatch, tmp_p
 
 def test_histogram_subprocess_prefers_bundled_helper_when_frozen(monkeypatch, tmp_path):
     bundle_root = tmp_path / "bundle"
-    helper_path = bundle_root / "helpers" / "mcsas3-histogrammer" / "mcsas3-histogrammer"
+    helper_name = mcsas3_cli._histogrammer_executable_name()
+    helper_path = bundle_root / "helpers" / "mcsas3-histogrammer" / helper_name
     helper_path.parent.mkdir(parents=True)
     helper_path.write_text("")
     helper_path.chmod(0o755)

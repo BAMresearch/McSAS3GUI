@@ -23,8 +23,8 @@ classifiers = [
 ]
 dependencies = [
     "PyQt6>=6.7.1",
-    "mcsas3",
-    "modacor",
+    "mcsas3>=1.0.6",
+    "modacor>=1.0.0",
 ]
 
 [[project.authors]]

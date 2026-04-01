@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
+import os
 import sys
 from pathlib import Path
 
@@ -18,9 +19,24 @@ def _has_canonical_mcsas3() -> bool:
 
 def _candidate_mcsas3_src_paths() -> list[Path]:
     repo_root = Path(__file__).resolve().parents[2]
-    return [
-        repo_root.parent / "McSAS3" / "src",
-    ]
+    candidates: list[Path] = []
+
+    configured = os.environ.get("MCSAS3GUI_MCSAS3_SRC")
+    if configured:
+        candidates.append(Path(configured).expanduser().resolve())
+
+    # CI checkout layout: <workspace>/McSAS3GUI/McSAS3
+    candidates.append((repo_root / "McSAS3" / "src").resolve())
+    # Local dev layout: sibling repos in same parent directory.
+    candidates.append((repo_root.parent / "McSAS3" / "src").resolve())
+
+    deduped: list[Path] = []
+    seen: set[Path] = set()
+    for candidate in candidates:
+        if candidate not in seen:
+            seen.add(candidate)
+            deduped.append(candidate)
+    return deduped
 
 
 def _clear_imported_mcsas3_modules() -> None:
@@ -49,5 +65,6 @@ def ensure_compatible_mcsas3() -> Path | None:
     raise ImportError(
         "McSAS3GUI requires a McSAS3 installation with the canonical workflow API "
         "(mcsas3.workflows, mcsas3.data_adapters, mcsas3.data_model). "
-        "Install the current McSAS3 package or place the McSAS3 source checkout next to McSAS3GUI."
+        "Install the current McSAS3 package, set MCSAS3GUI_MCSAS3_SRC, or place the McSAS3 source "
+        "checkout next to McSAS3GUI."
     )

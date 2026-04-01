@@ -2,10 +2,19 @@ name: Tests
 
 # Controls when the action will run.
 on:
+  workflow_call:
+    inputs:
+      mcsas3_ref:
+        description: McSAS3 ref to check out. Defaults to the current GUI branch, then main.
+        required: false
+        type: string
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-  workflow_call:
+    inputs:
+      mcsas3_ref:
+        description: McSAS3 ref to check out. Defaults to the current GUI branch, then main.
+        required: false
+        type: string
 
 jobs:
   # defining this job separately allows to refer to it later as job.needs dependency
@@ -22,6 +31,7 @@ jobs:
     env:
       PYTHON: ${{ join(matrix.python, '.') }}  # e.g. '3.12'
       TOX_ENV: ${{ format('{0}{1}', 'py', join(matrix.python, '')) }}  # e.g. 'py312'
+      MCSAS3GUI_MCSAS3_SRC: ${{ github.workspace }}/McSAS3/src
     runs-on: ${{ format('{0}-latest', matrix.os) }}
     name: "Test py-${{ join(matrix.python, '.') }} (${{ matrix.os }})"
     steps:
@@ -30,6 +40,13 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Check out McSAS3
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.repository_owner }}/McSAS3
+          path: McSAS3
+          ref: ${{ inputs.mcsas3_ref || github.head_ref || github.ref_name || 'main' }}
 
       - name: Setting up Python ${{ env.PYTHON }}
         uses: actions/setup-python@v5

@@ -44,17 +44,15 @@ Current implementation notes
 
 - the standalone path uses PyInstaller in ``onedir`` mode
 - the GUI bundle includes the shipped GUI configurations, resources, and test data
-- the build currently expects sibling ``McSAS3`` and ``MoDaCor`` source checkouts so the bundled
-  GUI and histogram helper use the same canonical core stack
+- the build expects a sibling ``McSAS3`` source checkout so the bundled GUI and histogram helper
+  use the same canonical core stack
 - by default the builder looks for:
 
   - ``../McSAS3/src``
-  - ``../MoDaCor/src``
 
-- you can override those locations with:
+- you can override that location with:
 
   - ``MCSAS3GUI_MCSAS3_SRC=/path/to/McSAS3/src``
-  - ``MCSAS3GUI_MODACOR_SRC=/path/to/MoDaCor/src``
 
 - the local builder smoke-tests the frozen GUI with ``--smoke-test`` in headless mode
 - the bundled histogram helper is validated with ``--help``
@@ -68,8 +66,8 @@ The repo includes ``.github/workflows/standalone.yml`` which builds standalone a
 - macOS
 - Windows
 
-The workflow checks out the sibling ``McSAS3`` and ``MoDaCor`` repositories explicitly and passes
-their source roots into the standalone build step.
+The workflow checks out the sibling ``McSAS3`` repository and passes its source root into the
+standalone build step.
 
 After the build succeeds, the workflow also verifies the generated standalone manifest and artifact
 layout by checking:

@@ -49,13 +49,6 @@ def _mcsas3_root() -> Path:
     return _mcsas3_src_dir().parent
 
 
-def _modacor_src_dir() -> Path:
-    configured = os.environ.get("MCSAS3GUI_MODACOR_SRC") or os.environ.get("MCSAS3_MODACOR_SRC")
-    if configured:
-        return Path(configured).expanduser().resolve()
-    return ROOT.parent / "MoDaCor" / "src"
-
-
 def _require_dir(path: Path, description: str) -> Path:
     if not path.is_dir():
         raise RuntimeError(f"Standalone GUI builds require {description} at '{path}'.")
@@ -72,13 +65,6 @@ def _require_mcsas3_src() -> Path:
 def _require_mcsas3_root() -> Path:
     root = _mcsas3_root()
     return _require_dir(root, "the McSAS3 repository root")
-
-
-def _require_modacor_src() -> Path:
-    return _require_dir(
-        _modacor_src_dir(),
-        "the MoDaCor source tree (set MCSAS3GUI_MODACOR_SRC or MCSAS3_MODACOR_SRC to override)",
-    )
 
 
 def _core_hooks_dir() -> Path:
@@ -166,8 +152,6 @@ def _gui_pyinstaller_args(gui_dist: Path) -> list[str]:
         str(SRC_DIR),
         "--paths",
         str(_require_mcsas3_src()),
-        "--paths",
-        str(_require_modacor_src()),
         "--additional-hooks-dir",
         str(_core_hooks_dir()),
         "--distpath",
@@ -209,8 +193,6 @@ def _histogrammer_pyinstaller_args(helper_dist: Path) -> list[str]:
         HISTOGRAMMER_NAME,
         "--paths",
         str(_require_mcsas3_src()),
-        "--paths",
-        str(_require_modacor_src()),
         "--additional-hooks-dir",
         str(_core_hooks_dir()),
         "--distpath",
@@ -279,8 +261,7 @@ def _write_bundle_readme(bundle_root: Path) -> None:
         "",
         "Build prerequisites:",
         f"- sibling McSAS3 checkout at {_mcsas3_src_dir()}",
-        f"- sibling MoDaCor checkout at {_modacor_src_dir()}",
-        "- or override them with MCSAS3GUI_MCSAS3_SRC and MCSAS3GUI_MODACOR_SRC",
+        "- or override it with MCSAS3GUI_MCSAS3_SRC",
         "",
         "Smoke-test entry points:",
         f"  {GUI_APP_NAME} --smoke-test",

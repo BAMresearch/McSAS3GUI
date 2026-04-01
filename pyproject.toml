@@ -105,11 +105,16 @@ extend_skip = ["ci/templates", ".ipynb_checkpoints"]
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+src = ["src", "tests"]
 extend-exclude = ["ci/templates", ".ipynb_checkpoints"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 ignore = ["E203"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mcsas3gui"]
+known-third-party = ["mcsas3", "modacor"]
 
 [tool.ruff.format]
 quote-style = "double"

@@ -3,7 +3,11 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import yaml
+from mcsas3.mc_hdf import ResultIndex, loadKV
+from mcsas3.workflows import prepare_1d_processing_data
 
 from mcsas3gui.gui import optimization_worker
 
@@ -89,6 +93,106 @@ def test_optimization_worker_run_passes_processing_metadata(tmp_path, monkeypatc
     assert statuses == [(0, "Running"), (0, "Complete")]
     assert progress_values == [100]
     assert finished == [(False, "All optimizations are complete.")]
+
+
+def test_runtime_run_config_defaults_to_nondeterministic_seed_for_multiple_repetitions():
+    runtime_config = optimization_worker._runtime_run_config({"modelName": "sphere", "nRep": 2})
+
+    assert runtime_config["modelName"] == "sphere"
+    assert runtime_config["nRep"] == 2
+    assert runtime_config["seed"] is None
+
+
+def test_runtime_run_config_preserves_explicit_seed():
+    runtime_config = optimization_worker._runtime_run_config({"modelName": "sphere", "nRep": 2, "seed": 7})
+
+    assert runtime_config["seed"] == 7
+
+
+def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
+    processing = prepare_1d_processing_data(
+        pd.DataFrame(
+            {
+                "Q": np.array([0.1, 0.2, 0.3, 0.4], dtype=float),
+                "I": np.array([10.0, 7.0, 4.0, 2.0], dtype=float),
+                "ISigma": np.array([1.0, 1.0, 1.0, 1.0], dtype=float),
+            }
+        ),
+        nbins=4,
+    )
+    result_file = tmp_path / "multi_rep.h5"
+    McHat, optimize_processing, _prepare_processing = optimization_worker._load_mcsas3_runtime()
+
+    optimization_worker._execute_hat_run(
+        hat_factory=McHat,
+        optimize_processing=optimize_processing,
+        processing=processing,
+        result_file=result_file,
+        result_index=1,
+        run_config={
+            "modelName": "sphere",
+            "nContrib": 20,
+            "modelDType": "default",
+            "fitParameterLimits": {"radius": [1.0, 100.0]},
+            "staticParameters": {"sld": 33.4, "sld_solvent": 0.0, "background": 0.0},
+            "maxIter": 1,
+            "maxAccept": 1,
+            "convCrit": 0.0,
+            "nRep": 2,
+            "nCores": 2,
+        },
+    )
+
+    path = ResultIndex(1).nxsEntryPoint / "model"
+    repetition0 = loadKV(result_file, path / "repetition0" / "parameterSet", datatype="dictToPandas")
+    repetition1 = loadKV(result_file, path / "repetition1" / "parameterSet", datatype="dictToPandas")
+    assert not repetition0.equals(repetition1)
+
+
+def test_execute_hat_run_explicit_seed_offsets_by_repetition(tmp_path):
+    processing = prepare_1d_processing_data(
+        pd.DataFrame(
+            {
+                "Q": np.array([0.1, 0.2, 0.3, 0.4], dtype=float),
+                "I": np.array([10.0, 7.0, 4.0, 2.0], dtype=float),
+                "ISigma": np.array([1.0, 1.0, 1.0, 1.0], dtype=float),
+            }
+        ),
+        nbins=4,
+    )
+    result_file = tmp_path / "seeded_multi_rep.h5"
+    McHat, optimize_processing, _prepare_processing = optimization_worker._load_mcsas3_runtime()
+
+    optimization_worker._execute_hat_run(
+        hat_factory=McHat,
+        optimize_processing=optimize_processing,
+        processing=processing,
+        result_file=result_file,
+        result_index=1,
+        run_config={
+            "modelName": "sphere",
+            "nContrib": 20,
+            "modelDType": "default",
+            "fitParameterLimits": {"radius": [1.0, 100.0]},
+            "staticParameters": {"sld": 33.4, "sld_solvent": 0.0, "background": 0.0},
+            "maxIter": 1,
+            "maxAccept": 1,
+            "convCrit": 0.0,
+            "nRep": 2,
+            "nCores": 2,
+            "seed": 5000,
+        },
+    )
+
+    path = ResultIndex(1).nxsEntryPoint / "model"
+    repetition0 = loadKV(result_file, path / "repetition0" / "parameterSet", datatype="dictToPandas")
+    repetition1 = loadKV(result_file, path / "repetition1" / "parameterSet", datatype="dictToPandas")
+    seed0 = loadKV(result_file, path / "repetition0" / "seed")
+    seed1 = loadKV(result_file, path / "repetition1" / "seed")
+
+    assert int(seed0) == 5000
+    assert int(seed1) == 5001
+    assert not repetition0.equals(repetition1)
 
 
 def test_optimization_worker_run_reports_aborted_result(tmp_path, monkeypatch):

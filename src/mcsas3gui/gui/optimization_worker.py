@@ -88,6 +88,20 @@ def _preview_run_config(run_config: Mapping[str, Any]) -> dict[str, Any]:
     return preview_config
 
 
+def _runtime_run_config(run_config: Mapping[str, Any]) -> dict[str, Any]:
+    """Normalize runtime run config to avoid deterministic multi-repetition seeding."""
+
+    runtime_config = dict(run_config)
+    try:
+        n_rep = int(runtime_config.get("nRep", 1))
+    except (TypeError, ValueError):
+        n_rep = 1
+    if n_rep > 1 and "seed" not in runtime_config:
+        # Let NumPy derive entropy per worker process instead of using McModel's fixed default seed.
+        runtime_config["seed"] = None
+    return runtime_config
+
+
 def _execute_hat_run(
     *,
     hat_factory: McHatFactory,
@@ -100,7 +114,7 @@ def _execute_hat_run(
 ) -> Any:
     """Execute a McSAS3 optimization run through a caller-supplied `McHat` factory."""
     _unlink_if_exists(result_file)
-    hat = hat_factory(resultIndex=result_index, **dict(run_config))
+    hat = hat_factory(resultIndex=result_index, **_runtime_run_config(run_config))
     optimize_kwargs: dict[str, Any] = {
         "result_index": result_index,
         "hat": hat,

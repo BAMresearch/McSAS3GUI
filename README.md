@@ -27,6 +27,12 @@ You can also install the in-development version with:
 pip install git+https://github.com/BAMresearch/mcsas3gui.git@main
 ```
 
+For prebuilt standalone binaries (Linux, macOS, Windows), see the latest GitHub release:
+
+- https://github.com/BAMresearch/mcsas3gui/releases/latest
+
+Release assets are built for tagged releases. The macOS release asset is code-signed.
+
 ## Running the Application
 
 After activating the environment, the preferred launch commands are:

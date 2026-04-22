@@ -76,3 +76,52 @@ layout by checking:
 - ``dist/standalone/<platform-tag>/README_STANDALONE.txt``
 - ``dist/standalone/mcsas3gui-standalone-<platform-tag>.zip``
 - the GUI executable and bundled ``mcsas3-histogrammer`` path recorded in ``build_info.json``
+
+Release assets workflow
+=======================
+
+The repo includes ``.github/workflows/standalone-release.yml`` for tagged releases.
+
+This workflow:
+
+- triggers on GitHub release publication (tags)
+- builds standalone archives for Linux, macOS, and Windows
+- code-signs the macOS app bundle
+- uploads the produced archives to the corresponding GitHub release
+
+Phase 1: macOS code signing (no notarization yet)
+==================================================
+
+The first rollout phase makes macOS signing mandatory for release assets, while notarization is
+added in a later phase.
+
+Required GitHub secrets for macOS signing:
+
+- ``MACOS_CERT_P12_BASE64``: base64-encoded ``.p12`` certificate export
+- ``MACOS_CERT_P12_PASSWORD``: password used when exporting the ``.p12``
+- ``MACOS_KEYCHAIN_PASSWORD``: temporary runner keychain password
+- ``MACOS_CODESIGN_IDENTITY``: certificate identity string (for example
+  ``Developer ID Application: International Scattering Alliance (...)``)
+
+One-time local prep to generate ``MACOS_CERT_P12_BASE64``:
+
+1. Export the signing certificate from Keychain Access as a password-protected ``.p12``.
+2. Encode it to base64:
+
+   .. code-block:: bash
+
+      base64 -i signing-cert.p12 | tr -d '\n'
+
+3. Store that one-line value in the ``MACOS_CERT_P12_BASE64`` GitHub secret.
+
+Verification done in CI in this phase:
+
+- ``codesign --verify --deep --strict`` on the app bundle
+- archive rebuilt after signing so the uploaded macOS zip contains signed binaries
+
+Phase 2 (planned): mandatory notarization
+=========================================
+
+The next step is to add Apple notarization as a required release gate (``notarytool submit
+--wait`` plus ``stapler``). This is intentionally split out to keep the first rollout simple and
+easy to validate.

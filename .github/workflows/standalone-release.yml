@@ -168,8 +168,20 @@ jobs:
           PY
           )"
 
+          GUI_EXEC_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          bundle_root = Path(os.environ["BUNDLE_ROOT"])
+          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
+          print(bundle_root / payload["gui_executable"])
+          PY
+          )"
+
           test -d "$APP_PATH"
           test -f "$HELPER_PATH"
+          test -f "$GUI_EXEC_PATH"
 
           # Sign standalone helper first (explicitly referenced from app resources).
           codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$HELPER_PATH"
@@ -177,6 +189,9 @@ jobs:
           # Sign all embedded Mach-O binaries. Avoid --deep, which attempts to sign
           # non-code metadata directories (for example *.dist-info) and can fail.
           while IFS= read -r -d '' CANDIDATE; do
+            if [[ "$CANDIDATE" == "$GUI_EXEC_PATH" || "$CANDIDATE" == "$HELPER_PATH" ]]; then
+              continue
+            fi
             if file -b "$CANDIDATE" | grep -q "Mach-O"; then
               codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$CANDIDATE"
             fi

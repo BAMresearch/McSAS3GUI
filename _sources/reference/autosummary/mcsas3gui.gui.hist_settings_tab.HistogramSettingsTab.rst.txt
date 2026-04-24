@@ -125,6 +125,7 @@ mcsas3gui.gui.hist\_settings\_tab.HistogramSettingsTab
       ~HistogramSettingsTab.isMaximized
       ~HistogramSettingsTab.isMinimized
       ~HistogramSettingsTab.isModal
+      ~HistogramSettingsTab.isQmlExposed
       ~HistogramSettingsTab.isQuickItemType
       ~HistogramSettingsTab.isRightToLeft
       ~HistogramSettingsTab.isSignalConnected

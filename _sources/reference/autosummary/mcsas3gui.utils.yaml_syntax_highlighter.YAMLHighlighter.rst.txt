@@ -40,6 +40,7 @@ mcsas3gui.utils.yaml\_syntax\_highlighter.YAMLHighlighter
       ~YAMLHighlighter.highlightBlock
       ~YAMLHighlighter.inherits
       ~YAMLHighlighter.installEventFilter
+      ~YAMLHighlighter.isQmlExposed
       ~YAMLHighlighter.isQuickItemType
       ~YAMLHighlighter.isSignalConnected
       ~YAMLHighlighter.isWidgetType

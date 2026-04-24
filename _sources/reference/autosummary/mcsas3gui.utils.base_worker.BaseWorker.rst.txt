@@ -44,6 +44,7 @@ mcsas3gui.utils.base\_worker.BaseWorker
       ~BaseWorker.isFinished
       ~BaseWorker.isInterruptionRequested
       ~BaseWorker.isMainThread
+      ~BaseWorker.isQmlExposed
       ~BaseWorker.isQuickItemType
       ~BaseWorker.isRunning
       ~BaseWorker.isSignalConnected

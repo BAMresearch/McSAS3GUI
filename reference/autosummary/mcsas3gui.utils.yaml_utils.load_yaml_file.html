@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="mcsas3gui.utils.yaml_utils.save_yaml_file" href="mcsas3gui.utils.yaml_utils.save_yaml_file.html" /><link rel="prev" title="mcsas3gui.utils.yaml_utils.check_yaml_syntax" href="mcsas3gui.utils.yaml_utils.check_yaml_syntax.html" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="mcsas3gui.utils.yaml_utils.save_yaml_file" href="mcsas3gui.utils.yaml_utils.save_yaml_file.html"><link rel="prev" title="mcsas3gui.utils.yaml_utils.check_yaml_syntax" href="mcsas3gui.utils.yaml_utils.check_yaml_syntax.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>mcsas3gui.utils.yaml_utils.load_yaml_file - McSAS3GUI 0.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=34bb78ad" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -23,14 +23,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -145,14 +145,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -162,8 +158,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -171,8 +166,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -180,8 +174,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -202,49 +195,49 @@
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">McSAS3GUI (v0.1.6)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="mcsas3gui.html">mcsas3gui</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of mcsas3gui</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 has-children"><a class="reference internal" href="mcsas3gui.gui.html">mcsas3gui.gui</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.data_loading_tab.html">mcsas3gui.gui.data_loading_tab</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.data_loading_tab</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Reference</a><input aria-label="Toggle navigation of Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="mcsas3gui.html">mcsas3gui</a><input aria-label="Toggle navigation of mcsas3gui" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="mcsas3gui.gui.html">mcsas3gui.gui</a><input aria-label="Toggle navigation of mcsas3gui.gui" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.data_loading_tab.html">mcsas3gui.gui.data_loading_tab</a><input aria-label="Toggle navigation of mcsas3gui.gui.data_loading_tab" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.data_loading_tab.DataLoadingTab.html">mcsas3gui.gui.data_loading_tab.DataLoadingTab</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.file_line_selection_widget.html">mcsas3gui.gui.file_line_selection_widget</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.file_line_selection_widget</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.file_line_selection_widget.html">mcsas3gui.gui.file_line_selection_widget</a><input aria-label="Toggle navigation of mcsas3gui.gui.file_line_selection_widget" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.file_line_selection_widget.FileLineSelectionWidget.html">mcsas3gui.gui.file_line_selection_widget.FileLineSelectionWidget</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.file_line_selection_widget.FilePathLineEdit.html">mcsas3gui.gui.file_line_selection_widget.FilePathLineEdit</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.file_selection_widget.html">mcsas3gui.gui.file_selection_widget</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.file_selection_widget</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.file_selection_widget.html">mcsas3gui.gui.file_selection_widget</a><input aria-label="Toggle navigation of mcsas3gui.gui.file_selection_widget" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.file_selection_widget.FileSelectionWidget.html">mcsas3gui.gui.file_selection_widget.FileSelectionWidget</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.getting_started_tab.html">mcsas3gui.gui.getting_started_tab</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.getting_started_tab</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.getting_started_tab.html">mcsas3gui.gui.getting_started_tab</a><input aria-label="Toggle navigation of mcsas3gui.gui.getting_started_tab" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.getting_started_tab.write_hist_yaml_block.html">mcsas3gui.gui.getting_started_tab.write_hist_yaml_block</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.getting_started_tab.write_yaml_file.html">mcsas3gui.gui.getting_started_tab.write_yaml_file</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.getting_started_tab.GettingStartedTab.html">mcsas3gui.gui.getting_started_tab.GettingStartedTab</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.hist_run_tab.html">mcsas3gui.gui.hist_run_tab</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.hist_run_tab</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.hist_run_tab.html">mcsas3gui.gui.hist_run_tab</a><input aria-label="Toggle navigation of mcsas3gui.gui.hist_run_tab" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.hist_run_tab.HistRunTab.html">mcsas3gui.gui.hist_run_tab.HistRunTab</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.hist_settings_tab.html">mcsas3gui.gui.hist_settings_tab</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.hist_settings_tab</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.hist_settings_tab.html">mcsas3gui.gui.hist_settings_tab</a><input aria-label="Toggle navigation of mcsas3gui.gui.hist_settings_tab" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.hist_settings_tab.HistogramSettingsTab.html">mcsas3gui.gui.hist_settings_tab.HistogramSettingsTab</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.main_window.html">mcsas3gui.gui.main_window</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.main_window</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.main_window.html">mcsas3gui.gui.main_window</a><input aria-label="Toggle navigation of mcsas3gui.gui.main_window" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.main_window.McSAS3MainWindow.html">mcsas3gui.gui.main_window.McSAS3MainWindow</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.optimization_tab.html">mcsas3gui.gui.optimization_tab</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.optimization_tab</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.optimization_tab.html">mcsas3gui.gui.optimization_tab</a><input aria-label="Toggle navigation of mcsas3gui.gui.optimization_tab" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.optimization_tab.OptimizationRunTab.html">mcsas3gui.gui.optimization_tab.OptimizationRunTab</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.run_settings_tab.html">mcsas3gui.gui.run_settings_tab</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.run_settings_tab</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.run_settings_tab.html">mcsas3gui.gui.run_settings_tab</a><input aria-label="Toggle navigation of mcsas3gui.gui.run_settings_tab" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.run_settings_tab.RunSettingsTab.html">mcsas3gui.gui.run_settings_tab.RunSettingsTab</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.yaml_editor_widget.html">mcsas3gui.gui.yaml_editor_widget</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of mcsas3gui.gui.yaml_editor_widget</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.gui.yaml_editor_widget.html">mcsas3gui.gui.yaml_editor_widget</a><input aria-label="Toggle navigation of mcsas3gui.gui.yaml_editor_widget" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.yaml_editor_widget.CustomDumper.html">mcsas3gui.gui.yaml_editor_widget.CustomDumper</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.yaml_editor_widget.YAMLEditorWidget.html">mcsas3gui.gui.yaml_editor_widget.YAMLEditorWidget</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.yaml_editor_widget.YAMLErrorHighlighter.html">mcsas3gui.gui.yaml_editor_widget.YAMLErrorHighlighter</a></li>
@@ -252,31 +245,31 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="mcsas3gui.utils.html">mcsas3gui.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of mcsas3gui.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.base_worker.html">mcsas3gui.utils.base_worker</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of mcsas3gui.utils.base_worker</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="mcsas3gui.utils.html">mcsas3gui.utils</a><input aria-label="Toggle navigation of mcsas3gui.utils" checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.base_worker.html">mcsas3gui.utils.base_worker</a><input aria-label="Toggle navigation of mcsas3gui.utils.base_worker" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.base_worker.BaseWorker.html">mcsas3gui.utils.base_worker.BaseWorker</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.file_utils.html">mcsas3gui.utils.file_utils</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of mcsas3gui.utils.file_utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.file_utils.html">mcsas3gui.utils.file_utils</a><input aria-label="Toggle navigation of mcsas3gui.utils.file_utils" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.file_utils.get_default_config_files.html">mcsas3gui.utils.file_utils.get_default_config_files</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.file_utils.get_main_path.html">mcsas3gui.utils.file_utils.get_main_path</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.file_utils.is_base_path.html">mcsas3gui.utils.file_utils.is_base_path</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.file_utils.make_out_path.html">mcsas3gui.utils.file_utils.make_out_path</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.logging_config.html">mcsas3gui.utils.logging_config</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of mcsas3gui.utils.logging_config</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.logging_config.html">mcsas3gui.utils.logging_config</a><input aria-label="Toggle navigation of mcsas3gui.utils.logging_config" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.logging_config.setup_logging.html">mcsas3gui.utils.logging_config.setup_logging</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.task_runner_mixin.html">mcsas3gui.utils.task_runner_mixin</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of mcsas3gui.utils.task_runner_mixin</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.task_runner_mixin.html">mcsas3gui.utils.task_runner_mixin</a><input aria-label="Toggle navigation of mcsas3gui.utils.task_runner_mixin" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.task_runner_mixin.TaskRunnerMixin.html">mcsas3gui.utils.task_runner_mixin.TaskRunnerMixin</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.yaml_syntax_highlighter.html">mcsas3gui.utils.yaml_syntax_highlighter</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of mcsas3gui.utils.yaml_syntax_highlighter</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="mcsas3gui.utils.yaml_syntax_highlighter.html">mcsas3gui.utils.yaml_syntax_highlighter</a><input aria-label="Toggle navigation of mcsas3gui.utils.yaml_syntax_highlighter" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.yaml_syntax_highlighter.YAMLHighlighter.html">mcsas3gui.utils.yaml_syntax_highlighter.YAMLHighlighter</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children"><a class="reference internal" href="mcsas3gui.utils.yaml_utils.html">mcsas3gui.utils.yaml_utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of mcsas3gui.utils.yaml_utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 current has-children"><a class="reference internal" href="mcsas3gui.utils.yaml_utils.html">mcsas3gui.utils.yaml_utils</a><input aria-label="Toggle navigation of mcsas3gui.utils.yaml_utils" checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.yaml_utils.check_yaml_syntax.html">mcsas3gui.utils.yaml_utils.check_yaml_syntax</a></li>
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">mcsas3gui.utils.yaml_utils.load_yaml_file</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.utils.yaml_utils.save_yaml_file.html">mcsas3gui.utils.yaml_utils.save_yaml_file</a></li>
@@ -318,8 +311,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -327,8 +319,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -376,7 +367,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on Sep 05, 2025 (git ea8998e)</div>
+              Last updated on Apr 24, 2026 (git c592e21)</div>
           </div>
           <div class="right-details">
             
@@ -411,8 +402,8 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=6e0256f3"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

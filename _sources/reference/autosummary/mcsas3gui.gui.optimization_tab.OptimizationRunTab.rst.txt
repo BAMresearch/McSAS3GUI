@@ -124,6 +124,7 @@ mcsas3gui.gui.optimization\_tab.OptimizationRunTab
       ~OptimizationRunTab.isMaximized
       ~OptimizationRunTab.isMinimized
       ~OptimizationRunTab.isModal
+      ~OptimizationRunTab.isQmlExposed
       ~OptimizationRunTab.isQuickItemType
       ~OptimizationRunTab.isRightToLeft
       ~OptimizationRunTab.isSignalConnected

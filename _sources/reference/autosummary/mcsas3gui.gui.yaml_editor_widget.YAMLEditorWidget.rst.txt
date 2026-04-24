@@ -126,6 +126,7 @@ mcsas3gui.gui.yaml\_editor\_widget.YAMLEditorWidget
       ~YAMLEditorWidget.isMaximized
       ~YAMLEditorWidget.isMinimized
       ~YAMLEditorWidget.isModal
+      ~YAMLEditorWidget.isQmlExposed
       ~YAMLEditorWidget.isQuickItemType
       ~YAMLEditorWidget.isRightToLeft
       ~YAMLEditorWidget.isSignalConnected

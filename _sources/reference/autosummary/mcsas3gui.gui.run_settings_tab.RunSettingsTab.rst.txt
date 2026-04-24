@@ -125,6 +125,7 @@ mcsas3gui.gui.run\_settings\_tab.RunSettingsTab
       ~RunSettingsTab.isMaximized
       ~RunSettingsTab.isMinimized
       ~RunSettingsTab.isModal
+      ~RunSettingsTab.isQmlExposed
       ~RunSettingsTab.isQuickItemType
       ~RunSettingsTab.isRightToLeft
       ~RunSettingsTab.isSignalConnected

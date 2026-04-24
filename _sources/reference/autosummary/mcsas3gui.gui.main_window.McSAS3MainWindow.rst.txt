@@ -138,6 +138,7 @@ mcsas3gui.gui.main\_window.McSAS3MainWindow
       ~McSAS3MainWindow.isMaximized
       ~McSAS3MainWindow.isMinimized
       ~McSAS3MainWindow.isModal
+      ~McSAS3MainWindow.isQmlExposed
       ~McSAS3MainWindow.isQuickItemType
       ~McSAS3MainWindow.isRightToLeft
       ~McSAS3MainWindow.isSeparator

@@ -41,6 +41,7 @@ mcsas3gui.gui.yaml\_editor\_widget.YAMLErrorHighlighter
       ~YAMLErrorHighlighter.highlightBlock
       ~YAMLErrorHighlighter.inherits
       ~YAMLErrorHighlighter.installEventFilter
+      ~YAMLErrorHighlighter.isQmlExposed
       ~YAMLErrorHighlighter.isQuickItemType
       ~YAMLErrorHighlighter.isSignalConnected
       ~YAMLErrorHighlighter.isWidgetType

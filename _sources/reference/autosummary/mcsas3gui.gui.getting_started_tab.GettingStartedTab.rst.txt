@@ -126,6 +126,7 @@ mcsas3gui.gui.getting\_started\_tab.GettingStartedTab
       ~GettingStartedTab.isMaximized
       ~GettingStartedTab.isMinimized
       ~GettingStartedTab.isModal
+      ~GettingStartedTab.isQmlExposed
       ~GettingStartedTab.isQuickItemType
       ~GettingStartedTab.isRightToLeft
       ~GettingStartedTab.isSignalConnected

@@ -127,6 +127,7 @@ mcsas3gui.gui.data\_loading\_tab.DataLoadingTab
       ~DataLoadingTab.isMaximized
       ~DataLoadingTab.isMinimized
       ~DataLoadingTab.isModal
+      ~DataLoadingTab.isQmlExposed
       ~DataLoadingTab.isQuickItemType
       ~DataLoadingTab.isRightToLeft
       ~DataLoadingTab.isSignalConnected

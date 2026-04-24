@@ -127,6 +127,7 @@ mcsas3gui.gui.file\_selection\_widget.FileSelectionWidget
       ~FileSelectionWidget.isMaximized
       ~FileSelectionWidget.isMinimized
       ~FileSelectionWidget.isModal
+      ~FileSelectionWidget.isQmlExposed
       ~FileSelectionWidget.isQuickItemType
       ~FileSelectionWidget.isRightToLeft
       ~FileSelectionWidget.isSignalConnected

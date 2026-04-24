@@ -124,6 +124,7 @@ mcsas3gui.gui.hist\_run\_tab.HistRunTab
       ~HistRunTab.isMaximized
       ~HistRunTab.isMinimized
       ~HistRunTab.isModal
+      ~HistRunTab.isQmlExposed
       ~HistRunTab.isQuickItemType
       ~HistRunTab.isRightToLeft
       ~HistRunTab.isSignalConnected

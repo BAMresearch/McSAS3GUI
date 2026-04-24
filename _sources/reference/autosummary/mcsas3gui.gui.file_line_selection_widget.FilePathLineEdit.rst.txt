@@ -154,6 +154,7 @@ mcsas3gui.gui.file\_line\_selection\_widget.FilePathLineEdit
       ~FilePathLineEdit.isMinimized
       ~FilePathLineEdit.isModal
       ~FilePathLineEdit.isModified
+      ~FilePathLineEdit.isQmlExposed
       ~FilePathLineEdit.isQuickItemType
       ~FilePathLineEdit.isReadOnly
       ~FilePathLineEdit.isRedoAvailable

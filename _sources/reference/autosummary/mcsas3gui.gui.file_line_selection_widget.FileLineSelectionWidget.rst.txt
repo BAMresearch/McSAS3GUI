@@ -125,6 +125,7 @@ mcsas3gui.gui.file\_line\_selection\_widget.FileLineSelectionWidget
       ~FileLineSelectionWidget.isMaximized
       ~FileLineSelectionWidget.isMinimized
       ~FileLineSelectionWidget.isModal
+      ~FileLineSelectionWidget.isQmlExposed
       ~FileLineSelectionWidget.isQuickItemType
       ~FileLineSelectionWidget.isRightToLeft
       ~FileLineSelectionWidget.isSignalConnected

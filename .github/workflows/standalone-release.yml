@@ -1,0 +1,219 @@
+name: Standalone Release Assets
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to upload assets to (for example v0.1.7).
+        required: true
+        type: string
+      mcsas3_ref:
+        description: McSAS3 ref to check out. Defaults to main.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  standalone-release:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checking out the GUI repo
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+
+      - name: Check out McSAS3
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.repository_owner }}/McSAS3
+          path: McSAS3
+          ref: ${{ github.event.inputs.mcsas3_ref || 'main' }}
+
+      - name: Show selected dependency refs
+        shell: bash
+        run: |
+          set -euxo pipefail
+          echo "Release tag: ${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          echo "McSAS3 ref: ${{ github.event.inputs.mcsas3_ref || 'main' }}"
+
+      - name: Setting up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            ci/requirements.txt
+            pyproject.toml
+            tox.ini
+
+      - name: Install required system packages
+        shell: bash
+        run: |
+          set -euxo pipefail
+          PLATFORM="$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')"
+          REQFN="ci/requirements_${PLATFORM}.txt"
+          if [[ "$PLATFORM" == "linux" && -f "$REQFN" ]]; then
+            mapfile -t packages < <(grep -vE '^\s*(#|$)' "$REQFN")
+            if [[ "${#packages[@]}" -gt 0 ]]; then
+              sudo apt-get update
+              sudo apt-get -y install "${packages[@]}"
+            fi
+          else
+            echo "No extra standalone system packages declared for $PLATFORM."
+          fi
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install --progress-bar=off -r ci/requirements.txt
+
+      - name: Build standalone GUI bundle
+        shell: bash
+        env:
+          MCSAS3GUI_MCSAS3_SRC: ${{ github.workspace }}/McSAS3/src
+        run: tox -e standalone -v
+
+      - name: Import Apple signing certificate
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+          MACOS_CERT_P12_PASSWORD: ${{ secrets.MACOS_CERT_P12_PASSWORD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+        run: |
+          set -euxo pipefail
+          for var in MACOS_CERT_P12_BASE64 MACOS_CERT_P12_PASSWORD MACOS_KEYCHAIN_PASSWORD; do
+            if [[ -z "${!var:-}" ]]; then
+              echo "Missing required secret: $var" >&2
+              exit 1
+            fi
+          done
+
+          CERT_PATH="$RUNNER_TEMP/macos-signing-cert.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/macos-signing.keychain-db"
+
+          python - <<'PY'
+          import base64
+          import os
+          from pathlib import Path
+
+          cert = Path(os.environ["RUNNER_TEMP"]) / "macos-signing-cert.p12"
+          cert.write_bytes(base64.b64decode(os.environ["MACOS_CERT_P12_BASE64"]))
+          PY
+
+          security create-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_CERT_P12_PASSWORD" -A -t cert -f pkcs12
+          security default-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+          echo "MACOS_SIGNING_KEYCHAIN=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+
+      - name: Sign macOS app bundle
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          MACOS_CODESIGN_IDENTITY: ${{ secrets.MACOS_CODESIGN_IDENTITY }}
+        run: |
+          set -euxo pipefail
+          if [[ -z "${MACOS_CODESIGN_IDENTITY:-}" ]]; then
+            echo "Missing required secret: MACOS_CODESIGN_IDENTITY" >&2
+            exit 1
+          fi
+
+          PLATFORM_TAG="$(python - <<'PY'
+          import platform
+          system = platform.system().lower()
+          machine = platform.machine().lower().replace("x86_64", "amd64")
+          print(f"{system}-{machine}")
+          PY
+          )"
+          BUNDLE_ROOT="dist/standalone/${PLATFORM_TAG}"
+          BUILD_INFO="${BUNDLE_ROOT}/build_info.json"
+          test -f "$BUILD_INFO"
+
+          APP_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          bundle_root = Path(os.environ["BUNDLE_ROOT"])
+          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
+          print(bundle_root / payload["gui_bundle"])
+          PY
+          )"
+
+          HELPER_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          bundle_root = Path(os.environ["BUNDLE_ROOT"])
+          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
+          print(bundle_root / payload["bundled_histogrammer"])
+          PY
+          )"
+
+          test -d "$APP_PATH"
+          test -f "$HELPER_PATH"
+
+          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$HELPER_PATH"
+          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --deep --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+          codesign --display --verbose=4 "$APP_PATH"
+
+          ARCHIVE_PATH="dist/standalone/mcsas3gui-standalone-${PLATFORM_TAG}.zip"
+          rm -f "$ARCHIVE_PATH"
+          ditto -c -k --sequesterRsrc --keepParent "$BUNDLE_ROOT" "$ARCHIVE_PATH"
+
+      - name: Clean up temporary signing keychain
+        if: runner.os == 'macOS' && always()
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if [[ -n "${MACOS_SIGNING_KEYCHAIN:-}" ]] && [[ -f "${MACOS_SIGNING_KEYCHAIN}" ]]; then
+            security delete-keychain "${MACOS_SIGNING_KEYCHAIN}"
+          fi
+
+      - name: Locate standalone archive
+        id: archive
+        shell: bash
+        run: |
+          set -euxo pipefail
+          PLATFORM_TAG="$(python - <<'PY'
+          import platform
+          system = platform.system().lower()
+          machine = platform.machine().lower().replace("x86_64", "amd64")
+          print(f"{system}-{machine}")
+          PY
+          )"
+          ARCHIVE_PATH="dist/standalone/mcsas3gui-standalone-${PLATFORM_TAG}.zip"
+          if [[ ! -f "$ARCHIVE_PATH" ]]; then
+            echo "Missing standalone archive: $ARCHIVE_PATH" >&2
+            exit 1
+          fi
+          echo "platform_tag=$PLATFORM_TAG" >> "$GITHUB_OUTPUT"
+          echo "archive_path=$ARCHIVE_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload standalone archive to GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+        run: |
+          set -euxo pipefail
+          gh release upload "$RELEASE_TAG" "${{ steps.archive.outputs.archive_path }}" --clobber

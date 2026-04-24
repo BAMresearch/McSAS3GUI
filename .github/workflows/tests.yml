@@ -37,19 +37,19 @@ jobs:
     steps:
 
       - name: Checking out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Check out McSAS3
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/McSAS3
           path: McSAS3
           ref: ${{ inputs.mcsas3_ref || github.head_ref || github.ref_name || 'main' }}
 
       - name: Setting up Python ${{ env.PYTHON }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '${{ env.PYTHON }}'
           architecture: '${{ matrix.python_arch }}'

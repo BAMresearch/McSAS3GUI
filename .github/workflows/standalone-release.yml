@@ -28,13 +28,13 @@ jobs:
 
     steps:
       - name: Checking out the GUI repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name || github.event.inputs.tag }}
 
       - name: Check out McSAS3
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/McSAS3
           path: McSAS3
@@ -48,7 +48,7 @@ jobs:
           echo "McSAS3 ref: ${{ github.event.inputs.mcsas3_ref || 'main' }}"
 
       - name: Setting up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -171,8 +171,23 @@ jobs:
           test -d "$APP_PATH"
           test -f "$HELPER_PATH"
 
+          # Sign standalone helper first (explicitly referenced from app resources).
           codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$HELPER_PATH"
-          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --deep --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$APP_PATH"
+
+          # Sign all embedded Mach-O binaries. Avoid --deep, which attempts to sign
+          # non-code metadata directories (for example *.dist-info) and can fail.
+          while IFS= read -r -d '' CANDIDATE; do
+            if file -b "$CANDIDATE" | grep -q "Mach-O"; then
+              codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$CANDIDATE"
+            fi
+          done < <(find "$APP_PATH/Contents" -type f -print0)
+
+          # Sign nested code bundles before the top-level app bundle.
+          while IFS= read -r -d '' BUNDLE; do
+            codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$BUNDLE"
+          done < <(find "$APP_PATH/Contents" -type d \( -name "*.framework" -o -name "*.bundle" -o -name "*.xpc" -o -name "*.appex" -o -name "*.app" \) -print0)
+
+          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$APP_PATH"
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
           codesign --display --verbose=4 "$APP_PATH"
 

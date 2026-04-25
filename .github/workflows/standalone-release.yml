@@ -220,6 +220,10 @@ jobs:
 
           # Sign nested code bundles before the top-level app bundle.
           while IFS= read -r -d '' BUNDLE; do
+            if [[ "$BUNDLE" == */Contents/Resources/Python.framework ]]; then
+              echo "Skipping PyInstaller Python framework wrapper: $BUNDLE"
+              continue
+            fi
             # Some PyInstaller layouts contain directories ending in ".framework"
             # that are not canonical macOS frameworks (no Versions/ tree). Those
             # should be treated as normal directories; their Mach-O files are

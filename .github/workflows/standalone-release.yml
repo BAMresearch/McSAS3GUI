@@ -183,19 +183,9 @@ jobs:
           test -f "$HELPER_PATH"
           test -f "$GUI_EXEC_PATH"
 
-          REAL_HELPER_PATH="$(python - "$HELPER_PATH" <<'PY'
-          import os
-          import sys
-          print(os.path.realpath(sys.argv[1]))
-          PY
-          )"
+          REAL_HELPER_PATH="$(python -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$HELPER_PATH")"
 
-          REAL_GUI_EXEC_PATH="$(python - "$GUI_EXEC_PATH" <<'PY'
-          import os
-          import sys
-          print(os.path.realpath(sys.argv[1]))
-          PY
-          )"
+          REAL_GUI_EXEC_PATH="$(python -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$GUI_EXEC_PATH")"
 
           SIGNED_REALPATHS="$RUNNER_TEMP/macos-signed-realpaths.txt"
           : > "$SIGNED_REALPATHS"
@@ -215,12 +205,7 @@ jobs:
               continue
             fi
             if file -b "$CANDIDATE" | grep -q "Mach-O"; then
-              REAL_CANDIDATE="$(python - "$CANDIDATE" <<'PY'
-              import os
-              import sys
-              print(os.path.realpath(sys.argv[1]))
-              PY
-              )"
+              REAL_CANDIDATE="$(python -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$CANDIDATE")"
 
               if [[ "$REAL_CANDIDATE" == "$REAL_GUI_EXEC_PATH" || "$REAL_CANDIDATE" == "$REAL_HELPER_PATH" ]]; then
                 continue

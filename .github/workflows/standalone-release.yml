@@ -128,6 +128,9 @@ jobs:
         shell: bash
         env:
           MACOS_CODESIGN_IDENTITY: ${{ secrets.MACOS_CODESIGN_IDENTITY }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+          MACOS_NOTARY_API_KEY: ${{ secrets.MACOS_NOTARY_API_KEY }}
         run: |
           set -euo pipefail
           if [[ -z "${MACOS_CODESIGN_IDENTITY:-}" ]]; then
@@ -149,6 +152,59 @@ jobs:
             --bundle-root "$BUNDLE_ROOT" \
             --identity "$MACOS_CODESIGN_IDENTITY" \
             --keychain "$MACOS_SIGNING_KEYCHAIN"
+
+          APP_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          bundle_root = Path(os.environ["BUNDLE_ROOT"])
+          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
+          print(bundle_root / payload["gui_bundle"])
+          PY
+          )"
+          test -d "$APP_PATH"
+
+          # For published releases, notarization is mandatory.
+          REQUIRE_NOTARIZATION="false"
+          if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+            REQUIRE_NOTARIZATION="true"
+          fi
+
+          HAVE_NOTARY_CREDS="true"
+          for var in MACOS_NOTARY_KEY_ID MACOS_NOTARY_ISSUER_ID MACOS_NOTARY_API_KEY; do
+            if [[ -z "${!var:-}" ]]; then
+              HAVE_NOTARY_CREDS="false"
+            fi
+          done
+
+          if [[ "$REQUIRE_NOTARIZATION" == "true" && "$HAVE_NOTARY_CREDS" != "true" ]]; then
+            echo "Missing required notarization secrets for release build." >&2
+            echo "Expected: MACOS_NOTARY_KEY_ID, MACOS_NOTARY_ISSUER_ID, MACOS_NOTARY_API_KEY" >&2
+            exit 1
+          fi
+
+          if [[ "$HAVE_NOTARY_CREDS" == "true" ]]; then
+            NOTARY_KEY_PATH="$RUNNER_TEMP/AuthKey_${MACOS_NOTARY_KEY_ID}.p8"
+            printf '%s' "$MACOS_NOTARY_API_KEY" > "$NOTARY_KEY_PATH"
+            chmod 600 "$NOTARY_KEY_PATH"
+
+            NOTARY_ARCHIVE_PATH="$RUNNER_TEMP/mcsas3gui-notarize-${PLATFORM_TAG}.zip"
+            rm -f "$NOTARY_ARCHIVE_PATH"
+            ditto -c -k --sequesterRsrc --keepParent "$BUNDLE_ROOT" "$NOTARY_ARCHIVE_PATH"
+
+            xcrun notarytool submit "$NOTARY_ARCHIVE_PATH" \
+              --key "$NOTARY_KEY_PATH" \
+              --key-id "$MACOS_NOTARY_KEY_ID" \
+              --issuer "$MACOS_NOTARY_ISSUER_ID" \
+              --wait
+
+            xcrun stapler staple "$APP_PATH"
+            xcrun stapler validate "$APP_PATH"
+            spctl -a -vvv --type exec "$APP_PATH"
+          else
+            echo "Notarization credentials not set; skipping notarization for manual run."
+          fi
 
           ARCHIVE_PATH="dist/standalone/mcsas3gui-standalone-${PLATFORM_TAG}.zip"
           rm -f "$ARCHIVE_PATH"

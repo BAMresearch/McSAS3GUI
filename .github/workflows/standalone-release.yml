@@ -192,6 +192,11 @@ jobs:
             if [[ "$CANDIDATE" == "$GUI_EXEC_PATH" || "$CANDIDATE" == "$HELPER_PATH" ]]; then
               continue
             fi
+            # Bundle directories (frameworks/plugins/extensions) should be signed as
+            # bundles in the next step, not by directly signing files inside them.
+            if [[ "$CANDIDATE" =~ \.framework/ || "$CANDIDATE" =~ \.bundle/ || "$CANDIDATE" =~ \.xpc/ || "$CANDIDATE" =~ \.appex/ ]]; then
+              continue
+            fi
             if file -b "$CANDIDATE" | grep -q "Mach-O"; then
               codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$CANDIDATE"
             fi

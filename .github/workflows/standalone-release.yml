@@ -143,101 +143,12 @@ jobs:
           PY
           )"
           BUNDLE_ROOT="dist/standalone/${PLATFORM_TAG}"
-          BUILD_INFO="${BUNDLE_ROOT}/build_info.json"
-          test -f "$BUILD_INFO"
+          test -f "${BUNDLE_ROOT}/build_info.json"
 
-          APP_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          bundle_root = Path(os.environ["BUNDLE_ROOT"])
-          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
-          print(bundle_root / payload["gui_bundle"])
-          PY
-          )"
-
-          HELPER_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          bundle_root = Path(os.environ["BUNDLE_ROOT"])
-          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
-          print(bundle_root / payload["bundled_histogrammer"])
-          PY
-          )"
-
-          GUI_EXEC_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          bundle_root = Path(os.environ["BUNDLE_ROOT"])
-          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
-          print(bundle_root / payload["gui_executable"])
-          PY
-          )"
-
-          test -d "$APP_PATH"
-          test -f "$HELPER_PATH"
-          test -f "$GUI_EXEC_PATH"
-
-          REAL_HELPER_PATH="$(python -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$HELPER_PATH")"
-
-          REAL_GUI_EXEC_PATH="$(python -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$GUI_EXEC_PATH")"
-
-          SIGNED_REALPATHS="$RUNNER_TEMP/macos-signed-realpaths.txt"
-          : > "$SIGNED_REALPATHS"
-
-          # Sign standalone helper first (explicitly referenced from app resources).
-          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$HELPER_PATH" >/dev/null
-
-          # Sign all embedded Mach-O binaries. Avoid --deep, which attempts to sign
-          # non-code metadata directories (for example *.dist-info) and can fail.
-          while IFS= read -r -d '' CANDIDATE; do
-            if [[ "$CANDIDATE" == "$GUI_EXEC_PATH" || "$CANDIDATE" == "$HELPER_PATH" ]]; then
-              continue
-            fi
-            # Bundle directories (frameworks/plugins/extensions) should be signed as
-            # bundles in the next step, not by directly signing files inside them.
-            if [[ "$CANDIDATE" =~ \.framework/ || "$CANDIDATE" =~ \.bundle/ || "$CANDIDATE" =~ \.xpc/ || "$CANDIDATE" =~ \.appex/ ]]; then
-              continue
-            fi
-            if file -b "$CANDIDATE" | grep -q "Mach-O"; then
-              REAL_CANDIDATE="$(python -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$CANDIDATE")"
-
-              if [[ "$REAL_CANDIDATE" == "$REAL_GUI_EXEC_PATH" || "$REAL_CANDIDATE" == "$REAL_HELPER_PATH" ]]; then
-                continue
-              fi
-              if grep -Fxq "$REAL_CANDIDATE" "$SIGNED_REALPATHS"; then
-                continue
-              fi
-              echo "$REAL_CANDIDATE" >> "$SIGNED_REALPATHS"
-              codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$REAL_CANDIDATE" >/dev/null
-            fi
-          done < <(find "$APP_PATH/Contents" -type f -print0)
-
-          # Sign nested code bundles before the top-level app bundle.
-          while IFS= read -r -d '' BUNDLE; do
-            if [[ "$BUNDLE" == */Python.framework ]]; then
-              echo "Skipping PyInstaller Python.framework wrapper: $BUNDLE"
-              continue
-            fi
-            # Some PyInstaller layouts contain directories ending in ".framework"
-            # that are not canonical macOS frameworks (no Versions/ tree). Those
-            # should be treated as normal directories; their Mach-O files are
-            # signed in the file loop above.
-            if [[ "$BUNDLE" == *.framework ]] && [[ ! -d "$BUNDLE/Versions" ]]; then
-              echo "Skipping non-canonical framework directory: $BUNDLE"
-              continue
-            fi
-            codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$BUNDLE" >/dev/null
-          done < <(find "$APP_PATH/Contents" -type d \( -name "*.framework" -o -name "*.bundle" -o -name "*.xpc" -o -name "*.appex" -o -name "*.app" \) -print0)
-
-          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$APP_PATH" >/dev/null
-          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
-          codesign --display --verbose=4 "$APP_PATH"
+          python tools/sign_macos_bundle.py \
+            --bundle-root "$BUNDLE_ROOT" \
+            --identity "$MACOS_CODESIGN_IDENTITY" \
+            --keychain "$MACOS_SIGNING_KEYCHAIN"
 
           ARCHIVE_PATH="dist/standalone/mcsas3gui-standalone-${PLATFORM_TAG}.zip"
           rm -f "$ARCHIVE_PATH"

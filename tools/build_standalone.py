@@ -230,12 +230,12 @@ def _helper_destination(gui_bundle: Path) -> Path:
 def _copy_helper_into_gui_bundle(gui_bundle: Path, helper_bundle: Path) -> None:
     destination = _helper_destination(gui_bundle)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(helper_bundle, destination, dirs_exist_ok=True)
+    shutil.copytree(helper_bundle, destination, symlinks=True, dirs_exist_ok=True)
 
 
 def _copy_gui_bundle_to_output(gui_bundle: Path, bundle_root: Path) -> Path:
     destination = bundle_root / gui_bundle.name
-    shutil.copytree(gui_bundle, destination, dirs_exist_ok=True)
+    shutil.copytree(gui_bundle, destination, symlinks=True, dirs_exist_ok=True)
     return destination
 
 

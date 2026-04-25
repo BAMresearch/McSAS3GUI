@@ -50,3 +50,52 @@ def test_write_build_info_records_bundle_and_helper_paths(tmp_path):
     assert payload["bundled_histogrammer"] == str(
         module._bundled_histogrammer_path(gui_bundle).relative_to(bundle_root)
     )
+
+
+def test_copy_helper_into_gui_bundle_preserves_symlinks(tmp_path, monkeypatch):
+    module = _load_build_standalone_module()
+    gui_bundle = tmp_path / "McSAS3GUI.app"
+    helper_bundle = tmp_path / module.HISTOGRAMMER_NAME
+    gui_bundle.mkdir(parents=True)
+    helper_bundle.mkdir()
+    calls: list[tuple[Path, Path, dict[str, object]]] = []
+
+    def fake_copytree(src, dst, **kwargs):
+        calls.append((Path(src), Path(dst), dict(kwargs)))
+        return dst
+
+    monkeypatch.setattr(module.shutil, "copytree", fake_copytree)
+
+    module._copy_helper_into_gui_bundle(gui_bundle, helper_bundle)
+
+    assert len(calls) == 1
+    source, destination, kwargs = calls[0]
+    assert source == helper_bundle
+    assert destination == module._helper_destination(gui_bundle)
+    assert kwargs["symlinks"] is True
+    assert kwargs["dirs_exist_ok"] is True
+
+
+def test_copy_gui_bundle_to_output_preserves_symlinks(tmp_path, monkeypatch):
+    module = _load_build_standalone_module()
+    gui_bundle = tmp_path / "gui" / "McSAS3GUI.app"
+    bundle_root = tmp_path / "bundle-root"
+    gui_bundle.mkdir(parents=True)
+    bundle_root.mkdir()
+    calls: list[tuple[Path, Path, dict[str, object]]] = []
+
+    def fake_copytree(src, dst, **kwargs):
+        calls.append((Path(src), Path(dst), dict(kwargs)))
+        return dst
+
+    monkeypatch.setattr(module.shutil, "copytree", fake_copytree)
+
+    destination = module._copy_gui_bundle_to_output(gui_bundle, bundle_root)
+
+    assert len(calls) == 1
+    source, copied_destination, kwargs = calls[0]
+    assert source == gui_bundle
+    assert copied_destination == bundle_root / gui_bundle.name
+    assert destination == copied_destination
+    assert kwargs["symlinks"] is True
+    assert kwargs["dirs_exist_ok"] is True

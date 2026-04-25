@@ -201,7 +201,7 @@ jobs:
             fi
             # Bundle directories (frameworks/plugins/extensions) should be signed as
             # bundles in the next step, not by directly signing files inside them.
-            if [[ "$CANDIDATE" =~ \.bundle/ || "$CANDIDATE" =~ \.xpc/ || "$CANDIDATE" =~ \.appex/ ]]; then
+            if [[ "$CANDIDATE" =~ \.framework/ || "$CANDIDATE" =~ \.bundle/ || "$CANDIDATE" =~ \.xpc/ || "$CANDIDATE" =~ \.appex/ ]]; then
               continue
             fi
             if file -b "$CANDIDATE" | grep -q "Mach-O"; then

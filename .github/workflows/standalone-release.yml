@@ -129,7 +129,7 @@ jobs:
         env:
           MACOS_CODESIGN_IDENTITY: ${{ secrets.MACOS_CODESIGN_IDENTITY }}
         run: |
-          set -euxo pipefail
+          set -euo pipefail
           if [[ -z "${MACOS_CODESIGN_IDENTITY:-}" ]]; then
             echo "Missing required secret: MACOS_CODESIGN_IDENTITY" >&2
             exit 1
@@ -194,7 +194,7 @@ jobs:
             fi
             # Bundle directories (frameworks/plugins/extensions) should be signed as
             # bundles in the next step, not by directly signing files inside them.
-            if [[ "$CANDIDATE" =~ \.framework/ || "$CANDIDATE" =~ \.bundle/ || "$CANDIDATE" =~ \.xpc/ || "$CANDIDATE" =~ \.appex/ ]]; then
+            if [[ "$CANDIDATE" =~ \.bundle/ || "$CANDIDATE" =~ \.xpc/ || "$CANDIDATE" =~ \.appex/ ]]; then
               continue
             fi
             if file -b "$CANDIDATE" | grep -q "Mach-O"; then
@@ -204,6 +204,14 @@ jobs:
 
           # Sign nested code bundles before the top-level app bundle.
           while IFS= read -r -d '' BUNDLE; do
+            # Some PyInstaller layouts contain directories ending in ".framework"
+            # that are not canonical macOS frameworks (no Versions/ tree). Those
+            # should be treated as normal directories; their Mach-O files are
+            # signed in the file loop above.
+            if [[ "$BUNDLE" == *.framework ]] && [[ ! -d "$BUNDLE/Versions" ]]; then
+              echo "Skipping non-canonical framework directory: $BUNDLE"
+              continue
+            fi
             codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$BUNDLE"
           done < <(find "$APP_PATH/Contents" -type d \( -name "*.framework" -o -name "*.bundle" -o -name "*.xpc" -o -name "*.appex" -o -name "*.app" \) -print0)
 

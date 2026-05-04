@@ -8,7 +8,9 @@ import os
 import platform
 import shutil
 import subprocess
+import sys
 import textwrap
+from ctypes.util import find_library
 from pathlib import Path
 
 import PyInstaller.__main__
@@ -139,6 +141,53 @@ def _macos_qt_conf() -> Path:
     return qt_conf
 
 
+def _linux_dynamic_library_path(library_name: str) -> Path | None:
+    """Resolve a Linux shared library name to an absolute filesystem path."""
+    if platform.system() != "Linux":
+        return None
+
+    library = find_library(library_name)
+    names = {f"lib{library_name}.so", f"lib{library_name}.so.0"}
+    if library:
+        library_path = Path(library)
+        if library_path.is_absolute() and library_path.is_file():
+            return library_path
+        names.add(library)
+
+    result = subprocess.run(["ldconfig", "-p"], check=False, capture_output=True, text=True)
+    if result.returncode == 0:
+        for line in result.stdout.splitlines():
+            if "=>" not in line:
+                continue
+            name, path = line.strip().split("=>", maxsplit=1)
+            if name.split(maxsplit=1)[0] in names:
+                resolved = Path(path.strip())
+                if resolved.is_file():
+                    return resolved
+
+    for directory in (Path("/lib"), Path("/usr/lib"), Path("/usr/local/lib")):
+        for name in names:
+            candidate = directory / name
+            if candidate.is_file():
+                return candidate
+
+    return None
+
+
+def _linux_xcb_cursor_binary_args() -> list[str]:
+    if platform.system() != "Linux":
+        return []
+
+    library_path = _linux_dynamic_library_path("xcb-cursor")
+    if library_path is None:
+        raise RuntimeError(
+            "Linux standalone builds require libxcb-cursor.so.0 so Qt can load the xcb "
+            "platform plugin. Install libxcb-cursor0 before running tox -e standalone."
+        )
+
+    return ["--add-binary", _add_data_arg(library_path, ".")]
+
+
 def _gui_pyinstaller_args(gui_dist: Path) -> list[str]:
     gui_script = ROOT / "src" / "mcsas3gui" / "__main__.py"
     args = [
@@ -177,6 +226,7 @@ def _gui_pyinstaller_args(gui_dist: Path) -> list[str]:
                 _add_data_arg(_macos_qt_conf(), "."),
             ]
         )
+    args.extend(_linux_xcb_cursor_binary_args())
     args.extend(_hidden_import_args())
     return args
 
@@ -300,6 +350,89 @@ def _archive_bundle(bundle_root: Path) -> Path:
     )
 
 
+def _expected_archive_path(bundle_root: Path) -> Path:
+    return DIST_ROOT / f"mcsas3gui-standalone-{bundle_root.name}.zip"
+
+
+def _macos_codesign_identity() -> str | None:
+    return os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY") or os.environ.get(
+        "MACOS_CODESIGN_IDENTITY"
+    )
+
+
+def _macos_codesign_keychain() -> str | None:
+    return os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_KEYCHAIN") or os.environ.get(
+        "MACOS_SIGNING_KEYCHAIN"
+    )
+
+
+def _macos_codesign_timestamp() -> str:
+    timestamp = os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_TIMESTAMP", "none")
+    if timestamp not in {"auto", "none"}:
+        raise RuntimeError(
+            "MCSAS3GUI_STANDALONE_CODESIGN_TIMESTAMP must be either 'auto' or 'none'."
+        )
+    return timestamp
+
+
+def _preflight_macos_codesigning() -> None:
+    if platform.system() != "Darwin":
+        return
+
+    identity = _macos_codesign_identity()
+    if not identity:
+        return
+
+    cmd = ["security", "find-identity", "-v", "-p", "codesigning"]
+    keychain = _macos_codesign_keychain()
+    if keychain:
+        cmd.append(keychain)
+
+    result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+    if result.returncode == 0 and identity in result.stdout:
+        return
+
+    searched = f"keychain '{keychain}'" if keychain else "the default keychain search list"
+    details = result.stdout or result.stderr or "No signing identities were reported."
+    raise RuntimeError(
+        "macOS code signing was requested, but the identity is not visible to codesign.\n"
+        f"Requested identity: {identity}\n"
+        f"Searched: {searched}\n"
+        "Run tools/prepare_sign_macos_bundle.sh, then export both variables it prints:\n"
+        "  MACOS_CODESIGN_IDENTITY\n"
+        "  MACOS_SIGNING_KEYCHAIN\n"
+        f"security find-identity output:\n{details}"
+    )
+
+
+def _maybe_sign_macos_bundle(bundle_root: Path) -> None:
+    if platform.system() != "Darwin":
+        return
+
+    identity = _macos_codesign_identity()
+    if not identity:
+        print(
+            "Skipping macOS code signing; set "
+            "MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY or MACOS_CODESIGN_IDENTITY to enable it."
+        )
+        return
+
+    cmd = [
+        sys.executable,
+        str(ROOT / "tools" / "sign_macos_bundle.py"),
+        "--bundle-root",
+        str(bundle_root),
+        "--identity",
+        identity,
+        "--timestamp",
+        _macos_codesign_timestamp(),
+    ]
+    keychain = _macos_codesign_keychain()
+    if keychain:
+        cmd.extend(["--keychain", keychain])
+    subprocess.run(cmd, check=True)
+
+
 def _run_smoke_test(gui_bundle: Path) -> None:
     gui_executable = _gui_executable_path(gui_bundle)
     histogrammer_executable = _bundled_histogrammer_path(gui_bundle)
@@ -344,6 +477,8 @@ def main() -> None:
     gui_dist = BUILD_ROOT / "dist-gui"
     helper_dist = BUILD_ROOT / "dist-helper"
 
+    _preflight_macos_codesigning()
+
     shutil.rmtree(BUILD_ROOT, ignore_errors=True)
     shutil.rmtree(bundle_root, ignore_errors=True)
     bundle_root.mkdir(parents=True, exist_ok=True)
@@ -357,9 +492,11 @@ def main() -> None:
     output_gui_bundle = _copy_gui_bundle_to_output(gui_bundle, bundle_root)
 
     _write_bundle_readme(bundle_root)
-    archive_path = _archive_bundle(bundle_root)
+    archive_path = _expected_archive_path(bundle_root)
     _write_build_info(bundle_root, output_gui_bundle, archive_path)
     _run_smoke_test(output_gui_bundle)
+    _maybe_sign_macos_bundle(bundle_root)
+    archive_path = _archive_bundle(bundle_root)
     print(f"Standalone GUI bundle created at {output_gui_bundle}")
     print(f"Standalone archive created at {archive_path}")
 

@@ -5,6 +5,7 @@ import json
 import sys
 import types
 from pathlib import Path
+from subprocess import CompletedProcess
 
 
 def _load_build_standalone_module():
@@ -29,6 +30,63 @@ def test_histogrammer_hidden_imports_include_pdf_backend():
 
     assert "--hidden-import" in args
     assert "matplotlib.backends.backend_pdf" in args
+
+
+def test_linux_dynamic_library_path_resolves_ldconfig_entry(tmp_path, monkeypatch):
+    module = _load_build_standalone_module()
+    library = tmp_path / "libxcb-cursor.so.0"
+    library.write_text("", encoding="utf-8")
+
+    def fake_run(cmd, **kwargs):
+        assert cmd == ["ldconfig", "-p"]
+        assert kwargs == {"check": False, "capture_output": True, "text": True}
+        return CompletedProcess(
+            cmd,
+            0,
+            stdout=f"\tlibxcb-cursor.so.0 (libc6,x86-64) => {library}\n",
+            stderr="",
+        )
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(module, "find_library", lambda name: "libxcb-cursor.so.0")
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    assert module._linux_dynamic_library_path("xcb-cursor") == library
+
+
+def test_linux_xcb_cursor_binary_args_adds_resolved_library(tmp_path, monkeypatch):
+    module = _load_build_standalone_module()
+    library = tmp_path / "libxcb-cursor.so.0"
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(module, "_linux_dynamic_library_path", lambda name: library)
+
+    assert module._linux_xcb_cursor_binary_args() == ["--add-binary", f"{library}:."]
+
+
+def test_linux_xcb_cursor_binary_args_fails_when_library_is_missing(monkeypatch):
+    module = _load_build_standalone_module()
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(module, "_linux_dynamic_library_path", lambda name: None)
+
+    try:
+        module._linux_xcb_cursor_binary_args()
+    except RuntimeError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("Expected _linux_xcb_cursor_binary_args to fail")
+
+    assert "libxcb-cursor.so.0" in message
+    assert "libxcb-cursor0" in message
+
+
+def test_linux_xcb_cursor_binary_args_skips_non_linux(monkeypatch):
+    module = _load_build_standalone_module()
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Darwin")
+
+    assert module._linux_xcb_cursor_binary_args() == []
 
 
 def test_write_build_info_records_bundle_and_helper_paths(tmp_path):
@@ -99,3 +157,112 @@ def test_copy_gui_bundle_to_output_preserves_symlinks(tmp_path, monkeypatch):
     assert destination == copied_destination
     assert kwargs["symlinks"] is True
     assert kwargs["dirs_exist_ok"] is True
+
+
+def test_maybe_sign_macos_bundle_skips_without_identity(tmp_path, monkeypatch):
+    module = _load_build_standalone_module()
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Darwin")
+    monkeypatch.delenv("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY", raising=False)
+    monkeypatch.delenv("MACOS_CODESIGN_IDENTITY", raising=False)
+    monkeypatch.setattr(module.subprocess, "run", lambda cmd, **kwargs: calls.append(cmd))
+
+    module._maybe_sign_macos_bundle(tmp_path)
+
+    assert calls == []
+
+
+def test_maybe_sign_macos_bundle_uses_identity_and_keychain(tmp_path, monkeypatch):
+    module = _load_build_standalone_module()
+    calls: list[tuple[list[str], dict[str, object]]] = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append((cmd, kwargs))
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Darwin")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY", "Developer ID Application: Example")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_CODESIGN_KEYCHAIN", "/tmp/example.keychain-db")
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    module._maybe_sign_macos_bundle(tmp_path)
+
+    assert len(calls) == 1
+    cmd, kwargs = calls[0]
+    assert cmd == [
+        module.sys.executable,
+        str(module.ROOT / "tools" / "sign_macos_bundle.py"),
+        "--bundle-root",
+        str(tmp_path),
+        "--identity",
+        "Developer ID Application: Example",
+        "--timestamp",
+        "none",
+        "--keychain",
+        "/tmp/example.keychain-db",
+    ]
+    assert kwargs == {"check": True}
+
+
+def test_maybe_sign_macos_bundle_can_request_timestamping(tmp_path, monkeypatch):
+    module = _load_build_standalone_module()
+    calls: list[tuple[list[str], dict[str, object]]] = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append((cmd, kwargs))
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Darwin")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY", "Developer ID Application: Example")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_CODESIGN_TIMESTAMP", "auto")
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    module._maybe_sign_macos_bundle(tmp_path)
+
+    assert "--timestamp" in calls[0][0]
+    assert calls[0][0][calls[0][0].index("--timestamp") + 1] == "auto"
+
+
+def test_preflight_macos_codesigning_checks_configured_keychain(monkeypatch):
+    module = _load_build_standalone_module()
+    calls: list[tuple[list[str], dict[str, object]]] = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append((cmd, kwargs))
+        return CompletedProcess(cmd, 0, stdout='1) ABCD "Developer ID Application: Example"\n', stderr="")
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Darwin")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY", "Developer ID Application: Example")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_CODESIGN_KEYCHAIN", "/tmp/example.keychain-db")
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    module._preflight_macos_codesigning()
+
+    assert calls == [
+        (
+            ["security", "find-identity", "-v", "-p", "codesigning", "/tmp/example.keychain-db"],
+            {"check": False, "capture_output": True, "text": True},
+        )
+    ]
+
+
+def test_preflight_macos_codesigning_fails_when_identity_is_missing(monkeypatch):
+    module = _load_build_standalone_module()
+
+    def fake_run(cmd, **kwargs):
+        return CompletedProcess(cmd, 0, stdout='1) ABCD "Developer ID Application: Other"\n', stderr="")
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Darwin")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY", "Developer ID Application: Example")
+    monkeypatch.delenv("MCSAS3GUI_STANDALONE_CODESIGN_KEYCHAIN", raising=False)
+    monkeypatch.delenv("MACOS_SIGNING_KEYCHAIN", raising=False)
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    try:
+        module._preflight_macos_codesigning()
+    except RuntimeError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("Expected _preflight_macos_codesigning to fail")
+
+    assert "identity is not visible to codesign" in message
+    assert "MACOS_SIGNING_KEYCHAIN" in message

@@ -48,13 +48,25 @@ def _should_skip_file(path: Path) -> bool:
     return ".bundle/" in p or ".xpc/" in p or ".appex/" in p
 
 
-def _codesign(target: Path, identity: str, keychain: str | None, deep: bool = False) -> None:
+def _timestamp_arg(timestamp: str) -> str:
+    if timestamp == "none":
+        return "--timestamp=none"
+    return "--timestamp"
+
+
+def _codesign(
+    target: Path,
+    identity: str,
+    keychain: str | None,
+    timestamp: str,
+    deep: bool = False,
+) -> None:
     cmd = [
         "codesign",
         "--force",
         "--options",
         "runtime",
-        "--timestamp",
+        _timestamp_arg(timestamp),
         "--sign",
         identity,
     ]
@@ -141,7 +153,7 @@ def _normalize_framework_layouts(app_path: Path) -> None:
         _normalize_framework(framework)
 
 
-def _sign_bundle(bundle_root: Path, identity: str, keychain: str | None) -> None:
+def _sign_bundle(bundle_root: Path, identity: str, keychain: str | None, timestamp: str) -> None:
     app_path, helper_path = _load_paths(bundle_root)
     seen_realpaths: set[Path] = set()
     app_executable = app_path / "Contents" / "MacOS" / app_path.stem
@@ -156,7 +168,7 @@ def _sign_bundle(bundle_root: Path, identity: str, keychain: str | None) -> None
     _normalize_framework_layouts(app_path)
 
     # 1) Sign helper executable first.
-    _codesign(helper_path, identity, keychain)
+    _codesign(helper_path, identity, keychain, timestamp)
     seen_realpaths.add(helper_path.resolve())
 
     # 2) Sign every unique Mach-O file in Contents/.
@@ -172,15 +184,15 @@ def _sign_bundle(bundle_root: Path, identity: str, keychain: str | None) -> None
         real_candidate = candidate.resolve()
         if real_candidate in seen_realpaths:
             continue
-        _codesign(real_candidate, identity, keychain)
+        _codesign(real_candidate, identity, keychain, timestamp)
         seen_realpaths.add(real_candidate)
 
     # 3) Sign nested helper app bundles first if present.
     for nested_app in nested_apps:
-        _codesign(nested_app, identity, keychain, deep=True)
+        _codesign(nested_app, identity, keychain, timestamp, deep=True)
 
     # 3) Sign top-level app bundle.
-    _codesign(app_path, identity, keychain)
+    _codesign(app_path, identity, keychain, timestamp)
 
     # 4) Verify full bundle recursively.
     _run(["codesign", "--verify", "--deep", "--strict", "--verbose=2", str(app_path)])
@@ -192,9 +204,15 @@ def main() -> int:
     parser.add_argument("--bundle-root", required=True, type=Path)
     parser.add_argument("--identity", required=True)
     parser.add_argument("--keychain")
+    parser.add_argument(
+        "--timestamp",
+        choices=("auto", "none"),
+        default="auto",
+        help="Use Apple timestamping, or disable timestamping for local development signing.",
+    )
     args = parser.parse_args()
 
-    _sign_bundle(args.bundle_root.resolve(), args.identity, args.keychain)
+    _sign_bundle(args.bundle_root.resolve(), args.identity, args.keychain, args.timestamp)
     return 0
 
 

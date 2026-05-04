@@ -54,6 +54,19 @@ def _timestamp_arg(timestamp: str) -> str:
     return "--timestamp"
 
 
+def _get_entitlements_file() -> Path | None:
+    """Locate entitlements file if it exists."""
+    # Check in build directory relative to bundle_root
+    entitlements_candidates = [
+        Path(__file__).parent.parent / "build" / "mcsas3gui.entitlements",
+        Path(__file__).parent.parent / "mcsas3gui.entitlements",
+    ]
+    for candidate in entitlements_candidates:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def _codesign(
     target: Path,
     identity: str,
@@ -70,6 +83,12 @@ def _codesign(
         "--sign",
         identity,
     ]
+    
+    # Add entitlements file if available (required for proper notarization)
+    entitlements = _get_entitlements_file()
+    if entitlements:
+        cmd.extend(["--entitlements", str(entitlements)])
+    
     if deep:
         cmd.append("--deep")
     if keychain:
@@ -191,10 +210,10 @@ def _sign_bundle(bundle_root: Path, identity: str, keychain: str | None, timesta
     for nested_app in nested_apps:
         _codesign(nested_app, identity, keychain, timestamp, deep=True)
 
-    # 3) Sign top-level app bundle.
-    _codesign(app_path, identity, keychain, timestamp)
+    # 4) Sign top-level app bundle recursively to ensure all contents are verified.
+    _codesign(app_path, identity, keychain, timestamp, deep=True)
 
-    # 4) Verify full bundle recursively.
+    # 5) Verify full bundle recursively.
     _run(["codesign", "--verify", "--deep", "--strict", "--verbose=2", str(app_path)])
     _run(["codesign", "--display", "--verbose=4", str(app_path)])
 

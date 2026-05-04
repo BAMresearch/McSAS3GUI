@@ -193,17 +193,46 @@ jobs:
             rm -f "$NOTARY_ARCHIVE_PATH"
             ditto -c -k --sequesterRsrc --keepParent "$BUNDLE_ROOT" "$NOTARY_ARCHIVE_PATH"
 
-            xcrun notarytool submit "$NOTARY_ARCHIVE_PATH" \
+            echo "Submitting app for notarization..."
+            NOTARY_RESULT="$(xcrun notarytool submit "$NOTARY_ARCHIVE_PATH" \
               --key "$NOTARY_KEY_PATH" \
               --key-id "$MACOS_NOTARY_KEY_ID" \
               --issuer "$MACOS_NOTARY_ISSUER_ID" \
-              --wait
+              --wait 2>&1)" || {
+              echo "Notarization failed:" >&2
+              echo "$NOTARY_RESULT" >&2
+              exit 1
+            }
+            echo "$NOTARY_RESULT"
+            
+            # Verify notarization succeeded before stapling
+            if ! echo "$NOTARY_RESULT" | grep -q "status: Accepted"; then
+              echo "Notarization was not accepted:" >&2
+              echo "$NOTARY_RESULT" >&2
+              exit 1
+            fi
 
-            xcrun stapler staple "$APP_PATH"
-            xcrun stapler validate "$APP_PATH"
-            spctl -a -vvv --type exec "$APP_PATH"
+            echo "Stapling notarization ticket to app bundle..."
+            xcrun stapler staple "$APP_PATH" || {
+              echo "Stapling failed - app may not be notarized" >&2
+              exit 1
+            }
+            
+            echo "Validating stapled notarization..."
+            xcrun stapler validate "$APP_PATH" || {
+              echo "Stapled notarization validation failed" >&2
+              exit 1
+            }
+            
+            echo "Running final security check..."
+            spctl -a -vvv --type exec "$APP_PATH" || {
+              echo "Security policy check failed - app may not be properly notarized" >&2
+              exit 1
+            }
+            echo "✓ App bundle is properly notarized and passes security validation"
           else
             echo "Notarization credentials not set; skipping notarization for manual run."
+            echo "Note: Release builds will fail without notarization."
           fi
 
           ARCHIVE_PATH="dist/standalone/mcsas3gui-standalone-${PLATFORM_TAG}.zip"

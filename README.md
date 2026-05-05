@@ -65,6 +65,56 @@ This produces a platform-specific standalone bundle under `dist/standalone/`, in
 windowed `McSAS3GUI` app and the bundled `mcsas3-histogrammer` helper used by the histogramming
 tabs.
 
+### Standalone release process
+
+Standalone release assets are produced by the GitHub Actions workflow in
+`.github/workflows/standalone-release.yml`.
+
+The release workflow:
+
+- checks out both `McSAS3GUI` and `McSAS3`
+- runs `tox -e standalone` on Linux, macOS, and Windows
+- signs the macOS `.app` bundle with a Developer ID certificate
+- notarizes and staples the macOS bundle with `notarytool` and `stapler`
+- uploads the platform zip archives to the GitHub release
+
+For local development builds, `tox -e standalone` produces the same bundle layout, but notarization
+only happens in the release workflow because it requires GitHub secrets and Apple credentials.
+
+### GitHub secrets for macOS standalone releases
+
+The macOS release build requires these GitHub Actions secrets:
+
+- `MACOS_CERT_P12_BASE64`
+- `MACOS_CERT_P12_PASSWORD`
+- `MACOS_CODESIGN_IDENTITY`
+- `MACOS_KEYCHAIN_PASSWORD`
+- `MACOS_NOTARY_KEY_ID`
+- `MACOS_NOTARY_ISSUER_ID`
+- `MACOS_NOTARY_API_KEY`
+
+You can prepare all of them in one step with:
+
+```bash
+tools/prepare_github_secrets.sh \
+    --p12-path ~/Downloads/mcsas3gui-signing-cert.p12 \
+    --p12-password '<p12-password>' \
+    --p8-path ~/Downloads/AuthKey_ABC123XYZ.p8 \
+    --issuer-id 12345678-1234-1234-1234-123456789abc
+```
+
+The helper script:
+
+- base64-encodes the `.p12` signing certificate as `MACOS_CERT_P12_BASE64`
+- reuses the supplied `.p12` password as `MACOS_CERT_P12_PASSWORD`
+- imports the `.p12` into a temporary macOS keychain to discover `MACOS_CODESIGN_IDENTITY`
+- emits `MACOS_KEYCHAIN_PASSWORD` for the temporary runner keychain used in CI
+- reads the raw `.p8` contents into `MACOS_NOTARY_API_KEY`
+- infers `MACOS_NOTARY_KEY_ID` from `AuthKey_<KEYID>.p8` when possible
+- requires `MACOS_NOTARY_ISSUER_ID` explicitly because Apple does not store it in the `.p8` file
+
+Store the emitted values in GitHub under Settings, Secrets and variables, Actions.
+
 ## Quick Start
 
 1. Open the **Getting Started** tab and choose one of the shipped prefab workflows, or configure

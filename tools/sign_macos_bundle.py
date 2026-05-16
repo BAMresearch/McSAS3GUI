@@ -83,12 +83,12 @@ def _codesign(
         "--sign",
         identity,
     ]
-    
+
     # Add entitlements file if available (required for proper notarization)
     entitlements = _get_entitlements_file()
     if entitlements:
         cmd.extend(["--entitlements", str(entitlements)])
-    
+
     if deep:
         cmd.append("--deep")
     if keychain:

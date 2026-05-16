@@ -26,6 +26,7 @@ jobs:
         python_arch: ['x64']
         python:
           - [3, 12]
+          - [3, 13]
         # os: ['ubuntu', 'windows', 'macos']
         os: ['windows']
     env:

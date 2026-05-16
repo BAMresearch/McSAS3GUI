@@ -168,3 +168,13 @@ testdata/round_robin_dataset_1_output.hdf5
 testdata/round_robin_dataset_1_output.pdf
 testdata/round_robin_dataset_3_output.hdf5
 testdata/round_robin_dataset_3_output.pdf
+src/mcsas3gui/configurations/histogram/hist_dual_emily.yaml
+src/mcsas3gui/configurations/readdata/read_emily.yaml
+src/mcsas3gui/configurations/readdata/read_josh.yaml
+src/mcsas3gui/configurations/readdata/read_niamh.yaml
+src/mcsas3gui/configurations/readdata/read_sophie.yaml
+src/mcsas3gui/configurations/readdata/read_testdata.yaml
+src/mcsas3gui/configurations/run/run_config_josh.yaml
+src/mcsas3gui/configurations/run/run_config_testdata.yaml
+src/mcsas3gui/configurations/run/run_emily.yml
+src/mcsas3gui/configurations/run/run_sophie.yml

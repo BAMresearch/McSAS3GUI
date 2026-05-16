@@ -54,39 +54,74 @@ def test_linux_dynamic_library_path_resolves_ldconfig_entry(tmp_path, monkeypatc
     assert module._linux_dynamic_library_path("xcb-cursor") == library
 
 
-def test_linux_xcb_cursor_binary_args_adds_resolved_library(tmp_path, monkeypatch):
+def test_linux_qt_xcb_binary_args_adds_resolved_libraries(tmp_path, monkeypatch):
     module = _load_build_standalone_module()
-    library = tmp_path / "libxcb-cursor.so.0"
+    libraries = {
+        library_name: tmp_path / f"lib{library_name}.so.0"
+        for library_name, _package_name in module.LINUX_QT_XCB_RUNTIME_LIBRARIES
+    }
 
     monkeypatch.setattr(module.platform, "system", lambda: "Linux")
-    monkeypatch.setattr(module, "_linux_dynamic_library_path", lambda name: library)
+    monkeypatch.setattr(module, "_linux_dynamic_library_path", lambda name: libraries[name])
 
-    assert module._linux_xcb_cursor_binary_args() == ["--add-binary", f"{library}:."]
+    expected_args: list[str] = []
+    for library_name, _package_name in module.LINUX_QT_XCB_RUNTIME_LIBRARIES:
+        expected_args.extend(["--add-binary", f"{libraries[library_name]}:."])
+
+    assert module._linux_qt_xcb_binary_args() == expected_args
 
 
-def test_linux_xcb_cursor_binary_args_fails_when_library_is_missing(monkeypatch):
+def test_linux_qt_xcb_binary_args_fails_when_library_is_missing(monkeypatch):
     module = _load_build_standalone_module()
 
     monkeypatch.setattr(module.platform, "system", lambda: "Linux")
     monkeypatch.setattr(module, "_linux_dynamic_library_path", lambda name: None)
 
     try:
-        module._linux_xcb_cursor_binary_args()
+        module._linux_qt_xcb_binary_args()
     except RuntimeError as exc:
         message = str(exc)
     else:
-        raise AssertionError("Expected _linux_xcb_cursor_binary_args to fail")
+        raise AssertionError("Expected _linux_qt_xcb_binary_args to fail")
 
-    assert "libxcb-cursor.so.0" in message
     assert "libxcb-cursor0" in message
+    assert "libxkbcommon-x11-0" in message
 
 
-def test_linux_xcb_cursor_binary_args_skips_non_linux(monkeypatch):
+def test_linux_qt_xcb_binary_args_skips_non_linux(monkeypatch):
     module = _load_build_standalone_module()
 
     monkeypatch.setattr(module.platform, "system", lambda: "Darwin")
 
-    assert module._linux_xcb_cursor_binary_args() == []
+    assert module._linux_qt_xcb_binary_args() == []
+
+
+def test_preflight_linux_glibc_allows_matching_baseline(monkeypatch):
+    module = _load_build_standalone_module()
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(module.platform, "libc_ver", lambda: ("glibc", "2.28"))
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_MAX_GLIBC", "2.28")
+
+    module._preflight_linux_glibc()
+
+
+def test_preflight_linux_glibc_rejects_newer_baseline(monkeypatch):
+    module = _load_build_standalone_module()
+
+    monkeypatch.setattr(module.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(module.platform, "libc_ver", lambda: ("glibc", "2.39"))
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_MAX_GLIBC", "2.28")
+
+    try:
+        module._preflight_linux_glibc()
+    except RuntimeError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("Expected _preflight_linux_glibc to fail")
+
+    assert "Detected glibc: 2.39" in message
+    assert "Maximum allowed glibc: 2.28" in message
 
 
 def test_write_build_info_records_bundle_and_helper_paths(tmp_path):

@@ -48,6 +48,7 @@ jobs:
           echo "McSAS3 ref: ${{ github.event.inputs.mcsas3_ref || 'main' }}"
 
       - name: Setting up Python 3.12
+        if: runner.os != 'Linux'
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -58,6 +59,7 @@ jobs:
             tox.ini
 
       - name: Install required system packages
+        if: runner.os != 'Linux'
         shell: bash
         run: |
           set -euxo pipefail
@@ -74,13 +76,41 @@ jobs:
           fi
 
       - name: Install dependencies
+        if: runner.os != 'Linux'
         shell: bash
         run: |
           set -euxo pipefail
           python -m pip install --upgrade pip
           python -m pip install --progress-bar=off -r ci/requirements.txt
 
+      - name: Build Linux standalone GUI bundle on GLIBC 2.28
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          docker run --rm \
+            -e MCSAS3GUI_MCSAS3_SRC=/work/McSAS3/src \
+            -e MCSAS3GUI_STANDALONE_MAX_GLIBC=2.28 \
+            -e TOXPYTHON=/opt/python/cp312-cp312/bin/python \
+            -v "$GITHUB_WORKSPACE:/work" \
+            -w /work \
+            quay.io/pypa/manylinux_2_28_x86_64 \
+            /bin/bash -lc '
+              set -euxo pipefail
+              package_manager=dnf
+              if ! command -v dnf >/dev/null 2>&1; then
+                package_manager=yum
+              fi
+              "${package_manager}" -y install dnf-plugins-core || true
+              dnf config-manager --set-enabled powertools || true
+              "${package_manager}" -y install $(grep -vE "^[[:space:]]*(#|$)" ci/requirements_manylinux_2_28.txt)
+              /opt/python/cp312-cp312/bin/python -m pip install --upgrade pip
+              /opt/python/cp312-cp312/bin/python -m pip install --progress-bar=off -r ci/requirements.txt
+              /opt/python/cp312-cp312/bin/python -m tox -e standalone -v
+            '
+
       - name: Build standalone GUI bundle
+        if: runner.os != 'Linux'
         shell: bash
         env:
           MCSAS3GUI_MCSAS3_SRC: ${{ github.workspace }}/McSAS3/src

@@ -65,6 +65,10 @@ This produces a platform-specific standalone bundle under `dist/standalone/`, in
 windowed `McSAS3GUI` app and the bundled `mcsas3-histogrammer` helper used by the histogramming
 tabs.
 
+Linux standalone release artifacts are built in a `manylinux_2_28` container so the produced
+bundle stays compatible with systems that provide GLIBC 2.28 or newer. Local Linux builds need the
+Qt xcb runtime packages listed in `ci/requirements_linux.txt`.
+
 ### Standalone release process
 
 Standalone release assets are produced by the GitHub Actions workflow in
@@ -73,7 +77,7 @@ Standalone release assets are produced by the GitHub Actions workflow in
 The release workflow:
 
 - checks out both `McSAS3GUI` and `McSAS3`
-- runs `tox -e standalone` on Linux, macOS, and Windows
+- runs `tox -e standalone` on Linux, macOS, and Windows, with Linux built from a GLIBC 2.28 baseline
 - signs the macOS `.app` bundle with a Developer ID certificate
 - notarizes and staples the macOS bundle with `notarytool` and `stapler`
 - uploads the platform zip archives to the GitHub release

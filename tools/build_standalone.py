@@ -21,6 +21,21 @@ BUILD_ROOT = ROOT / "build" / "standalone"
 DIST_ROOT = ROOT / "dist" / "standalone"
 GUI_APP_NAME = "McSAS3GUI"
 HISTOGRAMMER_NAME = "mcsas3-histogrammer"
+LINUX_QT_XCB_RUNTIME_LIBRARIES: tuple[tuple[str, str], ...] = (
+    ("xcb-cursor", "libxcb-cursor0"),
+    ("xcb-icccm", "libxcb-icccm4"),
+    ("xcb-image", "libxcb-image0"),
+    ("xcb-keysyms", "libxcb-keysyms1"),
+    ("xcb-randr", "libxcb-randr0"),
+    ("xcb-render-util", "libxcb-render-util0"),
+    ("xcb-shape", "libxcb-shape0"),
+    ("xcb-sync", "libxcb-sync1"),
+    ("xcb-util", "libxcb-util1"),
+    ("xcb-xfixes", "libxcb-xfixes0"),
+    ("xcb-xinerama", "libxcb-xinerama0"),
+    ("xcb-xkb", "libxcb-xkb1"),
+    ("xkbcommon-x11", "libxkbcommon-x11-0"),
+)
 
 os.environ.setdefault("PYINSTALLER_CONFIG_DIR", str(BUILD_ROOT / "pyinstaller-cache"))
 os.environ.setdefault("MPLCONFIGDIR", str(BUILD_ROOT / "matplotlib-cache"))
@@ -147,7 +162,7 @@ def _linux_dynamic_library_path(library_name: str) -> Path | None:
         return None
 
     library = find_library(library_name)
-    names = {f"lib{library_name}.so", f"lib{library_name}.so.0"}
+    names = {f"lib{library_name}.so", f"lib{library_name}.so.0", f"lib{library_name}.so.1"}
     if library:
         library_path = Path(library)
         if library_path.is_absolute() and library_path.is_file():
@@ -174,18 +189,57 @@ def _linux_dynamic_library_path(library_name: str) -> Path | None:
     return None
 
 
-def _linux_xcb_cursor_binary_args() -> list[str]:
+def _linux_qt_xcb_binary_args() -> list[str]:
     if platform.system() != "Linux":
         return []
 
-    library_path = _linux_dynamic_library_path("xcb-cursor")
-    if library_path is None:
+    args: list[str] = []
+    missing_packages: list[str] = []
+    for library_name, package_name in LINUX_QT_XCB_RUNTIME_LIBRARIES:
+        library_path = _linux_dynamic_library_path(library_name)
+        if library_path is None:
+            missing_packages.append(package_name)
+            continue
+        args.extend(["--add-binary", _add_data_arg(library_path, ".")])
+
+    if missing_packages:
+        packages = " ".join(missing_packages)
         raise RuntimeError(
-            "Linux standalone builds require libxcb-cursor.so.0 so Qt can load the xcb "
-            "platform plugin. Install libxcb-cursor0 before running tox -e standalone."
+            "Linux standalone builds require Qt xcb runtime libraries so Qt can load the xcb "
+            f"platform plugin. Install these packages before running tox -e standalone: {packages}"
         )
 
-    return ["--add-binary", _add_data_arg(library_path, ".")]
+    return args
+
+
+def _version_tuple(version: str) -> tuple[int, ...]:
+    parts: list[int] = []
+    for raw_part in version.split("."):
+        digits = "".join(char for char in raw_part if char.isdigit())
+        if not digits:
+            break
+        parts.append(int(digits))
+    return tuple(parts)
+
+
+def _preflight_linux_glibc() -> None:
+    required_max = os.environ.get("MCSAS3GUI_STANDALONE_MAX_GLIBC")
+    if platform.system() != "Linux" or not required_max:
+        return
+
+    libc_name, libc_version = platform.libc_ver()
+    if libc_name != "glibc" or not libc_version:
+        raise RuntimeError(
+            "MCSAS3GUI_STANDALONE_MAX_GLIBC was set, but the Linux glibc version could not be detected."
+        )
+
+    if _version_tuple(libc_version) > _version_tuple(required_max):
+        raise RuntimeError(
+            "Linux standalone builds must run on an old enough glibc baseline for release artifacts.\n"
+            f"Detected glibc: {libc_version}\n"
+            f"Maximum allowed glibc: {required_max}\n"
+            "Run the release build in a manylinux_2_28 or equivalent container."
+        )
 
 
 def _gui_pyinstaller_args(gui_dist: Path) -> list[str]:
@@ -226,7 +280,7 @@ def _gui_pyinstaller_args(gui_dist: Path) -> list[str]:
                 _add_data_arg(_macos_qt_conf(), "."),
             ]
         )
-    args.extend(_linux_xcb_cursor_binary_args())
+    args.extend(_linux_qt_xcb_binary_args())
     args.extend(_hidden_import_args())
     return args
 
@@ -325,10 +379,12 @@ def _write_bundle_readme(bundle_root: Path) -> None:
 
 
 def _write_build_info(bundle_root: Path, gui_bundle: Path, archive_path: Path) -> None:
+    libc_name, libc_version = platform.libc_ver()
     payload = {
         "platform": _platform_tag(),
         "system": platform.system(),
         "machine": platform.machine(),
+        "libc": {"name": libc_name, "version": libc_version},
         "artifacts": [GUI_APP_NAME, HISTOGRAMMER_NAME],
         "archive_name": archive_path.name,
         "gui_bundle": str(gui_bundle.relative_to(bundle_root)),
@@ -478,6 +534,7 @@ def main() -> None:
     helper_dist = BUILD_ROOT / "dist-helper"
 
     _preflight_macos_codesigning()
+    _preflight_linux_glibc()
 
     shutil.rmtree(BUILD_ROOT, ignore_errors=True)
     shutil.rmtree(bundle_root, ignore_errors=True)

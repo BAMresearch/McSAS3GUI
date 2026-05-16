@@ -11,6 +11,7 @@ include tox.ini
 include *.spec
 include templates/*.j2
 recursive-include tools *.py
+recursive-include tools *.sh
 include notebooks/*.ipynb
 recursive-include read_configurations *.yaml
 recursive-include run_configurations *.yaml

@@ -1,0 +1,13 @@
+# RHEL/AlmaLinux package names used inside quay.io/pypa/manylinux_2_28_x86_64.
+fontconfig
+freetype
+libX11-xcb
+libxcb
+libxkbcommon-x11
+mesa-libGL
+xcb-util
+xcb-util-cursor
+xcb-util-image
+xcb-util-keysyms
+xcb-util-renderutil
+xcb-util-wm

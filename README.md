@@ -1,7 +1,7 @@
-# McSAS3GUI (v0.1.6)
+# McSAS3GUI (v0.2.0)
 
 [![PyPI Package latest release](https://img.shields.io/pypi/v/mcsas3gui.svg)](https://pypi.org/project/mcsas3gui)
-[![Commits since latest release](https://img.shields.io/github/commits-since/BAMresearch/mcsas3gui/v0.1.6.svg)](https://github.com/BAMresearch/mcsas3gui/compare/v0.1.6...main)
+[![Commits since latest release](https://img.shields.io/github/commits-since/BAMresearch/mcsas3gui/v0.2.0.svg)](https://github.com/BAMresearch/mcsas3gui/compare/v0.2.0...main)
 [![License](https://img.shields.io/pypi/l/mcsas3gui.svg)](https://en.wikipedia.org/wiki/MIT_license)
 [![Supported versions](https://img.shields.io/pypi/pyversions/mcsas3gui.svg)](https://pypi.org/project/mcsas3gui)
 [![PyPI Wheel](https://img.shields.io/pypi/wheel/mcsas3gui.svg)](https://pypi.org/project/mcsas3gui#files)

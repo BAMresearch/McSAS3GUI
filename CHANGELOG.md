@@ -1,5 +1,141 @@
 # CHANGELOG
 
+## v0.2.0 (2026-08-25)
+
+### Bug fixes
+
+* fix: ruff ([`9eb7bd1`](https://github.com/BAMresearch/McSAS3GUI/commit/9eb7bd1a683c94a49a5f570cbfcf13192f7cd0b2))
+
+* fix: do not restrict the PyQT version (was only necessary for old linux) ([`771be52`](https://github.com/BAMresearch/McSAS3GUI/commit/771be527fdf41aa1942fad88053352ccb8b76c87))
+
+* fix: ruff fix ([`04b2ec3`](https://github.com/BAMresearch/McSAS3GUI/commit/04b2ec34db03c8fabf30da3ed5beabac99689b8e))
+
+* fix: improved dependencies for the current RHEL-based linuxes. May need to be revisited later. ([`045e9ad`](https://github.com/BAMresearch/McSAS3GUI/commit/045e9ad2c64f819e7e49f86fb3927edd5800a22a))
+
+* fix: updates for notarization ([`4005ccd`](https://github.com/BAMresearch/McSAS3GUI/commit/4005ccd2f88785a88370c5267f3b5018e9c1e451))
+
+* fix: adjusting CI so we can run with the in_depth_upgrades branch of McSAS3 ([`0ec6b15`](https://github.com/BAMresearch/McSAS3GUI/commit/0ec6b15dd3d4c23b9800ab37abaa6caf7040cc14))
+
+### Continuous integration
+
+* ci: de-duplicate macOS codesign by realpath and reduce log noise ([`9adc2fe`](https://github.com/BAMresearch/McSAS3GUI/commit/9adc2fe6a3d07566a9fdc04521a23dbe58cdbbc8))
+
+* ci: de-duplicate macOS codesign by realpath and reduce log noise ([`f9e0193`](https://github.com/BAMresearch/McSAS3GUI/commit/f9e0193cc5f60ef5eb8e890964cf42cc978f7e42))
+
+* ci: de-duplicate macOS codesign by realpath and reduce log noise ([`29d6955`](https://github.com/BAMresearch/McSAS3GUI/commit/29d695566a471ddd968aea536d047540d0d5ac89))
+
+* ci: de-duplicate macOS codesign by realpath and reduce log noise ([`5c219d2`](https://github.com/BAMresearch/McSAS3GUI/commit/5c219d265caf6e342e2c8d196e57318e01d41d59))
+
+* ci: de-duplicate macOS codesign by realpath and reduce log noise ([`b144e01`](https://github.com/BAMresearch/McSAS3GUI/commit/b144e01311d73af8b6f2ef6064c3e0254ba00a84))
+
+* ci: handle non-canonical macOS framework signing in release workflow ([`63a0cf9`](https://github.com/BAMresearch/McSAS3GUI/commit/63a0cf9563d29a6036d2231f8b01d3e7fb2ff4fe))
+
+* ci: skip direct file signing inside macOS bundles ([`3819d88`](https://github.com/BAMresearch/McSAS3GUI/commit/3819d885954c7318be708ea0ef79667c979691f4))
+
+* ci: fix macOS codesign ordering in standalone release workflow ([`b9b9942`](https://github.com/BAMresearch/McSAS3GUI/commit/b9b99420d4c0bbffaf19d237312db4c12a5d0b5c))
+
+* ci: add standalone release workflow ([`efdfc21`](https://github.com/BAMresearch/McSAS3GUI/commit/efdfc218231d25a6bf59c7c55dbdcb095cd52bf2))
+
+* **PyPI**: fix pypi url, switch to actions/checkout@v5 ([`ea8998e`](https://github.com/BAMresearch/McSAS3GUI/commit/ea8998e5eeaf55330eaa7ac466f62759a4fa5930))
+
+* **PyPI**: copier template update other places to pypi.org as well ([`5b00873`](https://github.com/BAMresearch/McSAS3GUI/commit/5b0087381339751385d856de725163b21dfd4d79))
+
+* **PyPI**: move from test.pypi.org to pypi.org ([`97d72f2`](https://github.com/BAMresearch/McSAS3GUI/commit/97d72f2acf0fb21691cdb5c98b47d205122b9b5a))
+
+### Enh
+
+* enh: added python3.14 to tox tests ([`71f9689`](https://github.com/BAMresearch/McSAS3GUI/commit/71f96895d5d079071b82854bf462b0bb0a7efa12))
+
+* enh: build standalone versions for three plarforms ([`7fb84b8`](https://github.com/BAMresearch/McSAS3GUI/commit/7fb84b8442c7167b6207b7fcd2529d156926a77a))
+
+### Testing
+
+* **Style**: checks moved to early tests stage ([`9f722d5`](https://github.com/BAMresearch/McSAS3GUI/commit/9f722d556dbec236eb583d8c8dfec5fa1e4d724f))
+
+### Unknown Scope
+
+* Fix for Linux build ([`08b72ec`](https://github.com/BAMresearch/McSAS3GUI/commit/08b72ec7ac19f208072af1ed31ee20dfc33b1160))
+
+* track main branch of McSAS, no longer in_depth_upgrades ([`ffaccef`](https://github.com/BAMresearch/McSAS3GUI/commit/ffaccef65efaea882fe8e7afc775c49c5cdd1fd0))
+
+* Bump the GLIBC version requirement of Linux to a more modern version to avoid limiting ourselves to old PyQT versions ([`e6f812d`](https://github.com/BAMresearch/McSAS3GUI/commit/e6f812d815aa0f5999a5ab102b579feacfa001ea))
+
+* simulated data now will use automatic porod slope determination for extrapolation ([`bad6e19`](https://github.com/BAMresearch/McSAS3GUI/commit/bad6e199cb283702a9d9988359d10918218d606f))
+
+* simulated data now will use automatic porod slope determination for extrapolation ([`0956ead`](https://github.com/BAMresearch/McSAS3GUI/commit/0956ead475ad342eff34272fdbafac429a7056e5))
+
+* modified README to add a uv installation path ([`28b839f`](https://github.com/BAMresearch/McSAS3GUI/commit/28b839f4b837549cc4bdec52e290329422fcdd75))
+
+* documentation and default configuration updates ([`edd3c7f`](https://github.com/BAMresearch/McSAS3GUI/commit/edd3c7fd53300ae26ae7dc957414e13a9e49a803))
+
+* doc: Updated build release documentation ([`9685a5d`](https://github.com/BAMresearch/McSAS3GUI/commit/9685a5d979443010546e1cbca0c51455791dcf3c))
+
+* Fixes to binary build scripts ([`f623285`](https://github.com/BAMresearch/McSAS3GUI/commit/f62328591007db16630235cc16081ecef263085e))
+
+* added notarization ([`fbc0ba6`](https://github.com/BAMresearch/McSAS3GUI/commit/fbc0ba650027fbe94fa27543d06d19647abc55ed))
+
+* trying a different approach ([`62c34e8`](https://github.com/BAMresearch/McSAS3GUI/commit/62c34e8e09dba8c2b2c70a46f041fd38a0a6d108))
+
+* patching workflows ([`88d28cb`](https://github.com/BAMresearch/McSAS3GUI/commit/88d28cbccb2b285197ac9fe92f1fe09c065ed9d5))
+
+* fix for seed issue ([`d31867a`](https://github.com/BAMresearch/McSAS3GUI/commit/d31867a52f0544ac9efb6d53670dc63c5e342b15))
+
+* setting up for code signing for mac os x in CI ([`c7a4043`](https://github.com/BAMresearch/McSAS3GUI/commit/c7a404373d44dc83f879fc6dab2b6396a651199a))
+
+* fix build paths ([`c14d483`](https://github.com/BAMresearch/McSAS3GUI/commit/c14d48340e96d77bcc51b2b8fdd13bb09e33b647))
+
+* yet another test fix. ([`e50848b`](https://github.com/BAMresearch/McSAS3GUI/commit/e50848b97bbef63e6c28c26eb76bddb12abba17b))
+
+* fix to imports, shifting python to match modacor reqs. ([`9baed9c`](https://github.com/BAMresearch/McSAS3GUI/commit/9baed9c71b1d80e2572afa544b959981482bced1))
+
+* addressing small usability issues. ([`9fad697`](https://github.com/BAMresearch/McSAS3GUI/commit/9fad697d27022d942a628bcad050e01aa2b9b93d))
+
+* fixing small documentation issue ([`25065ea`](https://github.com/BAMresearch/McSAS3GUI/commit/25065eab4c566056e8ba7897d773b89d8afc9634))
+
+* bugfixes in compiled build ([`5d52e4b`](https://github.com/BAMresearch/McSAS3GUI/commit/5d52e4bc35ba0806935900525ce213edc1d586e5))
+
+* bugfix ([`f3c1729`](https://github.com/BAMresearch/McSAS3GUI/commit/f3c1729e677553772d24837f280425b1676db30e))
+
+* compiled McSAS3GUI ([`2a3b138`](https://github.com/BAMresearch/McSAS3GUI/commit/2a3b13879151126bd8cd10d7a0ac8a796d303543))
+
+* aux windows close when main closes ([`6bf68db`](https://github.com/BAMresearch/McSAS3GUI/commit/6bf68db9352461dbda1c6947064633ef25aeab85))
+
+* bugfix ([`524db9f`](https://github.com/BAMresearch/McSAS3GUI/commit/524db9f550e2b85fb3b70a667a3b32201aa5c995))
+
+* documentation generation ([`fc0d7d0`](https://github.com/BAMresearch/McSAS3GUI/commit/fc0d7d091bafc2405735101c98302b8f5731cf85))
+
+* typing/docstrings added ([`26c1d4e`](https://github.com/BAMresearch/McSAS3GUI/commit/26c1d4e567151eb884189d9efbcff27e46b47a31))
+
+* more cleanip, moving on to docs next ([`7058012`](https://github.com/BAMresearch/McSAS3GUI/commit/7058012fff60975a90298f742cf1da08ddae18a5))
+
+* more cleanup ([`3f48b72`](https://github.com/BAMresearch/McSAS3GUI/commit/3f48b7219b4cae3394751ad18df6b019735dd0eb))
+
+* next cleanup step ([`b36da89`](https://github.com/BAMresearch/McSAS3GUI/commit/b36da896dffebf250a93f03c7d326482f0581015))
+
+* more cleanup ([`f63560e`](https://github.com/BAMresearch/McSAS3GUI/commit/f63560e97ecce760782563171c43150da001c553))
+
+* another cleanup sweep ([`2051dfb`](https://github.com/BAMresearch/McSAS3GUI/commit/2051dfbc1d8f03167911b13644ae87c4156a03c0))
+
+* continuing cleanup ([`a7ff42f`](https://github.com/BAMresearch/McSAS3GUI/commit/a7ff42f564926bdd2eb17eca49ec462d18d394b9))
+
+* cleanup pass and tests ([`de4dda8`](https://github.com/BAMresearch/McSAS3GUI/commit/de4dda8a8bca26175d6e6e72dbf68def97ab78d2))
+
+* initial cleanup pass on McSAS3GUI ([`95dd184`](https://github.com/BAMresearch/McSAS3GUI/commit/95dd1840bf8c91adeb255b0865e2a9e93c43e25d))
+
+* adjusting the test configuration ([`82c2c20`](https://github.com/BAMresearch/McSAS3GUI/commit/82c2c2035ac0304756ea59c39962c85b100343c0))
+
+* stop button on test run too. ([`cdd39cf`](https://github.com/BAMresearch/McSAS3GUI/commit/cdd39cfe14ffb221eb52aa500facbd97b04a5501))
+
+* implement stop functionality ([`1fc1bba`](https://github.com/BAMresearch/McSAS3GUI/commit/1fc1bba27b2efdcc66d1317dbd0762ea1a7464b0))
+
+* adjusted ignores and added missing info ([`f6f954b`](https://github.com/BAMresearch/McSAS3GUI/commit/f6f954b66cda5228c9cc45e9418b292ac87bf554))
+
+* adjust gitignore ([`f598571`](https://github.com/BAMresearch/McSAS3GUI/commit/f5985714b52afc3849165eae9b4d6c4f9c26fed5))
+
+* adapting to the new API of McSAS3 with ProcessingData ([`d3243ac`](https://github.com/BAMresearch/McSAS3GUI/commit/d3243ac9f87309e369c81094d39d25c121637c3f))
+
+* basic formatting and project git hooks, we'll pick this up after we're done with McSAS3 upgrades. ([`192e829`](https://github.com/BAMresearch/McSAS3GUI/commit/192e829b48616ee99628805043eacbc73e9dd0c5))
+
 ## v0.1.6 (2025-09-05)
 
 ### Bug fixes

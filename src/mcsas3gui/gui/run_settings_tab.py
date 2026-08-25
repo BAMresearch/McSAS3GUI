@@ -183,15 +183,15 @@ class RunSettingsTab(QWidget):
             if model_name.startswith("sim"):
                 info_text += """
                     Using model based on simulated data. \n
-                    The following additional parameters must be defined in the run configuration: \n
+                    The run configuration must define the scaling factor and simulated arrays: \n
                     fitParameterLimits:
                         factor: [1, 80] # scaling factor for the model data to try in McSAS3
                             optimization
                     staticParameters:
-                        extrapY0: e.g. 9.33e-11, porod slope extrapolation of the model according
-                            to extrapY0 + Q ** (-4) * extrapScaling
-                        extrapScaling: e.g. 95.5, porod slope extrapolation of the model according
-                            to extrapY0 + Q ** (-4) * extrapScaling
+                        # Optional high-Q extrapolation override. If omitted, extrapY0 is zero
+                        # and extrapScaling is estimated from finite high-Q data at positive Q.
+                        extrapY0: e.g. 0.0
+                        extrapScaling: e.g. 95.5
                         simDataQ1: null # intended for 2D simulated model data
                         simDataQ0: [list of Q values]
                         simDataI: [list of I values]

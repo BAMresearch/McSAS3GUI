@@ -17,15 +17,41 @@ histogramming without depending on removed legacy McSAS3 internals.
 
 ## Installation
 
+McSAS3GUI requires Python 3.12 or newer.
+
+Install the released GUI package with `pip`:
+
 ```bash
 pip install mcsas3gui
 ```
 
-You can also install the in-development version with:
+If you use `uv`, create and activate a Python 3.12+ environment, then install the same package with:
+
+```bash
+uv venv --python 3.12
+source .venv/bin/activate
+uv pip install mcsas3gui
+```
+
+On Windows, activate the environment with `.venv\Scripts\activate` instead of `source`.
+
+You can also install the in-development version with `pip`:
 
 ```bash
 pip install git+https://github.com/BAMresearch/mcsas3gui.git@main
 ```
+
+or, from a local source checkout with `uv`:
+
+```bash
+uv venv --python 3.12
+source .venv/bin/activate
+uv pip install ../McSAS3 .
+mcsas3gui --version
+```
+
+Run the local source command from the `McSAS3GUI` repository with the `McSAS3` repository checked
+out next to it.
 
 For prebuilt standalone binaries (Linux, macOS, Windows), see the latest GitHub release:
 

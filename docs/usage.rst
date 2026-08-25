@@ -43,4 +43,17 @@ Abortable Runs
 
 The optimization preview and the main optimization run can be aborted in place. When active, the
 buttons switch to ``Running... Click to abort.`` and forward a stop request to the core McSAS3
-runner.
+runner that prevent new repetitions from starting.
+
+Configuration Notes
+===================
+
+Read-configuration YAML files can declare source units with ``QUnits`` and ``IUnits``. The shipped
+examples use ``QUnits: "1/nm"`` and ``IUnits: "1/(m sr)"``.
+
+Run-configuration YAML files should normally include ``logRandom: true`` so fit parameters are
+sampled log-uniformly over their configured ranges. This is the recommended standard operating
+mode for the supplied examples.
+
+For ``fitParameterLimits: {radius: auto}``, McSAS3 resolves the radius range from the fitted Q
+support using ``pi / q_max`` for the lower limit and ``2 * pi / q_min`` for the upper limit.

@@ -41,6 +41,10 @@ Built-in example datasets live under:
 
 - ``src/mcsas3gui/testdata``
 
+The shipped read configurations declare source units with ``QUnits: "1/nm"`` and
+``IUnits: "1/(m sr)"``. The run configurations keep ``logRandom: true`` enabled, which is the
+recommended standard mode for log-uniform parameter sampling.
+
 Abort Running Tasks
 ===================
 

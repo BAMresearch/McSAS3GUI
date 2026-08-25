@@ -31,7 +31,7 @@ html_description: |
           <p>We adjust the range of the data, increase the minimum uncertainty estimate (to de-emphasize the most precise datapoints), and use a model of spheres with a hardsphere structure factor to get close to a perfect fit. It isn't a perfect fit in this case, because the particles aren't spherical but faceted. Unlike, say, cylinders, ellipsoids and discs, the scattering from faceted particles and nano-cubes etc. cannot be exactly modeled by superimposing spherical scattering signals. </p>
           <p>Finally, we histogram it in three different ways. Note from the last two histograms that changing from a linear to a logarithmic binning has an effect on the histogram (as the spacing between bin edges is now changed), but not on the population parameters! </p>
           <p>Remember, if you make any adjustments to the read, run or histogramming configurations, you have to explicitly save them before you can use them in the Optimization or histogramming tabs... </p>
-          <p>Note: try and see the effect of adding "logRandom: true" to the run configuration (note the capitalization). It will use a log-uniform random number generator and should reduce the number of required iterations from about 86000 to about 5000. This setting can be useful for data with a broad range. FutureWarning: This is a beta test implementation, and the syntax will change in the future.</p>
+          <p>The run configuration keeps "logRandom: true" switched on. This uses a log-uniform random number generator and is recommended for standard operation, especially for broad size ranges.</p>
       </body>
   </html>
 
@@ -55,10 +55,11 @@ configurations:
 
 # the configurations in the files given before will be overwritten if these are defined:
 read_configuration: # if defined, this will be stored to a temporary file and loaded instead
-  # Note that the units are assumed to be 1/(m sr) for I and 1/nm for Q
   nbins: 100
   dataRange: [0.02, 4.0]
   IEmin: 0.02
+  QUnits: "1/nm"
+  IUnits: "1/(m sr)"
   pathDict:
     Q: /entry/result/Q
     I: /entry/result/I
@@ -85,6 +86,7 @@ run_configuration: # ibid.
   convCrit: 1
   nRep: 10
   nCores: 10
+  logRandom: true
 
 
 hist_configuration: # ibid.

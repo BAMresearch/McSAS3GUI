@@ -140,6 +140,10 @@ The shipped example datasets live under:
 
 - `src/mcsas3gui/testdata`
 
+Read configurations declare source data units with `QUnits: "1/nm"` and `IUnits: "1/(m sr)"`.
+Run configurations keep `logRandom: true` enabled, which is the recommended standard mode for
+log-uniform parameter sampling.
+
 Both optimization buttons are abortable. While running, they change to
 `Running... Click to abort.` and forward a stop request to the core McSAS3 runner.
 

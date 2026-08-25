@@ -59,10 +59,11 @@ configurations:
 
 # the configurations in the files given before will be overwritten if these are defined:
 read_configuration: # if defined, this will be stored to a temporary file and loaded instead
-  # Note that the units are assumed to be 1/(m sr) for I and 1/nm for Q
   nbins: 100
   dataRange: [0.0, .inf]
   IEmin: 0.01
+  QUnits: "1/nm"
+  IUnits: "1/(m sr)"
   csvargs:
     sep: \s+
     skiprows: 6
@@ -78,6 +79,7 @@ run_configuration: # ibid.
   convCrit: 1.8
   nRep: 10
   nCores: 10
+  logRandom: true
   fitParameterLimits:
     factor: [1, 80]
   staticParameters:

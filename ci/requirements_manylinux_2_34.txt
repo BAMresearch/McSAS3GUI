@@ -5,6 +5,9 @@ libX11-xcb
 libxcb
 libxkbcommon-x11
 mesa-libGL
+python3.12
+python3.12-devel
+python3.12-pip
 xcb-util
 xcb-util-cursor
 xcb-util-image

@@ -1,6 +1,0 @@
-mcsas3gui.gui.getting\_started\_tab.write\_yaml\_file
-=====================================================
-
-.. currentmodule:: mcsas3gui.gui.getting_started_tab
-
-.. autofunction:: write_yaml_file

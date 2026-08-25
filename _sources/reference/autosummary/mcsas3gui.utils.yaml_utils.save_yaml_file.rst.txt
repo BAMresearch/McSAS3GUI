@@ -1,6 +1,0 @@
-mcsas3gui.utils.yaml\_utils.save\_yaml\_file
-============================================
-
-.. currentmodule:: mcsas3gui.utils.yaml_utils
-
-.. autofunction:: save_yaml_file

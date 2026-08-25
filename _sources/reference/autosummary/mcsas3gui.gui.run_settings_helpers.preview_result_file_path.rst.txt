@@ -1,0 +1,6 @@
+mcsas3gui.gui.run\_settings\_helpers.preview\_result\_file\_path
+================================================================
+
+.. currentmodule:: mcsas3gui.gui.run_settings_helpers
+
+.. autofunction:: preview_result_file_path

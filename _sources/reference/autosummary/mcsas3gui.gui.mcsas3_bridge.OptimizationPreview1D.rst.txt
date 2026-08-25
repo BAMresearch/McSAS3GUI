@@ -1,0 +1,36 @@
+mcsas3gui.gui.mcsas3\_bridge.OptimizationPreview1D
+==================================================
+
+.. currentmodule:: mcsas3gui.gui.mcsas3_bridge
+
+.. autoclass:: OptimizationPreview1D
+   :members:
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~OptimizationPreview1D.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OptimizationPreview1D.fit_q
+      ~OptimizationPreview1D.fit_intensity
+      ~OptimizationPreview1D.accepted_gofs
+      ~OptimizationPreview1D.accepted_steps
+      ~OptimizationPreview1D.max_iter
+      ~OptimizationPreview1D.max_accept
+      ~OptimizationPreview1D.x0
+   
+   

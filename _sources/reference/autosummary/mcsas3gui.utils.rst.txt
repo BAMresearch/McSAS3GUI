@@ -31,6 +31,7 @@ mcsas3gui.utils
    base_worker
    file_utils
    logging_config
+   mcsas3_cli
    task_runner_mixin
    yaml_syntax_highlighter
    yaml_utils

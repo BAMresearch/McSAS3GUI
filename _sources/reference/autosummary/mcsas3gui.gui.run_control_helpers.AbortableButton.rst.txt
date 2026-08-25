@@ -1,0 +1,26 @@
+mcsas3gui.gui.run\_control\_helpers.AbortableButton
+===================================================
+
+.. currentmodule:: mcsas3gui.gui.run_control_helpers
+
+.. autoclass:: AbortableButton
+   :members:
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AbortableButton.__init__
+      ~AbortableButton.setStyleSheet
+      ~AbortableButton.setText
+   
+   
+
+   
+   
+   

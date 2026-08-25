@@ -1,0 +1,109 @@
+mcsas3gui.gui.optimization\_worker.PreviewOptimizationWorker
+============================================================
+
+.. currentmodule:: mcsas3gui.gui.optimization_worker
+
+.. autoclass:: PreviewOptimizationWorker
+   :members:
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PreviewOptimizationWorker.__init__
+      ~PreviewOptimizationWorker.blockSignals
+      ~PreviewOptimizationWorker.childEvent
+      ~PreviewOptimizationWorker.children
+      ~PreviewOptimizationWorker.connectNotify
+      ~PreviewOptimizationWorker.currentThread
+      ~PreviewOptimizationWorker.currentThreadId
+      ~PreviewOptimizationWorker.customEvent
+      ~PreviewOptimizationWorker.deleteLater
+      ~PreviewOptimizationWorker.disconnect
+      ~PreviewOptimizationWorker.disconnectNotify
+      ~PreviewOptimizationWorker.dumpObjectInfo
+      ~PreviewOptimizationWorker.dumpObjectTree
+      ~PreviewOptimizationWorker.dynamicPropertyNames
+      ~PreviewOptimizationWorker.event
+      ~PreviewOptimizationWorker.eventDispatcher
+      ~PreviewOptimizationWorker.eventFilter
+      ~PreviewOptimizationWorker.exec
+      ~PreviewOptimizationWorker.exit
+      ~PreviewOptimizationWorker.findChild
+      ~PreviewOptimizationWorker.findChildren
+      ~PreviewOptimizationWorker.idealThreadCount
+      ~PreviewOptimizationWorker.inherits
+      ~PreviewOptimizationWorker.installEventFilter
+      ~PreviewOptimizationWorker.isCurrentThread
+      ~PreviewOptimizationWorker.isFinished
+      ~PreviewOptimizationWorker.isInterruptionRequested
+      ~PreviewOptimizationWorker.isMainThread
+      ~PreviewOptimizationWorker.isQmlExposed
+      ~PreviewOptimizationWorker.isQuickItemType
+      ~PreviewOptimizationWorker.isRunning
+      ~PreviewOptimizationWorker.isSignalConnected
+      ~PreviewOptimizationWorker.isWidgetType
+      ~PreviewOptimizationWorker.isWindowType
+      ~PreviewOptimizationWorker.killTimer
+      ~PreviewOptimizationWorker.loopLevel
+      ~PreviewOptimizationWorker.metaObject
+      ~PreviewOptimizationWorker.moveToThread
+      ~PreviewOptimizationWorker.msleep
+      ~PreviewOptimizationWorker.objectName
+      ~PreviewOptimizationWorker.parent
+      ~PreviewOptimizationWorker.priority
+      ~PreviewOptimizationWorker.property
+      ~PreviewOptimizationWorker.pyqtConfigure
+      ~PreviewOptimizationWorker.quit
+      ~PreviewOptimizationWorker.receivers
+      ~PreviewOptimizationWorker.removeEventFilter
+      ~PreviewOptimizationWorker.requestInterruption
+      ~PreviewOptimizationWorker.request_stop
+      ~PreviewOptimizationWorker.run
+      ~PreviewOptimizationWorker.sender
+      ~PreviewOptimizationWorker.senderSignalIndex
+      ~PreviewOptimizationWorker.serviceLevel
+      ~PreviewOptimizationWorker.setEventDispatcher
+      ~PreviewOptimizationWorker.setObjectName
+      ~PreviewOptimizationWorker.setParent
+      ~PreviewOptimizationWorker.setPriority
+      ~PreviewOptimizationWorker.setProperty
+      ~PreviewOptimizationWorker.setServiceLevel
+      ~PreviewOptimizationWorker.setStackSize
+      ~PreviewOptimizationWorker.setTerminationEnabled
+      ~PreviewOptimizationWorker.signalsBlocked
+      ~PreviewOptimizationWorker.sleep
+      ~PreviewOptimizationWorker.stackSize
+      ~PreviewOptimizationWorker.start
+      ~PreviewOptimizationWorker.startTimer
+      ~PreviewOptimizationWorker.terminate
+      ~PreviewOptimizationWorker.thread
+      ~PreviewOptimizationWorker.timerEvent
+      ~PreviewOptimizationWorker.tr
+      ~PreviewOptimizationWorker.usleep
+      ~PreviewOptimizationWorker.wait
+      ~PreviewOptimizationWorker.yieldCurrentThread
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PreviewOptimizationWorker.destroyed
+      ~PreviewOptimizationWorker.finished
+      ~PreviewOptimizationWorker.finished_signal
+      ~PreviewOptimizationWorker.objectNameChanged
+      ~PreviewOptimizationWorker.preview_ready_signal
+      ~PreviewOptimizationWorker.progress_text_signal
+      ~PreviewOptimizationWorker.started
+      ~PreviewOptimizationWorker.staticMetaObject
+   
+   

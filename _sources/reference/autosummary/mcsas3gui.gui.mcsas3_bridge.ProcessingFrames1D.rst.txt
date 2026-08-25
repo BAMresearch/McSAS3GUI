@@ -1,0 +1,32 @@
+mcsas3gui.gui.mcsas3\_bridge.ProcessingFrames1D
+===============================================
+
+.. currentmodule:: mcsas3gui.gui.mcsas3_bridge
+
+.. autoclass:: ProcessingFrames1D
+   :members:
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ProcessingFrames1D.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ProcessingFrames1D.raw
+      ~ProcessingFrames1D.clipped
+      ~ProcessingFrames1D.binned
+   
+   

@@ -1,6 +1,0 @@
-mcsas3gui.utils.yaml\_utils.load\_yaml\_file
-============================================
-
-.. currentmodule:: mcsas3gui.utils.yaml_utils
-
-.. autofunction:: load_yaml_file

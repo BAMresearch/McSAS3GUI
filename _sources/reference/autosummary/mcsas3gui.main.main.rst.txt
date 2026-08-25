@@ -1,0 +1,6 @@
+mcsas3gui.main.main
+===================
+
+.. currentmodule:: mcsas3gui.main
+
+.. autofunction:: main

@@ -1,6 +1,0 @@
-mcsas3gui.gui.getting\_started\_tab.write\_hist\_yaml\_block
-============================================================
-
-.. currentmodule:: mcsas3gui.gui.getting_started_tab
-
-.. autofunction:: write_hist_yaml_block

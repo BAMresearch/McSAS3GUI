@@ -1,0 +1,6 @@
+mcsas3gui.gui.mcsas3\_bridge.prepare\_processing\_from\_file
+============================================================
+
+.. currentmodule:: mcsas3gui.gui.mcsas3_bridge
+
+.. autofunction:: prepare_processing_from_file

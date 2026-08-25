@@ -6,7 +6,6 @@ mcsas3gui.utils.base\_worker.BaseWorker
 .. autoclass:: BaseWorker
    :members:
    :show-inheritance:
-   :inherited-members:
 
    
    .. automethod:: __init__
@@ -61,7 +60,6 @@ mcsas3gui.utils.base\_worker.BaseWorker
       ~BaseWorker.property
       ~BaseWorker.pyqtConfigure
       ~BaseWorker.quit
-      ~BaseWorker.quote_path
       ~BaseWorker.receivers
       ~BaseWorker.removeEventFilter
       ~BaseWorker.requestInterruption

@@ -1,0 +1,6 @@
+mcsas3gui.gui.run\_control\_helpers.worker\_is\_running
+=======================================================
+
+.. currentmodule:: mcsas3gui.gui.run_control_helpers
+
+.. autofunction:: worker_is_running

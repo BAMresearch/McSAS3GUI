@@ -30,12 +30,17 @@ mcsas3gui.gui
 
    data_loading_tab
    file_line_selection_widget
+   file_selection_helpers
    file_selection_widget
    getting_started_tab
    hist_run_tab
    hist_settings_tab
    main_window
+   mcsas3_bridge
    optimization_tab
+   optimization_worker
+   run_control_helpers
+   run_settings_helpers
    run_settings_tab
    yaml_editor_widget
 

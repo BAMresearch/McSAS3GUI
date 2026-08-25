@@ -1,0 +1,6 @@
+mcsas3gui.gui.mcsas3\_bridge.processing\_frames\_from\_processing
+=================================================================
+
+.. currentmodule:: mcsas3gui.gui.mcsas3_bridge
+
+.. autofunction:: processing_frames_from_processing

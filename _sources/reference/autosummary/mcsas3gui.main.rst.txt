@@ -1,0 +1,30 @@
+mcsas3gui.main
+==============
+
+.. automodule:: mcsas3gui.main
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      main
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

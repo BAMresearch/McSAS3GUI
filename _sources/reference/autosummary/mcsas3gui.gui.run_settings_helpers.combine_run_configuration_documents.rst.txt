@@ -1,0 +1,6 @@
+mcsas3gui.gui.run\_settings\_helpers.combine\_run\_configuration\_documents
+===========================================================================
+
+.. currentmodule:: mcsas3gui.gui.run_settings_helpers
+
+.. autofunction:: combine_run_configuration_documents

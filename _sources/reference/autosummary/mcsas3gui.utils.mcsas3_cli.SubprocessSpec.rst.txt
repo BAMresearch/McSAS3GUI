@@ -1,0 +1,32 @@
+mcsas3gui.utils.mcsas3\_cli.SubprocessSpec
+==========================================
+
+.. currentmodule:: mcsas3gui.utils.mcsas3_cli
+
+.. autoclass:: SubprocessSpec
+   :members:
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SubprocessSpec.__init__
+      ~SubprocessSpec.merged_env
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SubprocessSpec.env_overrides
+      ~SubprocessSpec.args
+   
+   

@@ -1,0 +1,6 @@
+mcsas3gui.gui.run\_settings\_helpers.format\_preview\_status\_header
+====================================================================
+
+.. currentmodule:: mcsas3gui.gui.run_settings_helpers
+
+.. autofunction:: format_preview_status_header

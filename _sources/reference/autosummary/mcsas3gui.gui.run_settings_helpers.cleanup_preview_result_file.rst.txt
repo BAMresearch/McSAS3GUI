@@ -1,0 +1,6 @@
+mcsas3gui.gui.run\_settings\_helpers.cleanup\_preview\_result\_file
+===================================================================
+
+.. currentmodule:: mcsas3gui.gui.run_settings_helpers
+
+.. autofunction:: cleanup_preview_result_file

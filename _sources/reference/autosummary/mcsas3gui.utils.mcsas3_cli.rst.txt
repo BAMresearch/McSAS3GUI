@@ -1,0 +1,39 @@
+mcsas3gui.utils.mcsas3\_cli
+===========================
+
+.. automodule:: mcsas3gui.utils.mcsas3_cli
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      histogram_command
+      histogram_subprocess_spec
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: class.rst
+   
+      SubprocessSpec
+   
+   
+
+   
+   
+   
+
+
+

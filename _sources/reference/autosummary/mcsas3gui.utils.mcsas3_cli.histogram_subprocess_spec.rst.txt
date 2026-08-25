@@ -1,0 +1,6 @@
+mcsas3gui.utils.mcsas3\_cli.histogram\_subprocess\_spec
+=======================================================
+
+.. currentmodule:: mcsas3gui.utils.mcsas3_cli
+
+.. autofunction:: histogram_subprocess_spec

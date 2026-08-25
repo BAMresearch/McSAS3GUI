@@ -1,0 +1,109 @@
+mcsas3gui.gui.optimization\_worker.OptimizationWorker
+=====================================================
+
+.. currentmodule:: mcsas3gui.gui.optimization_worker
+
+.. autoclass:: OptimizationWorker
+   :members:
+   :show-inheritance:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~OptimizationWorker.__init__
+      ~OptimizationWorker.blockSignals
+      ~OptimizationWorker.childEvent
+      ~OptimizationWorker.children
+      ~OptimizationWorker.connectNotify
+      ~OptimizationWorker.currentThread
+      ~OptimizationWorker.currentThreadId
+      ~OptimizationWorker.customEvent
+      ~OptimizationWorker.deleteLater
+      ~OptimizationWorker.disconnect
+      ~OptimizationWorker.disconnectNotify
+      ~OptimizationWorker.dumpObjectInfo
+      ~OptimizationWorker.dumpObjectTree
+      ~OptimizationWorker.dynamicPropertyNames
+      ~OptimizationWorker.event
+      ~OptimizationWorker.eventDispatcher
+      ~OptimizationWorker.eventFilter
+      ~OptimizationWorker.exec
+      ~OptimizationWorker.exit
+      ~OptimizationWorker.findChild
+      ~OptimizationWorker.findChildren
+      ~OptimizationWorker.idealThreadCount
+      ~OptimizationWorker.inherits
+      ~OptimizationWorker.installEventFilter
+      ~OptimizationWorker.isCurrentThread
+      ~OptimizationWorker.isFinished
+      ~OptimizationWorker.isInterruptionRequested
+      ~OptimizationWorker.isMainThread
+      ~OptimizationWorker.isQmlExposed
+      ~OptimizationWorker.isQuickItemType
+      ~OptimizationWorker.isRunning
+      ~OptimizationWorker.isSignalConnected
+      ~OptimizationWorker.isWidgetType
+      ~OptimizationWorker.isWindowType
+      ~OptimizationWorker.killTimer
+      ~OptimizationWorker.loopLevel
+      ~OptimizationWorker.metaObject
+      ~OptimizationWorker.moveToThread
+      ~OptimizationWorker.msleep
+      ~OptimizationWorker.objectName
+      ~OptimizationWorker.parent
+      ~OptimizationWorker.priority
+      ~OptimizationWorker.property
+      ~OptimizationWorker.pyqtConfigure
+      ~OptimizationWorker.quit
+      ~OptimizationWorker.receivers
+      ~OptimizationWorker.removeEventFilter
+      ~OptimizationWorker.requestInterruption
+      ~OptimizationWorker.request_stop
+      ~OptimizationWorker.run
+      ~OptimizationWorker.sender
+      ~OptimizationWorker.senderSignalIndex
+      ~OptimizationWorker.serviceLevel
+      ~OptimizationWorker.setEventDispatcher
+      ~OptimizationWorker.setObjectName
+      ~OptimizationWorker.setParent
+      ~OptimizationWorker.setPriority
+      ~OptimizationWorker.setProperty
+      ~OptimizationWorker.setServiceLevel
+      ~OptimizationWorker.setStackSize
+      ~OptimizationWorker.setTerminationEnabled
+      ~OptimizationWorker.signalsBlocked
+      ~OptimizationWorker.sleep
+      ~OptimizationWorker.stackSize
+      ~OptimizationWorker.start
+      ~OptimizationWorker.startTimer
+      ~OptimizationWorker.terminate
+      ~OptimizationWorker.thread
+      ~OptimizationWorker.timerEvent
+      ~OptimizationWorker.tr
+      ~OptimizationWorker.usleep
+      ~OptimizationWorker.wait
+      ~OptimizationWorker.yieldCurrentThread
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OptimizationWorker.destroyed
+      ~OptimizationWorker.finished
+      ~OptimizationWorker.finished_signal
+      ~OptimizationWorker.objectNameChanged
+      ~OptimizationWorker.progress_signal
+      ~OptimizationWorker.started
+      ~OptimizationWorker.staticMetaObject
+      ~OptimizationWorker.status_signal
+   
+   

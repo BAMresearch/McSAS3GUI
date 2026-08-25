@@ -1,6 +1,0 @@
-mcsas3gui.utils.yaml\_utils.check\_yaml\_syntax
-===============================================
-
-.. currentmodule:: mcsas3gui.utils.yaml_utils
-
-.. autofunction:: check_yaml_syntax

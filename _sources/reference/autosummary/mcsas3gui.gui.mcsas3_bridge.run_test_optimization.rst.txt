@@ -1,0 +1,6 @@
+mcsas3gui.gui.mcsas3\_bridge.run\_test\_optimization
+====================================================
+
+.. currentmodule:: mcsas3gui.gui.mcsas3_bridge
+
+.. autofunction:: run_test_optimization

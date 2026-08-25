@@ -29,7 +29,7 @@ dependencies = [
     "modacor>=1.0.0",
     "numpy",
     "pandas",
-    "PyQt6>=6.9.1,<6.10",
+    "PyQt6>=6.9.1",
     "pyyaml",
     "sasmodels",
 ]

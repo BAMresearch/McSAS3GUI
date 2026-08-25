@@ -5,14 +5,14 @@ on:
   workflow_call:
     inputs:
       mcsas3_ref:
-        description: McSAS3 ref to check out. Defaults to the current GUI branch, then main.
+        description: McSAS3 ref to check out. Defaults to main.
         required: false
         type: string
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       mcsas3_ref:
-        description: McSAS3 ref to check out. Defaults to the current GUI branch, then main.
+        description: McSAS3 ref to check out. Defaults to main.
         required: false
         type: string
 
@@ -48,7 +48,7 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/McSAS3
           path: McSAS3
-          ref: ${{ inputs.mcsas3_ref || github.head_ref || github.ref_name || 'main' }}
+          ref: ${{ inputs.mcsas3_ref || 'main' }}
 
       - name: Setting up Python ${{ env.PYTHON }}
         uses: actions/setup-python@v6

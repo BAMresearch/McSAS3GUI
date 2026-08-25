@@ -4,13 +4,13 @@ on:
   workflow_call:
     inputs:
       mcsas3_ref:
-        description: McSAS3 ref to check out. Defaults to the current GUI branch, then main.
+        description: McSAS3 ref to check out. Defaults to main.
         required: false
         type: string
   workflow_dispatch:
     inputs:
       mcsas3_ref:
-        description: McSAS3 ref to check out. Defaults to the current GUI branch, then main.
+        description: McSAS3 ref to check out. Defaults to main.
         required: false
         type: string
 
@@ -34,13 +34,13 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/McSAS3
           path: McSAS3
-          ref: ${{ inputs.mcsas3_ref || github.head_ref || github.ref_name || 'main' }}
+          ref: ${{ inputs.mcsas3_ref || 'main' }}
 
       - name: Show selected dependency refs
         shell: bash
         run: |
           set -euxo pipefail
-          echo "McSAS3 ref: ${{ inputs.mcsas3_ref || github.head_ref || github.ref_name || 'main' }}"
+          echo "McSAS3 ref: ${{ inputs.mcsas3_ref || 'main' }}"
 
       - name: Setting up Python 3.12
         if: runner.os != 'Linux'

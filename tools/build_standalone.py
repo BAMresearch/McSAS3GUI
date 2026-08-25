@@ -229,9 +229,7 @@ def _preflight_linux_glibc() -> None:
 
     libc_name, libc_version = platform.libc_ver()
     if libc_name != "glibc" or not libc_version:
-        raise RuntimeError(
-            "MCSAS3GUI_STANDALONE_MAX_GLIBC was set, but the Linux glibc version could not be detected."
-        )
+        raise RuntimeError("MCSAS3GUI_STANDALONE_MAX_GLIBC was set, but the Linux glibc version could not be detected.")
 
     if _version_tuple(libc_version) > _version_tuple(required_max):
         raise RuntimeError(
@@ -411,23 +409,17 @@ def _expected_archive_path(bundle_root: Path) -> Path:
 
 
 def _macos_codesign_identity() -> str | None:
-    return os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY") or os.environ.get(
-        "MACOS_CODESIGN_IDENTITY"
-    )
+    return os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_IDENTITY") or os.environ.get("MACOS_CODESIGN_IDENTITY")
 
 
 def _macos_codesign_keychain() -> str | None:
-    return os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_KEYCHAIN") or os.environ.get(
-        "MACOS_SIGNING_KEYCHAIN"
-    )
+    return os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_KEYCHAIN") or os.environ.get("MACOS_SIGNING_KEYCHAIN")
 
 
 def _macos_codesign_timestamp() -> str:
     timestamp = os.environ.get("MCSAS3GUI_STANDALONE_CODESIGN_TIMESTAMP", "none")
     if timestamp not in {"auto", "none"}:
-        raise RuntimeError(
-            "MCSAS3GUI_STANDALONE_CODESIGN_TIMESTAMP must be either 'auto' or 'none'."
-        )
+        raise RuntimeError("MCSAS3GUI_STANDALONE_CODESIGN_TIMESTAMP must be either 'auto' or 'none'.")
     return timestamp
 
 

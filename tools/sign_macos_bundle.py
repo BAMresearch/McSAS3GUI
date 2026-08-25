@@ -127,9 +127,7 @@ def _normalize_framework(framework_dir: Path) -> None:
     if not versions_dir.is_dir():
         return
 
-    version_dirs = sorted(
-        path for path in versions_dir.iterdir() if path.is_dir() and path.name != "Current"
-    )
+    version_dirs = sorted(path for path in versions_dir.iterdir() if path.is_dir() and path.name != "Current")
     if not version_dirs:
         return
     canonical_version = version_dirs[0]

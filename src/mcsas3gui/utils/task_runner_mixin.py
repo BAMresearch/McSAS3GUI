@@ -1,40 +1,67 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any
+
 from PyQt6.QtWidgets import QMessageBox
 
-from .base_worker import BaseWorker
+from .base_worker import BaseWorker, CommandBuilder, FileMap
 
 
 class TaskRunnerMixin:
-    def run_tasks(self, files_in_out, command_template, extra_keywords=None):
-        """
-        Run tasks with the provided command template and files.
+    """Shared worker/progress wiring for file-oriented GUI task tabs."""
 
-        Args:
-            files_in_out (dict): Pairs for {input:output} file paths to process.
-            command_template (str): Command template with placeholders for replacement.
-            extra_keywords (dict): Additional keywords for replacing in the command template.
-        """
-        if not files_in_out:
-            QMessageBox.warning(self, "Run Tasks", "No files selected.")
-            return
+    task_dialog_title = "Run Tasks"
 
-        self.worker = BaseWorker(files_in_out, command_template, extra_keywords)
+    def start_worker(self, worker: BaseWorker) -> None:
+        """Connect a worker to the shared progress/status/result handlers and start it."""
+        self.worker = worker
         self.worker.progress_signal.connect(self.update_progress)
         self.worker.status_signal.connect(self.update_file_status)
         self.worker.finished_signal.connect(self.tasks_finished)
 
-        self.run_button.setEnabled(False)
         self.progress_bar.setValue(0)
+        self._set_task_running_state(True)
         self.worker.start()
 
-    def update_progress(self, progress):
+    def run_tasks(
+        self,
+        files_in_out: FileMap,
+        command_builder: CommandBuilder,
+        extra_keywords: Mapping[str, Any] | None = None,
+    ) -> None:
+        """
+        Run tasks with the provided command template and files.
+
+        Args:
+            files_in_out: Pairs for `{input: output}` file paths to process.
+            command_builder: Callable that returns a subprocess argument list for each file.
+            extra_keywords: Additional keywords forwarded to the command builder.
+        """
+        if not files_in_out:
+            QMessageBox.warning(self, self.task_dialog_title, "No files selected.")
+            return
+
+        worker = BaseWorker(files_in_out, command_builder, extra_keywords)
+        self.start_worker(worker)
+
+    def _set_task_running_state(self, is_running: bool) -> None:
+        """Apply the default enabled/disabled run-button state while a worker is active."""
+        self.run_button.setEnabled(not is_running)
+
+    def update_progress(self, progress: int) -> None:
         """Update the progress bar."""
         self.progress_bar.setValue(progress)
 
-    def update_file_status(self, row, status):
+    def update_file_status(self, row: int, status: str) -> None:
         """Update the status of a file in the table."""
         self.file_selection_widget.set_status_by_row(row, status)
 
-    def tasks_finished(self):
-        """Re-enable the run button after tasks are complete."""
-        self.run_button.setEnabled(True)
-        QMessageBox.information(self, "Run Tasks", "All tasks are complete.")
+    def tasks_finished(self, failed: bool, message: str):
+        """Re-enable the run button and report the overall task result."""
+        self._set_task_running_state(False)
+        self.worker = None
+        if failed:
+            QMessageBox.warning(self, self.task_dialog_title, message)
+            return
+        QMessageBox.information(self, self.task_dialog_title, message)

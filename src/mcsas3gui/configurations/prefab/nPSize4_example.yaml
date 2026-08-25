@@ -31,7 +31,7 @@ html_description: |
           <ul>
               <li>Measurements were performed at the SAXS beamline at the PTB.</li>
               <li>The model is a special "sim"-type, which requires the simulated arrays for Q, I and I_sigma to be specified in the model description.</li>
-              <li>This model should include a (flat) Guinier region at the start, and a porod region at the end. It is extrapolated between 0<Q<Q_min by the value of I(Q_min), and between Q_max<Q<infinity by a Q^-4 (porod) slope modeled using extrapY0 + Q ** (-4) * extrapScaling.</li>
+              <li>This model should include a (flat) Guinier region at the start, and a Porod region at the end. It is extrapolated between 0<Q<Q_min by the value of I(Q_min), and between Q_max<Q<infinity by a Q^-4 Porod tail. The Porod coefficient is estimated automatically from finite high-Q data at positive Q unless extrapY0 and/or extrapScaling are set explicitly.</li>
               <li>The result is a scaling factor, under the assumption that a uniform scaling of the object results in a volume-squared intensity scaling and an inverse Q-axis scaling.</li>
               <li>The faceted cube data was simulated using the SPONGE, a software tool for simulating scattering from complex structures using the Debye equation. The model was an STL file of a faceted cube with a face-to-face distance of 1 nm. This means the scaling factors in the final histogram are identical to the object size distribution in nm. </li>
               <li>This can work in absolute units if the model is supplied in absolute units.</li>
@@ -59,10 +59,11 @@ configurations:
 
 # the configurations in the files given before will be overwritten if these are defined:
 read_configuration: # if defined, this will be stored to a temporary file and loaded instead
-  # Note that the units are assumed to be 1/(m sr) for I and 1/nm for Q
   nbins: 100
   dataRange: [0.0, .inf]
   IEmin: 0.01
+  QUnits: "1/nm"
+  IUnits: "1/(m sr)"
   csvargs:
     sep: \s+
     skiprows: 6
@@ -78,11 +79,13 @@ run_configuration: # ibid.
   convCrit: 1.8
   nRep: 10
   nCores: 10
+  logRandom: true
   fitParameterLimits:
     factor: [1, 80]
   staticParameters:
-    extrapY0: 9.33e-11
-    extrapScaling: 95.5
+    # extrapY0 and extrapScaling can be set explicitly to override the automatic
+    # high-Q Porod extrapolation. If omitted, extrapY0=0 and extrapScaling is
+    # estimated from finite high-Q simDataI values at positive Q.
     simDataQ1: null
     simDataQ0: [0.8, 0.810694038594491, 0.821531030265807, 0.832512885946099, 0.843641542111997,
       0.854918961126074, 0.866347131582879, 0.877928068659596, 0.889663814471386, 0.901556438431485,

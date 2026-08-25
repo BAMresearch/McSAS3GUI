@@ -1,5 +1,6 @@
 sphinx>=1.3
 furo
 myst_parser
+sphinxcontrib-mermaid
 toml
 numpy

@@ -1,8 +1,9 @@
-# Note that the units are assumed to be 1/(m sr) for I and 1/nm for Q
 nbins: 100
 dataRange:
   - 0.0 # minimum
   - .inf # maximum. Positive infinity starts with a dot. negative infinity is -.inf
+QUnits: "1/nm"
+IUnits: "1/(m sr)"
 csvargs:
   sep: ";"
   header: null # null translates to a Python "None"

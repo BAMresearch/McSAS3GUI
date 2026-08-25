@@ -1,0 +1,15 @@
+parameter: radius
+nBin: 20
+binScale: log
+presetRangeMin: 0.4
+presetRangeMax: 3
+binWeighting: vol
+autoRange: false
+---
+parameter: radius
+nBin: 50
+binScale: log
+presetRangeMin: 3.14
+presetRangeMax: 314
+binWeighting: vol
+autoRange: true

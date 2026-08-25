@@ -3,16 +3,23 @@ import re
 from pathlib import Path
 from typing import Sequence
 
-import h5py
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from mcsas3.mc_hat import McHat
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QPushButton, QTextEdit, QVBoxLayout, QWidget
 from sasmodels.core import load_model_info
 
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
+from .optimization_worker import PreviewOptimizationWorker
+from .run_control_helpers import set_abortable_button_state, worker_is_running
+from .run_settings_helpers import (
+    cleanup_preview_result_file,
+    combine_run_configuration_documents,
+    format_preview_progress_message,
+    format_preview_status_header,
+    preview_result_file_path,
+)
 from .yaml_editor_widget import YAMLEditorWidget
 
 logger = logging.getLogger("McSAS3")
@@ -26,13 +33,17 @@ class RunSettingsTab(QWidget):
 
     def __init__(self, parent=None, data_loading_tab=None, temp_dir: Path = None):
         super().__init__(parent)
-        assert temp_dir.is_dir(), f"Given temp dir '{temp_dir}' does not exist!"
+        if temp_dir is None or not temp_dir.is_dir():
+            raise FileNotFoundError(f"Given temp dir '{temp_dir}' does not exist!")
         self._temp_dir = temp_dir
         self.data_loading_tab = data_loading_tab
         self.config_path = get_main_path() / "configurations/run"
         self.update_timer = QTimer(self)  # Timer for debouncing updates
         self.update_timer.setSingleShot(True)
         self.update_timer.timeout.connect(self.update_info_field)
+        self.preview_worker: PreviewOptimizationWorker | None = None
+        self.preview_result_file = preview_result_file_path(self._temp_dir)
+        self._preview_run_config: dict | None = None
 
         layout = QVBoxLayout()
 
@@ -51,14 +62,13 @@ class RunSettingsTab(QWidget):
 
         # Monitor changes in the YAML editor to detect custom changes
         self.yaml_editor_widget.yaml_editor.textChanged.connect(self.on_yaml_editor_change)
-        self.yaml_editor_widget.fileSaved.connect(
-            self.refresh_config_dropdown
-        )  # Refresh dropdown after save
+        self.yaml_editor_widget.fileSaved.connect(self.refresh_config_dropdown)  # Refresh dropdown after save
 
         # Test Run Button
-        test_run_button = QPushButton("Test single repetition on loaded Test Data")
-        test_run_button.clicked.connect(self.run_test_optimization)
-        layout.addWidget(test_run_button)
+        self.test_run_button = QPushButton("Test single repetition on loaded Test Data")
+        self._default_test_run_button_style = self.test_run_button.styleSheet()
+        self.test_run_button.clicked.connect(self.handle_test_run_button_clicked)
+        layout.addWidget(self.test_run_button)
 
         # Info text field for model parameters
         self.info_field = QTextEdit()
@@ -79,22 +89,35 @@ class RunSettingsTab(QWidget):
             self.config_dropdown.setCurrentIndex(0)
             self.load_selected_default_config()
 
-    def refresh_config_dropdown(
-        self, savedName: str | None = None
-    ):  # args is a dummy argument to handle signals
+    def close_auxiliary_windows(self) -> None:
+        """Close any standalone preview/plot windows owned by this tab."""
+        if hasattr(self, "metrics_dialog") and self.metrics_dialog is not None:
+            self.metrics_dialog.close()
+            self.metrics_dialog = None
+        if hasattr(self, "metrics_fig") and self.metrics_fig is not None:
+            plt.close(self.metrics_fig)
+            self.metrics_fig = None
+        if hasattr(self, "metrics_ax"):
+            self.metrics_ax = None
+
+    def refresh_config_dropdown(self, savedName: str | None = None):  # args is a dummy argument to handle signals
         """Populate or refresh the configuration dropdown list."""
-        self.config_dropdown.clear()
-        self.default_configs = get_default_config_files(directory=self.config_path)
-        self.config_dropdown.addItems(self.default_configs)
-        self.config_dropdown.addItem("<Custom...>")
-        if savedName is not None:
-            listName = str(Path(savedName).name)
-            if listName in self.default_configs:
-                self.config_dropdown.setCurrentText(listName)
+        self.config_dropdown.blockSignals(True)
+        try:
+            self.config_dropdown.clear()
+            self.default_configs = get_default_config_files(directory=self.config_path)
+            self.config_dropdown.addItems(self.default_configs)
+            self.config_dropdown.addItem("<Custom...>")
+            if savedName is not None:
+                listName = str(Path(savedName).name)
+                if listName in self.default_configs:
+                    self.config_dropdown.setCurrentText(listName)
+                else:
+                    self.config_dropdown.setCurrentText("<Custom...>")
             else:
                 self.config_dropdown.setCurrentText("<Custom...>")
-        else:
-            self.config_dropdown.setCurrentText("<Custom...>")
+        finally:
+            self.config_dropdown.blockSignals(False)
 
     def handle_dropdown_change(self):
         """Handle dropdown changes and load the selected configuration."""
@@ -160,15 +183,15 @@ class RunSettingsTab(QWidget):
             if model_name.startswith("sim"):
                 info_text += """
                     Using model based on simulated data. \n
-                    The following additional parameters must be defined in the run configuration: \n
+                    The run configuration must define the scaling factor and simulated arrays: \n
                     fitParameterLimits:
                         factor: [1, 80] # scaling factor for the model data to try in McSAS3
                             optimization
                     staticParameters:
-                        extrapY0: e.g. 9.33e-11, porod slope extrapolation of the model according
-                            to extrapY0 + Q ** (-4) * extrapScaling
-                        extrapScaling: e.g. 95.5, porod slope extrapolation of the model according
-                            to extrapY0 + Q ** (-4) * extrapScaling
+                        # Optional high-Q extrapolation override. If omitted, extrapY0 is zero
+                        # and extrapScaling is estimated from finite high-Q data at positive Q.
+                        extrapY0: e.g. 0.0
+                        extrapScaling: e.g. 95.5
                         simDataQ1: null # intended for 2D simulated model data
                         simDataQ0: [list of Q values]
                         simDataI: [list of I values]
@@ -200,84 +223,103 @@ class RunSettingsTab(QWidget):
 
         self.info_field.setPlainText(info_text)
 
+    def handle_test_run_button_clicked(self):
+        if worker_is_running(self.preview_worker):
+            self.request_preview_stop()
+            return
+        self.run_test_optimization()
+
+    def _set_test_run_button_running_state(self, is_running: bool) -> None:
+        set_abortable_button_state(
+            self.test_run_button,
+            is_running=is_running,
+            default_text="Test single repetition on loaded Test Data",
+            default_style=self._default_test_run_button_style,
+        )
+
+    def _combined_yaml_content(self):
+        return combine_run_configuration_documents(self.yaml_editor_widget.get_yaml_content())
+
+    def request_preview_stop(self):
+        if not worker_is_running(self.preview_worker):
+            return
+        logger.info("Abort requested from run settings preview button.")
+        self.preview_worker.request_stop()
+
+    def _loaded_processing(self):
+        processing = self.data_loading_tab.processing
+        if processing is None:
+            self.info_field.setPlainText("No data loaded in the Data Loading tab.")
+            return None
+        return processing
+
+    def _run_configuration(self):
+        run_config = self._combined_yaml_content()
+        if not run_config:
+            self.info_field.setPlainText("Invalid or missing run configuration.")
+            return None
+        return run_config
+
+    def _start_preview_worker(self, processing, run_config) -> None:
+        cleanup_preview_result_file(self.preview_result_file)
+        logger.debug("Temporary HDF5 file created at: %s", self.preview_result_file)
+        self._preview_run_config = dict(run_config)
+        self.preview_worker = PreviewOptimizationWorker(
+            processing=processing,
+            result_file=self.preview_result_file,
+            run_config=run_config,
+            result_index=1,
+        )
+        self.preview_worker.progress_text_signal.connect(self._on_preview_progress)
+        self.preview_worker.preview_ready_signal.connect(self._on_preview_ready)
+        self.preview_worker.finished_signal.connect(self._on_preview_finished)
+        self._set_test_run_button_running_state(True)
+        self.info_field.setPlainText(format_preview_status_header(run_config))
+        self.preview_worker.start()
+
     def run_test_optimization(self):
         """Run a single optimization repetition on the loaded test data."""
         try:
-            # Retrieve data from the DataLoadingTab
-            mds = self.data_loading_tab.mds
-            if not mds:
-                self.info_field.setPlainText("No data loaded in the Data Loading tab.")
+            processing = self._loaded_processing()
+            if processing is None:
                 return
 
-            # Parse the YAML configuration for the optimizer
-            yaml_content = self.yaml_editor_widget.get_yaml_content()
-            if not yaml_content:
-                self.info_field.setPlainText("Invalid or missing run configuration.")
+            run_config = self._run_configuration()
+            if run_config is None:
                 return
 
-            # Ensure YAML content is a dictionary for the optimizer
-            if isinstance(yaml_content, list):
-                # Combine all documents into a single dictionary, overriding keys if repeated
-                combined_yaml_content = {}
-                for doc in yaml_content:
-                    if not isinstance(doc, dict):
-                        self.info_field.setPlainText(
-                            "One or more YAML documents are not valid configurations."
-                        )
-                        return
-                    combined_yaml_content.update(doc)
-                yaml_content = combined_yaml_content
-
-            # Create a temporary file to save data for the optimizer
-            temp_file = self._temp_dir / "test_data.hdf5"
-            self.tempFileName = Path(temp_file.name)
-            logger.debug(f"Temporary HDF5 file created at: {self.tempFileName}")
-
-            mds.store(self.tempFileName)
-            yaml_content.update({"nRep": 1})  # Update configuration for single repetition
-
-            mh = McHat(**yaml_content)
-            mh.run(mds.measData.copy(), self.tempFileName)
-
-            self.info_field.setPlainText("Optimization completed successfully.")
-
-            with h5py.File(self.tempFileName, "r") as h5f:
-                fitQ = h5f["/analyses/MCResult1/mcdata/measData/Q"][()].flatten()  # model Q
-                fitI = h5f["/analyses/MCResult1/optimization/repetition0/modelI"][
-                    ()
-                ]  # model intensity
-                acceptedGofs = h5f["/analyses/MCResult1/optimization/repetition0/acceptedGofs"][
-                    ()
-                ]  # list of GOFs
-                acceptedSteps = h5f["/analyses/MCResult1/optimization/repetition0/acceptedSteps"][
-                    ()
-                ]  # steps accepted
-                maxIter = h5f["/analyses/MCResult1/optimization/repetition0/maxIter"][
-                    ()
-                ]  # max iterations
-                maxAccept = h5f["/analyses/MCResult1/optimization/repetition0/maxAccept"][
-                    ()
-                ]  # max accepts
-                x0 = h5f["/analyses/MCResult1/optimization/repetition0/x0"][
-                    ()
-                ]  # scaling and background
-
-            self._plot_fit(
-                fit_q=fitQ,
-                fit_intensity=fitI,
-                accepted_gofs=acceptedGofs,
-                accepted_steps=acceptedSteps,
-                max_iter=maxIter,
-                max_accept=maxAccept,
-                x0=x0,
-            )
-
-            # Clean up the temporary file
-            self.tempFileName.unlink()
+            self._start_preview_worker(processing, run_config)
 
         except Exception as e:
             logger.error(f"Error during test optimization: {e}")
             self.info_field.setPlainText(f"Error during test optimization: {e}")
+
+    def _on_preview_ready(self, preview) -> None:
+        self._plot_fit(
+            fit_q=preview.fit_q,
+            fit_intensity=preview.fit_intensity,
+            accepted_gofs=preview.accepted_gofs,
+            accepted_steps=preview.accepted_steps,
+            max_iter=preview.max_iter,
+            max_accept=preview.max_accept,
+            x0=preview.x0,
+        )
+
+    def _on_preview_finished(self, stopped: bool, message: str) -> None:
+        self._set_test_run_button_running_state(False)
+        self.info_field.append(message)
+        self.preview_worker = None
+        self._preview_run_config = None
+        cleanup_preview_result_file(self.preview_result_file)
+
+    def _on_preview_progress(self, message: str) -> None:
+        if not message:
+            return
+        formatted_message = format_preview_progress_message(
+            message,
+            run_config=self._preview_run_config,
+        )
+        self.info_field.append(formatted_message)
 
     def _plot_fit(
         self,
@@ -306,7 +348,7 @@ class RunSettingsTab(QWidget):
             # Retrieve the data plot from the DataLoadingTab
             data_tab = self.data_loading_tab
 
-            ax = data_tab.show_plot_popup(self.data_loading_tab.mds)
+            ax = data_tab.show_plot_popup()
 
             # Plot the fit on the existing data plot with zorder for proper layering
             scaled_fit_intensity = x0[0] * fit_intensity + x0[1]
@@ -339,9 +381,7 @@ class RunSettingsTab(QWidget):
                 or self.metrics_dialog is None
                 or not self.metrics_dialog.isVisible()
             ):
-                self.metrics_dialog = (
-                    QDialog()
-                )  # do not use self or it'll end up on the main window
+                self.metrics_dialog = QDialog()  # do not use self or it'll end up on the main window
                 self.metrics_dialog.setWindowTitle("Optimization Metrics")
                 self.metrics_dialog.setMinimumSize(700, 500)
                 layout = QVBoxLayout(self.metrics_dialog)

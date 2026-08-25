@@ -1,7 +1,6 @@
 import logging
 import os
 import subprocess
-import sys
 from pathlib import Path
 from sys import platform
 from tempfile import gettempdir
@@ -18,7 +17,9 @@ from PyQt6.QtWidgets import (
 )
 
 from ..utils.file_utils import get_default_config_files, get_main_path
+from ..utils.mcsas3_cli import histogram_subprocess_spec
 from .file_line_selection_widget import FileLineSelectionWidget
+from .file_selection_helpers import load_existing_selector_file
 from .yaml_editor_widget import YAMLEditorWidget
 
 logger = logging.getLogger("McSAS3")
@@ -44,17 +45,13 @@ class HistogramSettingsTab(QWidget):
         self.config_dropdown.currentTextChanged.connect(self.handle_dropdown_change)
 
         # YAML Editor for histogram settings
-        self.yaml_editor_widget = YAMLEditorWidget(
-            directory=self.config_path, parent=self, multipart=True
-        )
+        self.yaml_editor_widget = YAMLEditorWidget(directory=self.config_path, parent=self, multipart=True)
         layout.addWidget(QLabel("Histogramming Configuration (YAML):"))
         layout.addWidget(self.yaml_editor_widget)
 
         # Monitor changes in the YAML editor to detect custom changes
         self.yaml_editor_widget.yaml_editor.textChanged.connect(self.on_yaml_editor_change)
-        self.yaml_editor_widget.fileSaved.connect(
-            self.refresh_config_dropdown
-        )  # Refresh dropdown after save
+        self.yaml_editor_widget.fileSaved.connect(self.refresh_config_dropdown)  # Refresh dropdown after save
 
         # File Selection for Test Datafile
         self.test_file_selector = FileLineSelectionWidget(
@@ -92,29 +89,26 @@ class HistogramSettingsTab(QWidget):
 
     def load_test_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            self.test_file_selector.set_file_path(self.selected_file)
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+        load_existing_selector_file(self, self.test_file_selector, file_path)
 
     def refresh_config_dropdown(self, savedName: str | None = None):  # args added to handle signal
         """Populate or refresh the histogramming configuration dropdown."""
-        self.config_dropdown.clear()
-        self.default_configs = get_default_config_files(directory=self.config_path)
-        self.config_dropdown.addItems(self.default_configs)
-        self.config_dropdown.addItem("<Custom...>")
-        if savedName is not None:
-            listName = str(Path(savedName).name)
-            if listName in self.default_configs:
-                self.config_dropdown.setCurrentText(listName)
+        self.config_dropdown.blockSignals(True)
+        try:
+            self.config_dropdown.clear()
+            self.default_configs = get_default_config_files(directory=self.config_path)
+            self.config_dropdown.addItems(self.default_configs)
+            self.config_dropdown.addItem("<Custom...>")
+            if savedName is not None:
+                listName = str(Path(savedName).name)
+                if listName in self.default_configs:
+                    self.config_dropdown.setCurrentText(listName)
+                else:
+                    self.config_dropdown.setCurrentText("<Custom...>")
             else:
                 self.config_dropdown.setCurrentText("<Custom...>")
-        else:
-            self.config_dropdown.setCurrentText("<Custom...>")
+        finally:
+            self.config_dropdown.blockSignals(False)
 
     def handle_dropdown_change(self):
         """Handle dropdown changes and load the selected configuration."""
@@ -143,9 +137,7 @@ class HistogramSettingsTab(QWidget):
                     QMessageBox.warning(self, "Error", f"File not found: {file_path}")
             except Exception as e:
                 logger.error(f"Error loading histogramming configuration: {e}")
-                QMessageBox.critical(
-                    self, "Error", f"Error loading histogramming configuration: {e}"
-                )
+                QMessageBox.critical(self, "Error", f"Error loading histogramming configuration: {e}")
 
     def on_yaml_editor_change(self):
         """Mark the dropdown as <Custom...> if the YAML content is modified by the user."""
@@ -172,26 +164,14 @@ class HistogramSettingsTab(QWidget):
             # Store the yaml content in a temporary file
             yaml_file = Path(gettempdir()) / "hist_config_temp_ui.yaml"
             with open(yaml_file, "w") as file:
-                yaml.dump_all(
-                    yaml_content, file, default_flow_style=False
-                )  # Use dump_all for multi-document YAML
+                yaml.dump_all(yaml_content, file, default_flow_style=False)  # Use dump_all for multi-document YAML
 
             logger.debug("Launching histogramming test.")
             self.info_field.append("Launching histogramming test...")
 
             # Construct the command
-            command = [
-                str(Path(sys.executable).as_posix()),
-                "-m",
-                "mcsas3.mcsas3_cli_histogrammer",
-                "-r",
-                test_file,
-                "-H",
-                str(yaml_file),
-                "-i",
-                "1",
-                # "-v", "-d"
-            ]
+            command_spec = histogram_subprocess_spec(Path(test_file), yaml_file, result_index=1)
+            command = command_spec.args
 
             # Specify the working directory (replace 'desired_directory' with the actual path)
             working_directory = Path(".").resolve()  # Set the directory where the script exists
@@ -208,6 +188,7 @@ class HistogramSettingsTab(QWidget):
                 cwd=working_directory,  # Run the command from the specified directory
                 capture_output=True,  # Capture stdout and stderr
                 text=True,  # Decode output as text
+                env=command_spec.merged_env(),
             )
 
             # Handle the output

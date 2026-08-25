@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import yaml
@@ -11,18 +12,19 @@ from .yaml_editor_widget import CustomDumper
 
 CustomDumper.add_representer(dict, CustomDumper.represent_dict)
 CustomDumper.add_representer(list, CustomDumper.represent_list)
+logger = logging.getLogger("McSAS3")
 
 
-def write_yaml_file(data, filepath):
+def write_yaml_file(data: object, filepath: Path) -> None:
+    """Write a single YAML document to disk using the GUI dumper."""
+
     with open(filepath, "w", encoding="utf-8") as f:
         yaml.dump(data, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
 
 
-def write_hist_yaml_block(hist_configs, filepath):
-    """
-    Write histogram block(s) to YAML. If a single block: plain YAML.
-    If multiple: separate documents using '---'.
-    """
+def write_hist_yaml_block(hist_configs: object, filepath: Path) -> None:
+    """Write one or more histogram YAML documents to disk."""
+
     with open(filepath, "w", encoding="utf-8") as f:
         if isinstance(hist_configs, list):
             if len(hist_configs) == 1:
@@ -37,14 +39,10 @@ def write_hist_yaml_block(hist_configs, filepath):
                 for i, block in enumerate(hist_configs):
                     # if i > 0:
                     f.write("---\n")
-                    yaml.dump(
-                        block, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False
-                    )
+                    yaml.dump(block, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
         else:
             # fallback for single dict passed instead of a list
-            yaml.dump(
-                hist_configs, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False
-            )
+            yaml.dump(hist_configs, f, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
 
 
 class GettingStartedTab(QWidget):
@@ -61,7 +59,8 @@ class GettingStartedTab(QWidget):
         temp_dir: Path = None,
     ):
         super().__init__(parent)
-        assert temp_dir.is_dir(), f"Given temp dir '{temp_dir}' does not exist!"
+        if temp_dir is None or not temp_dir.is_dir():
+            raise FileNotFoundError(f"Given temp dir '{temp_dir}' does not exist!")
         self._temp_dir = temp_dir
         self.data_loading_tab = data_loading_tab
         self.run_settings_tab = run_settings_tab
@@ -99,10 +98,7 @@ class GettingStartedTab(QWidget):
         )
 
         # Load HTML content
-        html_content = (
-            "<h1>Welcome to McSAS3</h1> - "
-            "select a template from the dropdown menu above to start exploring!"
-        )
+        html_content = "<h1>Welcome to McSAS3</h1> - select a template from the dropdown menu above to start exploring!"
         self.info_viewer.setHtml(html_content)
 
         layout.addWidget(self.info_viewer)
@@ -126,7 +122,7 @@ class GettingStartedTab(QWidget):
                 yaml_content = load_yaml_file(self.main_path / config_path_rel)
                 tab.yaml_editor_widget.set_yaml_content(yaml_content)
             except Exception as e:
-                print(f"[WARNING] Failed to load YAML content for {list_name}: {e}")
+                logger.warning("Failed to load YAML content for %s: %s", list_name, e)
 
     def refresh_config_dropdown(
         self, savedName: str | None = "getting_started.yaml"
@@ -179,7 +175,7 @@ class GettingStartedTab(QWidget):
             if isinstance(hist_config, list):
                 write_hist_yaml_block(hist_config, hist_config_path)
             else:
-                print("[WARNING] 'hist_configuration' must be a list of dicts.")
+                logger.warning("'hist_configuration' must be a list of dicts.")
             # update hist configuration file to point at the temp file
             template["configurations"]["hist_configuration_file"] = str(hist_config_path)
 
@@ -192,34 +188,26 @@ class GettingStartedTab(QWidget):
         if selected_file:
             try:
                 yaml_content = self.load_template(self.config_path / selected_file)
-                self.info_viewer.setHtml(
-                    yaml_content.get("html_description", "<p>No description available.</p>")
-                )
+                self.info_viewer.setHtml(yaml_content.get("html_description", "<p>No description available.</p>"))
 
                 # Apply data reading settings
                 file_dict = yaml_content.get("configurations", {})
                 if self.data_loading_tab and "read_configuration_file" in file_dict:
-                    self.apply_yaml_to_tab_pulldown(
-                        self.data_loading_tab, file_dict["read_configuration_file"]
-                    )
+                    self.apply_yaml_to_tab_pulldown(self.data_loading_tab, file_dict["read_configuration_file"])
                     self.optimization_tab.data_config_selector.set_file_path(
                         str((self.main_path / file_dict["read_configuration_file"]).as_posix())
                     )
 
                 # Apply run settings
                 if self.run_settings_tab and "run_configuration_file" in file_dict:
-                    self.apply_yaml_to_tab_pulldown(
-                        self.run_settings_tab, file_dict["run_configuration_file"]
-                    )
+                    self.apply_yaml_to_tab_pulldown(self.run_settings_tab, file_dict["run_configuration_file"])
                     self.optimization_tab.run_config_selector.set_file_path(
                         str((self.main_path / file_dict["run_configuration_file"]).as_posix())
                     )
 
                 # Apply hist settings
                 if self.hist_settings_tab and "hist_configuration_file" in file_dict:
-                    self.apply_yaml_to_tab_pulldown(
-                        self.hist_settings_tab, file_dict["hist_configuration_file"]
-                    )
+                    self.apply_yaml_to_tab_pulldown(self.hist_settings_tab, file_dict["hist_configuration_file"])
                     self.histogramming_tab.histogram_config_selector.set_file_path(
                         str((self.main_path / file_dict["hist_configuration_file"]).as_posix())
                     )
@@ -241,16 +229,12 @@ class GettingStartedTab(QWidget):
                 # Lastly, fill the files into the optimization tab and histogramming run tab
                 if self.optimization_tab and "optimization_files" in yaml_content:
                     for file_path in yaml_content["optimization_files"]:
-                        self.optimization_tab.file_selection_widget.add_file_to_table(
-                            str(self.main_path / file_path)
-                        )
+                        self.optimization_tab.file_selection_widget.add_file_to_table(str(self.main_path / file_path))
 
                 # Lastly, fill the files into the optimization tab and histogramming run tab
                 if self.histogramming_tab and "histogramming_files" in yaml_content:
                     for file_path in yaml_content["histogramming_files"]:
-                        self.histogramming_tab.file_selection_widget.add_file_to_table(
-                            str(self.main_path / file_path)
-                        )
+                        self.histogramming_tab.file_selection_widget.add_file_to_table(str(self.main_path / file_path))
 
             except Exception as e:
                 self.info_viewer.setHtml(f"<p>Error loading template: {e}</p>")

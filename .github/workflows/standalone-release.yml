@@ -28,13 +28,13 @@ jobs:
 
     steps:
       - name: Checking out the GUI repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name || github.event.inputs.tag }}
 
       - name: Check out McSAS3
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/McSAS3
           path: McSAS3
@@ -48,7 +48,8 @@ jobs:
           echo "McSAS3 ref: ${{ github.event.inputs.mcsas3_ref || 'main' }}"
 
       - name: Setting up Python 3.12
-        uses: actions/setup-python@v5
+        if: runner.os != 'Linux'
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -58,6 +59,7 @@ jobs:
             tox.ini
 
       - name: Install required system packages
+        if: runner.os != 'Linux'
         shell: bash
         run: |
           set -euxo pipefail
@@ -74,13 +76,44 @@ jobs:
           fi
 
       - name: Install dependencies
+        if: runner.os != 'Linux'
         shell: bash
         run: |
           set -euxo pipefail
           python -m pip install --upgrade pip
           python -m pip install --progress-bar=off -r ci/requirements.txt
 
+      - name: Build Linux standalone GUI bundle on GLIBC 2.34
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          docker run --rm \
+            -e MCSAS3GUI_MCSAS3_SRC=/work/McSAS3/src \
+            -e MCSAS3GUI_STANDALONE_MAX_GLIBC=2.34 \
+            -e TOXPYTHON=/usr/bin/python3.12 \
+            -v "$GITHUB_WORKSPACE:/work" \
+            -w /work \
+            quay.io/pypa/manylinux_2_34_x86_64 \
+            /bin/bash -lc '
+              set -euxo pipefail
+              package_manager=dnf
+              if ! command -v dnf >/dev/null 2>&1; then
+                package_manager=yum
+              fi
+              "${package_manager}" -y install dnf-plugins-core || true
+              dnf config-manager --set-enabled powertools || true
+              dnf config-manager --set-enabled crb || true
+              "${package_manager}" -y install $(grep -vE "^[[:space:]]*(#|$)" ci/requirements_manylinux_2_34.txt)
+              /usr/bin/python3.12 -m venv /tmp/mcsas3gui-standalone-bootstrap
+              source /tmp/mcsas3gui-standalone-bootstrap/bin/activate
+              python -m pip install --upgrade pip
+              python -m pip install --progress-bar=off -r ci/requirements.txt
+              python -m tox -e standalone -v
+            '
+
       - name: Build standalone GUI bundle
+        if: runner.os != 'Linux'
         shell: bash
         env:
           MCSAS3GUI_MCSAS3_SRC: ${{ github.workspace }}/McSAS3/src
@@ -128,8 +161,11 @@ jobs:
         shell: bash
         env:
           MACOS_CODESIGN_IDENTITY: ${{ secrets.MACOS_CODESIGN_IDENTITY }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+          MACOS_NOTARY_API_KEY: ${{ secrets.MACOS_NOTARY_API_KEY }}
         run: |
-          set -euxo pipefail
+          set -euo pipefail
           if [[ -z "${MACOS_CODESIGN_IDENTITY:-}" ]]; then
             echo "Missing required secret: MACOS_CODESIGN_IDENTITY" >&2
             exit 1
@@ -143,8 +179,12 @@ jobs:
           PY
           )"
           BUNDLE_ROOT="dist/standalone/${PLATFORM_TAG}"
-          BUILD_INFO="${BUNDLE_ROOT}/build_info.json"
-          test -f "$BUILD_INFO"
+          test -f "${BUNDLE_ROOT}/build_info.json"
+
+          python tools/sign_macos_bundle.py \
+            --bundle-root "$BUNDLE_ROOT" \
+            --identity "$MACOS_CODESIGN_IDENTITY" \
+            --keychain "$MACOS_SIGNING_KEYCHAIN"
 
           APP_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
           import json
@@ -156,25 +196,77 @@ jobs:
           print(bundle_root / payload["gui_bundle"])
           PY
           )"
-
-          HELPER_PATH="$(BUNDLE_ROOT="$BUNDLE_ROOT" python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          bundle_root = Path(os.environ["BUNDLE_ROOT"])
-          payload = json.loads((bundle_root / "build_info.json").read_text(encoding="utf-8"))
-          print(bundle_root / payload["bundled_histogrammer"])
-          PY
-          )"
-
           test -d "$APP_PATH"
-          test -f "$HELPER_PATH"
 
-          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$HELPER_PATH"
-          codesign --force --keychain "$MACOS_SIGNING_KEYCHAIN" --deep --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$APP_PATH"
-          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
-          codesign --display --verbose=4 "$APP_PATH"
+          # For published releases, notarization is mandatory.
+          REQUIRE_NOTARIZATION="false"
+          if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+            REQUIRE_NOTARIZATION="true"
+          fi
+
+          HAVE_NOTARY_CREDS="true"
+          for var in MACOS_NOTARY_KEY_ID MACOS_NOTARY_ISSUER_ID MACOS_NOTARY_API_KEY; do
+            if [[ -z "${!var:-}" ]]; then
+              HAVE_NOTARY_CREDS="false"
+            fi
+          done
+
+          if [[ "$REQUIRE_NOTARIZATION" == "true" && "$HAVE_NOTARY_CREDS" != "true" ]]; then
+            echo "Missing required notarization secrets for release build." >&2
+            echo "Expected: MACOS_NOTARY_KEY_ID, MACOS_NOTARY_ISSUER_ID, MACOS_NOTARY_API_KEY" >&2
+            exit 1
+          fi
+
+          if [[ "$HAVE_NOTARY_CREDS" == "true" ]]; then
+            NOTARY_KEY_PATH="$RUNNER_TEMP/AuthKey_${MACOS_NOTARY_KEY_ID}.p8"
+            printf '%s' "$MACOS_NOTARY_API_KEY" > "$NOTARY_KEY_PATH"
+            chmod 600 "$NOTARY_KEY_PATH"
+
+            NOTARY_ARCHIVE_PATH="$RUNNER_TEMP/mcsas3gui-notarize-${PLATFORM_TAG}.zip"
+            rm -f "$NOTARY_ARCHIVE_PATH"
+            ditto -c -k --sequesterRsrc --keepParent "$BUNDLE_ROOT" "$NOTARY_ARCHIVE_PATH"
+
+            echo "Submitting app for notarization..."
+            NOTARY_RESULT="$(xcrun notarytool submit "$NOTARY_ARCHIVE_PATH" \
+              --key "$NOTARY_KEY_PATH" \
+              --key-id "$MACOS_NOTARY_KEY_ID" \
+              --issuer "$MACOS_NOTARY_ISSUER_ID" \
+              --wait 2>&1)" || {
+              echo "Notarization failed:" >&2
+              echo "$NOTARY_RESULT" >&2
+              exit 1
+            }
+            echo "$NOTARY_RESULT"
+            
+            # Verify notarization succeeded before stapling
+            if ! echo "$NOTARY_RESULT" | grep -q "status: Accepted"; then
+              echo "Notarization was not accepted:" >&2
+              echo "$NOTARY_RESULT" >&2
+              exit 1
+            fi
+
+            echo "Stapling notarization ticket to app bundle..."
+            xcrun stapler staple "$APP_PATH" || {
+              echo "Stapling failed - app may not be notarized" >&2
+              exit 1
+            }
+            
+            echo "Validating stapled notarization..."
+            xcrun stapler validate "$APP_PATH" || {
+              echo "Stapled notarization validation failed" >&2
+              exit 1
+            }
+            
+            echo "Running final security check..."
+            spctl -a -vvv --type exec "$APP_PATH" || {
+              echo "Security policy check failed - app may not be properly notarized" >&2
+              exit 1
+            }
+            echo "✓ App bundle is properly notarized and passes security validation"
+          else
+            echo "Notarization credentials not set; skipping notarization for manual run."
+            echo "Note: Release builds will fail without notarization."
+          fi
 
           ARCHIVE_PATH="dist/standalone/mcsas3gui-standalone-${PLATFORM_TAG}.zip"
           rm -f "$ARCHIVE_PATH"

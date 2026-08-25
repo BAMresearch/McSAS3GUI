@@ -5,17 +5,17 @@ from pathlib import Path
 
 import h5py
 import matplotlib.pyplot as plt
-import numpy as np
 import yaml
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from mcsas3.mc_data_1d import McData1D
 from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QTextCursor, QTextOption  # Import QTextOption for word wrapping
-from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QMessageBox, QTextEdit, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QComboBox, QDialog, QLabel, QTextEdit, QVBoxLayout, QWidget
 
 from ..utils.file_utils import get_default_config_files, get_main_path
 from ..utils.yaml_utils import load_yaml_file
 from .file_line_selection_widget import FileLineSelectionWidget
+from .file_selection_helpers import load_existing_selector_file
+from .mcsas3_bridge import prepare_processing_from_file, processing_frames_from_processing
 from .yaml_editor_widget import YAMLEditorWidget
 
 # from .drag_and_drop_mixin import DragAndDropMixin
@@ -35,7 +35,9 @@ class DataLoadingTab(QWidget):
         self.update_timer.setSingleShot(True)
         self.update_timer.timeout.connect(self.update_and_plot)  # Trigger plot after delay
         self.pdi = []
-        self.mds = None
+        self.processing = None
+        self.processing_frames = None
+        self.selected_file = None
 
         layout = QVBoxLayout()
 
@@ -47,25 +49,19 @@ class DataLoadingTab(QWidget):
         self.config_dropdown.currentTextChanged.connect(self.handle_dropdown_change)
 
         # YAML Editor for data loading configuration
-        self.yaml_editor_widget = YAMLEditorWidget(
-            directory=self.config_path, parent=self, multipart=False
-        )
+        self.yaml_editor_widget = YAMLEditorWidget(directory=self.config_path, parent=self, multipart=False)
         layout.addWidget(QLabel("Data Loading Configuration (YAML):"))
         layout.addWidget(self.yaml_editor_widget)
 
         # Monitor changes in the YAML editor to detect custom changes
         self.yaml_editor_widget.yaml_editor.textChanged.connect(self.on_yaml_editor_change)
-        self.yaml_editor_widget.fileSaved.connect(
-            self.refresh_config_dropdown
-        )  # Refresh dropdown after save
+        self.yaml_editor_widget.fileSaved.connect(self.refresh_config_dropdown)  # Refresh dropdown after save
 
         # Reusable file selection widget
         self.file_line_selection_widget = FileLineSelectionWidget(
             placeholder_text="Select test data file", file_types="All Files (*.*)"
         )
-        self.file_line_selection_widget.fileSelected.connect(
-            self.load_file
-        )  # Handle file selection
+        self.file_line_selection_widget.fileSelected.connect(self.load_file)  # Handle file selection
 
         layout.addWidget(self.file_line_selection_widget)
 
@@ -80,9 +76,7 @@ class DataLoadingTab(QWidget):
             """
         )
         self.error_message_display.setReadOnly(True)  # Make the display non-editable
-        self.error_message_display.setWordWrapMode(
-            QTextOption.WrapMode.WordWrap
-        )  # Enable word wrap
+        self.error_message_display.setWordWrapMode(QTextOption.WrapMode.WordWrap)  # Enable word wrap
         self.error_message_display.setPlaceholderText("Messages will be displayed here.")
         # self.error_message_display.setStyleSheet("color: darkgreen;")  # Display messages in green
         layout.addWidget(self.error_message_display)
@@ -94,6 +88,17 @@ class DataLoadingTab(QWidget):
         if self.config_dropdown.count() > 0:
             self.config_dropdown.setCurrentIndex(0)
             self.load_selected_default_config()
+
+    def close_auxiliary_windows(self) -> None:
+        """Close any standalone plotting windows owned by this tab."""
+        if self.plot_dialog is not None:
+            self.plot_dialog.close()
+            self.plot_dialog = None
+        if hasattr(self, "fig") and self.fig is not None:
+            plt.close(self.fig)
+            self.fig = None
+        if hasattr(self, "ax"):
+            self.ax = None
 
     def display_error(self, message):
         """Display the error message in the logger and on the tab."""
@@ -107,22 +112,24 @@ class DataLoadingTab(QWidget):
         self.error_message_display.moveCursor(QTextCursor.MoveOperation.Start)
         logger.error(message)
 
-    def refresh_config_dropdown(
-        self, savedName: str | None = None
-    ):  # optional args to match signal signature
+    def refresh_config_dropdown(self, savedName: str | None = None):  # optional args to match signal signature
         """Populate or refresh the configuration dropdown list."""
-        self.config_dropdown.clear()
-        self.default_configs = get_default_config_files(directory=self.config_path)
-        self.config_dropdown.addItems(self.default_configs)
-        self.config_dropdown.addItem("<Custom...>")
-        if savedName is not None:
-            listName = str(Path(savedName).name)
-            if listName in self.default_configs:
-                self.config_dropdown.setCurrentText(listName)
+        self.config_dropdown.blockSignals(True)
+        try:
+            self.config_dropdown.clear()
+            self.default_configs = get_default_config_files(directory=self.config_path)
+            self.config_dropdown.addItems(self.default_configs)
+            self.config_dropdown.addItem("<Custom...>")
+            if savedName is not None:
+                listName = str(Path(savedName).name)
+                if listName in self.default_configs:
+                    self.config_dropdown.setCurrentText(listName)
+                else:
+                    self.config_dropdown.setCurrentText("<Custom...>")
             else:
                 self.config_dropdown.setCurrentText("<Custom...>")
-        else:
-            self.config_dropdown.setCurrentText("<Custom...>")
+        finally:
+            self.config_dropdown.blockSignals(False)
 
     def handle_dropdown_change(self):
         """Handle dropdown changes and load the selected configuration."""
@@ -150,17 +157,20 @@ class DataLoadingTab(QWidget):
 
     def load_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            # Check for specific file types and list paths if applicable
-            if file_path.lower().endswith((".hdf5", ".h5", ".nxs")):
-                self.list_hdf5_paths_and_dimensions(file_path)
+
+        def on_loaded(path: Path) -> None:
+            self.pdi = []
+            self.selected_file = str(path)
+            if path.suffix.lower() in {".hdf5", ".h5", ".nxs"}:
+                self.list_hdf5_paths_and_dimensions(str(path))
             self.update_and_plot()
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+
+        load_existing_selector_file(
+            self,
+            self.file_line_selection_widget,
+            file_path,
+            on_loaded=on_loaded,
+        )
 
     def list_hdf5_paths_and_dimensions(self, file_name: str) -> None:
         """List paths and dimensions of datasets in an HDF5/Nexus file."""
@@ -202,7 +212,7 @@ class DataLoadingTab(QWidget):
         # Parse the YAML configuration from the editor
         try:
             yaml_content = self.yaml_editor_widget.yaml_editor.toPlainText()
-            yaml_config = yaml.safe_load(yaml_content)
+            yaml_config = yaml.safe_load(yaml_content) or {}
         except yaml.YAMLError as e:
             self.display_error(f"YAML Error: {e}")
             self.clear_plot()
@@ -210,19 +220,13 @@ class DataLoadingTab(QWidget):
 
         # Load data and update the plot
         try:
-            self.mds = McData1D(
-                filename=Path(file_path),
-                nbins=int(yaml_config.get("nbins", 100)),
-                csvargs=yaml_config.get("csvargs", {}),
-                pathDict=yaml_config.get("pathDict", None),
-                IEmin=float(yaml_config.get("IEmin", 0.01)),
-                dataRange=yaml_config.get("dataRange", [-np.inf, np.inf]),
-                omitQRanges=yaml_config.get("omitQRanges", []),
-                resultIndex=int(yaml_config.get("resultIndex", 1)),
-            )
+            self.processing = prepare_processing_from_file(Path(file_path), yaml_config)
+            self.processing_frames = processing_frames_from_processing(self.processing)
             logger.debug(f"Loaded data file: {file_path}")
             self.show_plot_popup()  # Display the plot in a popup window
         except Exception as e:
+            self.processing = None
+            self.processing_frames = None
             self.display_error(f"Error loading file {file_path}: {e}")
             self.clear_plot()
 
@@ -232,10 +236,12 @@ class DataLoadingTab(QWidget):
             self.ax.clear()
             self.ax.figure.canvas.draw()
 
-    def show_plot_popup(self, mds=None):
+    def show_plot_popup(self, frames=None):
         """Display a popup window with the loaded data plot."""
-        if not mds:
-            mds = self.mds
+        if frames is None:
+            frames = self.processing_frames
+        if frames is None:
+            raise ValueError("No processed data is available for plotting.")
         # If a plot window is already open, update it
         if self.plot_dialog is None or not self.plot_dialog.isVisible():
             self.plot_dialog = QDialog()  # self removed to avoid constant placement on top of main
@@ -254,9 +260,10 @@ class DataLoadingTab(QWidget):
 
         # Clear the previous plot and redraw
         self.ax.clear()  # how to maintain position?
-        self.plot_dialog.setWindowTitle(f"Data Plot for {mds.filename.name}")
-        mds.rawData.plot("Q", "I", yerr="ISigma", ax=self.ax, label="As provided data")
-        mds.clippedData.plot(
+        title_name = Path(self.selected_file).name if self.selected_file else "selected data"
+        self.plot_dialog.setWindowTitle(f"Data Plot for {title_name}")
+        frames.raw.plot("Q", "I", yerr="ISigma", ax=self.ax, label="As provided data")
+        frames.clipped.plot(
             "Q",
             "I",
             yerr="ISigma",
@@ -266,7 +273,7 @@ class DataLoadingTab(QWidget):
             ax=self.ax,
             label="Clipped data",
         )
-        mds.binnedData.plot(
+        frames.binned.plot(
             x="Q",
             y="I",
             yerr="ISigma",
@@ -277,17 +284,15 @@ class DataLoadingTab(QWidget):
             capsize=1,  # Optionally, add capsize for the error bars
             elinewidth=1,  # Set error bar line width if needed
         )
-        # mds.binnedData.plot('Q', 'I', yerr='ISigma', linestyle=None,
-        #                     linewidth=0, marker='.', ax=self.ax, label='Binned data')
         self.ax.set_yscale("log")
         self.ax.set_xscale("log")
         self.ax.set_xlabel("Q (1/nm)")
         self.ax.set_ylabel("I (1/(m sr))")
 
         # Add vertical dashed lines for the clipped data boundaries
-        if not self.mds.clippedData.empty:
-            xmin = self.mds.clippedData["Q"].min()
-            xmax = self.mds.clippedData["Q"].max()
+        if not frames.clipped.empty:
+            xmin = frames.clipped["Q"].min()
+            xmax = frames.clipped["Q"].max()
             self.ax.axvline(x=xmin, color="red", linestyle=":", label="Clipped boundary min")
             self.ax.axvline(x=xmax, color="red", linestyle=":", label="Clipped boundary max")
 

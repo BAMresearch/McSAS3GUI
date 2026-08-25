@@ -1,0 +1,11 @@
+nbins: 100
+dataRange: [0.0, .inf]
+QUnits: "1/nm"
+IUnits: "1/(m sr)"
+csvargs:
+  sep: ;
+  header: null
+  names: [Q, I, ISigma]
+omitQRanges:
+  - [0.04, 0.08]
+  - [0.7, 0.8]

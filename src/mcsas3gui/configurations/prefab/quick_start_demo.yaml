@@ -33,7 +33,7 @@ html_description: |
           # make a list of notes:
           <ul>
               <li>We use the simplest read configuration that reads data from a csv file. The options are fed directly to pandas.read_csv, so use those to adjust for different three-column text files. </li>
-              <li>The units are assumed to be (for now) in 1/nm for Q, and 1/m for I. Absolute scaled data will give you absolute volume fractions out.</li>
+              <li>The read configuration declares QUnits as 1/nm and IUnits as 1/(m sr). Absolute scaled data will give you absolute volume fractions out.</li>
               <li>These automatic settings are usually decent for real data too, just make sure to adjust the data range to a range that contains only scattering from non-regular structures. Diffraction effects (i.e. scattering from regular, ordered structures) cannot be modeled by McSAS.</li>
           </ul>
 

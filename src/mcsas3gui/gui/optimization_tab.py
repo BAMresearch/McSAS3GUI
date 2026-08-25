@@ -1,5 +1,4 @@
 import logging
-import sys
 from pathlib import Path
 
 from PyQt6.QtWidgets import QMessageBox, QProgressBar, QPushButton, QVBoxLayout, QWidget
@@ -7,13 +6,17 @@ from PyQt6.QtWidgets import QMessageBox, QProgressBar, QPushButton, QVBoxLayout,
 from ..utils.file_utils import make_out_path
 from ..utils.task_runner_mixin import TaskRunnerMixin
 from .file_line_selection_widget import FileLineSelectionWidget
+from .file_selection_helpers import load_existing_selector_file
 from .file_selection_widget import FileSelectionWidget
+from .optimization_worker import OptimizationWorker
+from .run_control_helpers import set_abortable_button_state, worker_is_running
 
 logger = logging.getLogger("McSAS3")
 
 
 class OptimizationRunTab(QWidget, TaskRunnerMixin):
     last_used_directory = Path("~").expanduser()
+    task_dialog_title = "McSAS3 Optimization"
     _temp_dir = None  # provided by __main__, for testdata results, out-of-source
 
     def __init__(
@@ -26,12 +29,14 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
         temp_dir: Path = None,
     ):
         super().__init__(parent)
-        assert temp_dir.is_dir(), f"Given temp dir '{temp_dir}' does not exist!"
+        if temp_dir is None or not temp_dir.is_dir():
+            raise FileNotFoundError(f"Given temp dir '{temp_dir}' does not exist!")
         self._temp_dir = temp_dir
         self.data_loading_tab = data_loading_tab
         self.run_settings_tab = run_settings_tab
         self.hist_settings_tab = hist_settings_tab
         self.histogramming_tab = histogramming_tab
+        self.worker: OptimizationWorker | None = None
 
         self.file_selection_widget = FileSelectionWidget(
             title="Loaded Files:",
@@ -47,9 +52,7 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
             placeholder_text="Select data load configuration file",
             file_types="YAML data config Files (*.yaml)",
         )
-        self.data_config_selector.fileSelected.connect(
-            self.load_data_config_file
-        )  # Handle file selection
+        self.data_config_selector.fileSelected.connect(self.load_data_config_file)  # Handle file selection
         # self.data_loading_tab.yaml_editor_widget.yaml_editor.fileSaved.\
         # connect(self.data_config_selector.set_file_path)  # Handle file save
 
@@ -60,9 +63,7 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
             placeholder_text="Select run configuration file",
             file_types="YAML run config Files (*.yaml)",
         )
-        self.run_config_selector.fileSelected.connect(
-            self.load_run_config_file
-        )  # Handle file selection
+        self.run_config_selector.fileSelected.connect(self.load_run_config_file)  # Handle file selection
         # self.run_settings_tab.yaml_editor_widget.yaml_editor.fileSaved.\
         # connect(self.run_config_selector.set_file_path)  # Handle file save
 
@@ -73,32 +74,19 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
         layout.addWidget(self.progress_bar)
 
         self.run_button = QPushButton("Run McSAS3 Optimization ...")
-        self.run_button.clicked.connect(self.start_optimizations)
+        self._default_run_button_style = self.run_button.styleSheet()
+        self.run_button.clicked.connect(self.handle_run_button_clicked)
         layout.addWidget(self.run_button)
 
         self.setLayout(layout)
 
     def load_data_config_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            self.data_config_selector.set_file_path(self.selected_file)
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+        load_existing_selector_file(self, self.data_config_selector, file_path)
 
     def load_run_config_file(self, file_path: str):
         """Process the file after selection or drop."""
-        if Path(file_path).exists():
-            self.pdi = []  # clear any previous information
-            logger.debug(f"File loaded: {file_path}")
-            self.selected_file = file_path
-            self.run_config_selector.set_file_path(self.selected_file)
-        else:
-            logger.warning(f"File does not exist: {file_path}")
-            QMessageBox.warning(self, "File Error", f"Cannot access file: {file_path}")
+        load_existing_selector_file(self, self.run_config_selector, file_path)
 
     def _set_expected_output(self, outpath):
         if self.hist_settings_tab:
@@ -106,19 +94,52 @@ class OptimizationRunTab(QWidget, TaskRunnerMixin):
         if self.histogramming_tab:
             self.histogramming_tab.file_selection_widget.add_file_to_table(str(outpath))
 
+    def handle_run_button_clicked(self):
+        if worker_is_running(self.worker):
+            self.request_stop()
+            return
+        self.start_optimizations()
+
+    def _set_task_running_state(self, is_running: bool) -> None:
+        set_abortable_button_state(
+            self.run_button,
+            is_running=is_running,
+            default_text="Run McSAS3 Optimization ...",
+            default_style=self._default_run_button_style,
+        )
+
     def start_optimizations(self):
         files = self.file_selection_widget.get_selected_files()
         data_config = self.data_config_selector.get_file_path()
         run_config = self.run_config_selector.get_file_path()
-
-        command_template = (
-            str(Path(sys.executable).as_posix())
-            + " "
-            "-m mcsas3.mcsas3_cli_runner -f {input_file} -F {data_config} "
-            "-r {result_file} -R {run_config} -i 1 -d"
-        )
+        if not files:
+            QMessageBox.warning(self, "McSAS3 Optimization", "No files selected.")
+            return
+        if not data_config:
+            QMessageBox.warning(self, "McSAS3 Optimization", "Select a data load configuration file first.")
+            return
+        if not run_config:
+            QMessageBox.warning(self, "McSAS3 Optimization", "Select a run configuration file first.")
+            return
 
         files_in_out = {infn: make_out_path(infn, self._temp_dir) for infn in files}
         self._set_expected_output(list(files_in_out.values())[0])  # forward the first output file
-        extra_keywords = {"data_config": data_config, "run_config": run_config}
-        self.run_tasks(files_in_out, command_template, extra_keywords)
+
+        self.worker = OptimizationWorker(
+            files_in_out,
+            data_config_file=Path(data_config),
+            run_config_file=Path(run_config),
+            result_index=1,
+        )
+        self.start_worker(self.worker)
+
+    def request_stop(self):
+        if not worker_is_running(self.worker):
+            return
+        logger.info("Abort requested from optimization tab.")
+        self.worker.request_stop()
+
+    def tasks_finished(self, stopped: bool, message: str):
+        self._set_task_running_state(False)
+        self.worker = None
+        QMessageBox.information(self, self.task_dialog_title, message)

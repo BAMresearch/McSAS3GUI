@@ -12,3 +12,4 @@ maxAccept: 1000
 convCrit: 1
 nRep: 10
 nCores: 5
+logRandom: true

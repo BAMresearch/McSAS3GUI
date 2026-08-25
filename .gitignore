@@ -1,5 +1,6 @@
 *.py[cod]
 __pycache__
+uv.lock
 
 # C extensions
 *.so
@@ -107,9 +108,9 @@ cython_debug/
 .abstra/
 
 # Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
+#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore
 #  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
+#  and can be added to the global gitignore or merged into this file. However, if you prefer,
 #  you could uncomment the following to ignore the entire vscode folder
 # .vscode/
 
@@ -136,3 +137,44 @@ temporary_files/run.yaml
 temporary_files/data.yaml
 logs/mcsas3_debug.log
 logs/mcsas3_debug.log
+read_configurations/Moeez_csv.yaml
+read_configurations/Moeez_S171.yaml
+run_configurations/run_config_Moeez_longcyl.yaml
+run_configurations/run_config_Moeez.yaml
+src/mcsas3gui/configurations/histogram/hist_config_dual_KJ.yaml
+src/mcsas3gui/configurations/histogram/hist_config_dual_kuanode.yaml
+src/mcsas3gui/configurations/histogram/hist_dual_tomek.yaml
+src/mcsas3gui/configurations/readdata/read_kuehns_nxs_data.yaml
+src/mcsas3gui/configurations/readdata/read_Pauls_base_mats_dat.yaml
+src/mcsas3gui/configurations/readdata/read_Pauls_kuanode_kapton_dat.yaml
+src/mcsas3gui/configurations/readdata/read_Pauls_kuanode_kapton_nxs.yaml
+src/mcsas3gui/configurations/readdata/read_tomeks_csv.yaml
+src/mcsas3gui/configurations/run/run_config_kuanode.yaml
+src/mcsas3gui/configurations/run/run_config_kuehn.yaml
+src/mcsas3gui/configurations/run/run_config_pauls_base_moar.yaml
+src/mcsas3gui/configurations/run/run_config_pauls_base.yaml
+src/mcsas3gui/configurations/run/run_config_tomek.yaml
+testdata/Archive.zip
+testdata/Example_cyl_output.hdf5
+testdata/Example_cyl_output.pdf
+testdata/Example_output.hdf5
+testdata/Example_output.pdf
+testdata/Example.csv
+testdata/merged_AutoMOFs_7_L011_output.hdf5
+testdata/merged_AutoMOFs_7_L011_output.pdf
+testdata/quickstartdemo1_output.hdf5
+testdata/quickstartdemo1_output.pdf
+testdata/round_robin_dataset_1_output.hdf5
+testdata/round_robin_dataset_1_output.pdf
+testdata/round_robin_dataset_3_output.hdf5
+testdata/round_robin_dataset_3_output.pdf
+src/mcsas3gui/configurations/histogram/hist_dual_emily.yaml
+src/mcsas3gui/configurations/readdata/read_emily.yaml
+src/mcsas3gui/configurations/readdata/read_josh.yaml
+src/mcsas3gui/configurations/readdata/read_niamh.yaml
+src/mcsas3gui/configurations/readdata/read_sophie.yaml
+src/mcsas3gui/configurations/readdata/read_testdata.yaml
+src/mcsas3gui/configurations/run/run_config_josh.yaml
+src/mcsas3gui/configurations/run/run_config_testdata.yaml
+src/mcsas3gui/configurations/run/run_emily.yml
+src/mcsas3gui/configurations/run/run_sophie.yml

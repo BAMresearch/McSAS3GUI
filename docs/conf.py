@@ -22,11 +22,16 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx.ext.graphviz",
     "myst_parser",
+    "sphinxcontrib.mermaid",
 ]
 inheritance_edge_attrs = dict(color="gray")  # readable in darkmode too
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 templates_path = ["_templates"]
-source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+myst_fence_as_directive = ["mermaid"]
 master_doc = "index"
 project = "McSAS3GUI"
 year = "2024-2025"
@@ -36,9 +41,7 @@ version = "0.1.6"
 release = version
 commit_id = None
 try:
-    commit_id = (
-        subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip().decode("ascii")
-    )
+    commit_id = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip().decode("ascii")
 except subprocess.CalledProcessError as e:
     print(e)
 
@@ -76,6 +79,9 @@ html_short_title = "%s-%s" % (project, version)
 napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False
+suppress_warnings = [
+    "myst.xref_missing",
+]
 
 linkcheck_ignore = [
     join(
@@ -85,7 +91,7 @@ linkcheck_ignore = [
     + r".*",
     # attempted fix of '406 Client Error: Not Acceptable for url'
     # https://github.com/sphinx-doc/sphinx/issues/1331
-    join(project_meta["project"]["urls"]["repository"], "commit", r"[0-9a-fA-F]+")
+    join(project_meta["project"]["urls"]["repository"], "commit", r"[0-9a-fA-F]+"),
 ]
 linkcheck_anchors_ignore_for_url = [
     r"https://pypi\.org/project/[^/]+",

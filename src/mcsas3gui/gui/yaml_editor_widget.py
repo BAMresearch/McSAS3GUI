@@ -134,9 +134,7 @@ class YAMLEditorWidget(QWidget):
         self.yaml_editor.setAcceptDrops(False)  # Disable drag-and-drop
         self.error_highlighter = YAMLErrorHighlighter(self.yaml_editor.document())
         self.yaml_editor.textChanged.connect(self.validate_yaml)  # Connect validation
-        self.yaml_editor.installEventFilter(
-            self.error_highlighter
-        )  # Install event filter for tooltip handling
+        self.yaml_editor.installEventFilter(self.error_highlighter)  # Install event filter for tooltip handling
         layout.addWidget(self.yaml_editor)
 
         # Load and Save Buttons
@@ -166,9 +164,7 @@ class YAMLEditorWidget(QWidget):
             error_message = str(e)
             line_number = self.extract_error_line(error_message)
             if line_number is not None:
-                self.error_highlighter.set_error(
-                    line_number, error_message
-                )  # Highlight offending line
+                self.error_highlighter.set_error(line_number, error_message)  # Highlight offending line
         finally:
             # Reconnect the signal
             self.yaml_editor.textChanged.connect(self.validate_yaml)
@@ -180,18 +176,14 @@ class YAMLEditorWidget(QWidget):
 
     def load_yaml(self):
         """Open a file dialog to load a YAML file and display it in the editor."""
-        file_name, _ = QFileDialog.getOpenFileName(
-            self, "Load Configuration", self.directory, "YAML Files (*.yaml)"
-        )
+        file_name, _ = QFileDialog.getOpenFileName(self, "Load Configuration", self.directory, "YAML Files (*.yaml)")
         if file_name:
             logger.debug(f"Loading YAML configuration from file: {file_name}")
             with open(file_name, "r") as file:
                 try:
                     yaml_content = list(yaml.safe_load_all(file))  # Handle multipart YAML
                     yaml_text = "---\n".join(
-                        yaml.dump(
-                            doc, Dumper=CustomDumper, default_flow_style=None, sort_keys=False
-                        )
+                        yaml.dump(doc, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
                         for doc in yaml_content
                         if doc
                     )
@@ -202,20 +194,16 @@ class YAMLEditorWidget(QWidget):
 
     def save_yaml(self):
         """Save the content of the YAML editor to a file."""
-        file_name, _ = QFileDialog.getSaveFileName(
-            self, "Save Configuration", self.directory, "YAML Files (*.yaml)"
-        )
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Configuration", self.directory, "YAML Files (*.yaml)")
         if file_name:
             yaml_content = self.yaml_editor.toPlainText()
             try:
-
                 with open(file_name, "w") as file:
                     if self.multipart:
                         # make sure we're not saving "None" entries after a superfluos '---'
                         parsed_content = [
                             i for i in list(yaml.safe_load_all(yaml_content)) if i
                         ]  # Validate multipart YAML
-                        print(parsed_content)
                         yaml.dump_all(
                             parsed_content,
                             file,
@@ -252,14 +240,11 @@ class YAMLEditorWidget(QWidget):
         if isinstance(yaml_content, list):
             # Convert list of YAML documents into a string with separators
             yaml_text = "---\n".join(
-                yaml.dump(doc, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
-                for doc in yaml_content
+                yaml.dump(doc, Dumper=CustomDumper, default_flow_style=None, sort_keys=False) for doc in yaml_content
             )
         elif isinstance(yaml_content, dict):
             # Convert single YAML document into a string
-            yaml_text = yaml.dump(
-                yaml_content, Dumper=CustomDumper, default_flow_style=None, sort_keys=False
-            )
+            yaml_text = yaml.dump(yaml_content, Dumper=CustomDumper, default_flow_style=None, sort_keys=False)
         else:
             # Fallback to raw string if input is already serialized YAML
             yaml_text = yaml_content

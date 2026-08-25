@@ -1,4 +1,4 @@
-# RHEL/AlmaLinux package names used inside quay.io/pypa/manylinux_2_28_x86_64.
+# RHEL/AlmaLinux package names used inside quay.io/pypa/manylinux_2_34_x86_64.
 fontconfig
 freetype
 libX11-xcb

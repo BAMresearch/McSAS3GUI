@@ -100,8 +100,8 @@ def test_preflight_linux_glibc_allows_matching_baseline(monkeypatch):
     module = _load_build_standalone_module()
 
     monkeypatch.setattr(module.platform, "system", lambda: "Linux")
-    monkeypatch.setattr(module.platform, "libc_ver", lambda: ("glibc", "2.28"))
-    monkeypatch.setenv("MCSAS3GUI_STANDALONE_MAX_GLIBC", "2.28")
+    monkeypatch.setattr(module.platform, "libc_ver", lambda: ("glibc", "2.34"))
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_MAX_GLIBC", "2.34")
 
     module._preflight_linux_glibc()
 
@@ -111,7 +111,7 @@ def test_preflight_linux_glibc_rejects_newer_baseline(monkeypatch):
 
     monkeypatch.setattr(module.platform, "system", lambda: "Linux")
     monkeypatch.setattr(module.platform, "libc_ver", lambda: ("glibc", "2.39"))
-    monkeypatch.setenv("MCSAS3GUI_STANDALONE_MAX_GLIBC", "2.28")
+    monkeypatch.setenv("MCSAS3GUI_STANDALONE_MAX_GLIBC", "2.34")
 
     try:
         module._preflight_linux_glibc()
@@ -121,7 +121,7 @@ def test_preflight_linux_glibc_rejects_newer_baseline(monkeypatch):
         raise AssertionError("Expected _preflight_linux_glibc to fail")
 
     assert "Detected glibc: 2.39" in message
-    assert "Maximum allowed glibc: 2.28" in message
+    assert "Maximum allowed glibc: 2.34" in message
 
 
 def test_write_build_info_records_bundle_and_helper_paths(tmp_path):

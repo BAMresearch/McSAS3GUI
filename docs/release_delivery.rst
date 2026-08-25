@@ -41,10 +41,10 @@ This runs ``tools/build_standalone.py`` and produces:
 
 Linux compatibility note:
 
-- release Linux bundles are built inside ``quay.io/pypa/manylinux_2_28_x86_64``
-- this keeps the generated executable and bundled Qt/xcb libraries on a GLIBC 2.28 baseline
+- release Linux bundles are built inside ``quay.io/pypa/manylinux_2_34_x86_64``
+- this keeps the generated executable and bundled Qt/xcb libraries on a GLIBC 2.34 baseline
 - local Linux builds should install the Debian/Ubuntu packages in ``ci/requirements_linux.txt``
-- the container build uses the RHEL/AlmaLinux package names in ``ci/requirements_manylinux_2_28.txt``
+- the container build uses the RHEL/AlmaLinux package names in ``ci/requirements_manylinux_2_34.txt``
 
 Current implementation notes
 ============================
@@ -76,8 +76,8 @@ The repo includes ``.github/workflows/standalone.yml`` which builds standalone a
 The workflow checks out the sibling ``McSAS3`` repository and passes its source root into the
 standalone build step.
 
-On Linux, the workflow runs the standalone build in a ``manylinux_2_28`` container and fails the
-build if the detected GLIBC baseline is newer than 2.28.
+On Linux, the workflow runs the standalone build in a ``manylinux_2_34`` container and fails the
+build if the detected GLIBC baseline is newer than 2.34.
 
 After the build succeeds, the workflow also verifies the generated standalone manifest and artifact
 layout by checking:

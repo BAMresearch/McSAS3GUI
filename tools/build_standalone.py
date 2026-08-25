@@ -236,7 +236,7 @@ def _preflight_linux_glibc() -> None:
             "Linux standalone builds must run on an old enough glibc baseline for release artifacts.\n"
             f"Detected glibc: {libc_version}\n"
             f"Maximum allowed glibc: {required_max}\n"
-            "Run the release build in a manylinux_2_28 or equivalent container."
+            f"Run the release build in a manylinux_{required_max.replace('.', '_')} or equivalent container."
         )
 
 

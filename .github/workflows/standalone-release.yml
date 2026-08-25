@@ -83,18 +83,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --progress-bar=off -r ci/requirements.txt
 
-      - name: Build Linux standalone GUI bundle on GLIBC 2.28
+      - name: Build Linux standalone GUI bundle on GLIBC 2.34
         if: runner.os == 'Linux'
         shell: bash
         run: |
           set -euxo pipefail
           docker run --rm \
             -e MCSAS3GUI_MCSAS3_SRC=/work/McSAS3/src \
-            -e MCSAS3GUI_STANDALONE_MAX_GLIBC=2.28 \
+            -e MCSAS3GUI_STANDALONE_MAX_GLIBC=2.34 \
             -e TOXPYTHON=/opt/python/cp312-cp312/bin/python \
             -v "$GITHUB_WORKSPACE:/work" \
             -w /work \
-            quay.io/pypa/manylinux_2_28_x86_64 \
+            quay.io/pypa/manylinux_2_34_x86_64 \
             /bin/bash -lc '
               set -euxo pipefail
               package_manager=dnf
@@ -103,7 +103,8 @@ jobs:
               fi
               "${package_manager}" -y install dnf-plugins-core || true
               dnf config-manager --set-enabled powertools || true
-              "${package_manager}" -y install $(grep -vE "^[[:space:]]*(#|$)" ci/requirements_manylinux_2_28.txt)
+              dnf config-manager --set-enabled crb || true
+              "${package_manager}" -y install $(grep -vE "^[[:space:]]*(#|$)" ci/requirements_manylinux_2_34.txt)
               /opt/python/cp312-cp312/bin/python -m pip install --upgrade pip
               /opt/python/cp312-cp312/bin/python -m pip install --progress-bar=off -r ci/requirements.txt
               /opt/python/cp312-cp312/bin/python -m tox -e standalone -v

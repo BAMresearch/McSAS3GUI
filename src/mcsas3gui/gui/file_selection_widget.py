@@ -109,6 +109,10 @@ class FileSelectionWidget(QWidget):
         for row in sorted(selected_rows, reverse=True):
             self.file_table.removeRow(row)
 
+    def clear_all_files(self):
+        """Remove all rows from the file table."""
+        self.file_table.setRowCount(0)
+
     def is_file_in_table(self, file_path):
         """Check if a file is already in the table to avoid duplicates."""
         for row in range(self.file_table.rowCount()):

@@ -227,9 +227,7 @@ class GettingStartedTab(QWidget):
                     )
 
                 # Lastly, fill the files into the optimization tab and histogramming run tab
-                if self.optimization_tab and "optimization_files" in yaml_content:
-                    for file_path in yaml_content["optimization_files"]:
-                        self.optimization_tab.file_selection_widget.add_file_to_table(str(self.main_path / file_path))
+                self._apply_optimization_files(yaml_content.get("optimization_files") or [])
 
                 # Lastly, fill the files into the optimization tab and histogramming run tab
                 if self.histogramming_tab and "histogramming_files" in yaml_content:
@@ -242,3 +240,12 @@ class GettingStartedTab(QWidget):
     def handle_dropdown_change(self, index: int):
         # selected_text = self.config_dropdown.itemText(index)
         self.load_selected_default_config()
+
+    def _apply_optimization_files(self, optimization_files: list[str]):
+        if not self.optimization_tab:
+            return
+
+        file_selection_widget = self.optimization_tab.file_selection_widget
+        file_selection_widget.clear_all_files()
+        for file_path in optimization_files:
+            file_selection_widget.add_file_to_table(str(self.main_path / file_path))

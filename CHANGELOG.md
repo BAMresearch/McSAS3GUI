@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.2.1 (2026-08-26)
+
+### Bug fixes
+
+* fix: fix for CI/CD issue ([`b835e64`](https://github.com/BAMresearch/McSAS3GUI/commit/b835e647c868a89761ac6576f3d77576a3473715))
+
+* fix: clear stale prefab file selections when switching examples ([`c8e2529`](https://github.com/BAMresearch/McSAS3GUI/commit/c8e2529960507ca19ba46b59ea3b436c0fd29670))
+
+### Unknown Scope
+
+* Same behaviour implemented for the histogramming tab. ([`f244087`](https://github.com/BAMresearch/McSAS3GUI/commit/f24408755addf9b4b36048354d99e6f4bab16585))
+
+* ensuring previous examples are removed from the optimization tab when another example is chosen ([`eda6924`](https://github.com/BAMresearch/McSAS3GUI/commit/eda69246996e0fb511149ef1851d290fb166c1bb))
+
+* doc: mentioning the structure factor applied to the form factor in the Round Robin dataset 3 example ([`1d70ff1`](https://github.com/BAMresearch/McSAS3GUI/commit/1d70ff1b53381b8bcd42b3835ebdc79a76c2f75c))
+
 ## v0.2.0 (2026-08-25)
 
 ### Bug fixes

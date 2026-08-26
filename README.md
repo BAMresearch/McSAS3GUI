@@ -57,7 +57,7 @@ For prebuilt standalone binaries (Linux, macOS, Windows), see the latest GitHub 
 
 - https://github.com/BAMresearch/mcsas3gui/releases/latest
 
-Release assets are built for tagged releases. The macOS release asset is code-signed.
+Release assets are built for tagged releases. 
 
 ## Running the Application
 

@@ -230,9 +230,7 @@ class GettingStartedTab(QWidget):
                 self._apply_optimization_files(yaml_content.get("optimization_files") or [])
 
                 # Lastly, fill the files into the optimization tab and histogramming run tab
-                if self.histogramming_tab and "histogramming_files" in yaml_content:
-                    for file_path in yaml_content["histogramming_files"]:
-                        self.histogramming_tab.file_selection_widget.add_file_to_table(str(self.main_path / file_path))
+                self._apply_histogramming_files(yaml_content.get("histogramming_files") or [])
 
             except Exception as e:
                 self.info_viewer.setHtml(f"<p>Error loading template: {e}</p>")
@@ -248,4 +246,13 @@ class GettingStartedTab(QWidget):
         file_selection_widget = self.optimization_tab.file_selection_widget
         file_selection_widget.clear_all_files()
         for file_path in optimization_files:
+            file_selection_widget.add_file_to_table(str(self.main_path / file_path))
+
+    def _apply_histogramming_files(self, histogramming_files: list[str]):
+        if not self.histogramming_tab:
+            return
+
+        file_selection_widget = self.histogramming_tab.file_selection_widget
+        file_selection_widget.clear_all_files()
+        for file_path in histogramming_files:
             file_selection_widget.add_file_to_table(str(self.main_path / file_path))

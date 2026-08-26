@@ -17,6 +17,11 @@ class _FakeOptimizationTab:
         self.file_selection_widget = _FakeFileSelectionWidget()
 
 
+class _FakeHistogrammingTab:
+    def __init__(self) -> None:
+        self.file_selection_widget = _FakeFileSelectionWidget()
+
+
 def test_apply_optimization_files_clears_previous_files_before_adding_template_files(tmp_path):
     tab = GettingStartedTab.__new__(GettingStartedTab)
     tab.main_path = tmp_path
@@ -39,3 +44,27 @@ def test_apply_optimization_files_clears_previous_files_when_template_has_no_opt
     tab._apply_optimization_files([])
 
     assert tab.optimization_tab.file_selection_widget.calls == [("clear_all_files",)]
+
+
+def test_apply_histogramming_files_clears_previous_files_before_adding_template_files(tmp_path):
+    tab = GettingStartedTab.__new__(GettingStartedTab)
+    tab.main_path = tmp_path
+    tab.histogramming_tab = _FakeHistogrammingTab()
+
+    tab._apply_histogramming_files(["results/first.h5", "results/second.h5"])
+
+    assert tab.histogramming_tab.file_selection_widget.calls == [
+        ("clear_all_files",),
+        ("add_file_to_table", str(tmp_path / "results/first.h5")),
+        ("add_file_to_table", str(tmp_path / "results/second.h5")),
+    ]
+
+
+def test_apply_histogramming_files_clears_previous_files_when_template_has_no_histogramming_files(tmp_path):
+    tab = GettingStartedTab.__new__(GettingStartedTab)
+    tab.main_path = tmp_path
+    tab.histogramming_tab = _FakeHistogrammingTab()
+
+    tab._apply_histogramming_files([])
+
+    assert tab.histogramming_tab.file_selection_widget.calls == [("clear_all_files",)]

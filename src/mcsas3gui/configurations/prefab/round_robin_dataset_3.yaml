@@ -37,6 +37,7 @@ html_description: |
 
           <p>This demo uses the third dataset, which is a measurement of a powder mixture of two different sizes of spherical silica particles. Since this is an intercalating powder of low-polydispersity particles, there is a significant structure factor visible. The following is noteworthy:</p>
           <ul>
+              <li>We apply the SasModels "hardsphere" structure factor (with Percus-Yevick closure and an implicit local monodisperse approximation) to the spherical form factor.</li>
               <li>If we have significant structure factors and large structure scattering, we may want to increase the maximum dimension in the model size parameter to ensure we can get a porod-slope from the smallest Q.</li>
               <li>We also need to limit the data range in the data read-in config to avoid the wide-angle silica scattering hump. </li>
               <li>This sample is a bit harder to analyze but with the right settings, you can arrive at valid solutions. Note, however, how the size distribution is affected by the configured volume fraction (you can get valid answers from ~0.46 - 0.6, which also affects the resulting distribution). In other words, you cannot get both volume fraction and size distribution uniquely, but must fix one to retrieve the other as they're inextricably linked... We chose 0.55 because it is one of the fastest settings.</li>

@@ -316,55 +316,113 @@
 <a class="reference external" href="https://pypi.org/project/mcsas3gui/"><img alt="Weekly PyPI downloads" src="https://img.shields.io/pypi/dw/mcsas3gui.svg" /></a>
 <a class="reference external" href="https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml"><img alt="Continuous Integration and Deployment Status" src="https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml/badge.svg" /></a>
 <a class="reference external" href="https://BAMresearch.github.io/mcsas3gui/coverage-report/"><img alt="Coverage report" src="https://img.shields.io/endpoint?url=https://BAMresearch.github.io/mcsas3gui/coverage-report/cov.json" /></a></p>
-<p>A graphical user interface for the canonical McSAS3 workflow.</p>
-<p>McSAS3GUI is a thin desktop client over the maintained McSAS3 public API. It loads data through
-the canonical <code class="docutils literal notranslate"><span class="pre">ProcessingData</span></code> workflow, previews fits, runs optimizations, and launches
-histogramming without depending on removed legacy McSAS3 internals.</p>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
-<p>McSAS3GUI requires Python 3.12 or newer.</p>
+<p>McSAS3GUI is the desktop application for McSAS3. It guides you through loading
+SAXS/SANS data, previewing a model fit, running the Monte Carlo optimization,
+and turning the result into histograms.</p>
+<p>If you are unfamiliar with Python environments, start with one of the two paths
+below. The rest of this README is mostly for people who want to script,
+customize, or build McSAS3GUI themselves.</p>
+<section id="start-here">
+<h2>Start Here<a class="headerlink" href="#start-here" title="Link to this heading">¶</a></h2>
+<section id="option-1-download-the-application">
+<h3>Option 1: Download the application<a class="headerlink" href="#option-1-download-the-application" title="Link to this heading">¶</a></h3>
+<p>For prebuilt standalone binaries, see the latest GitHub release:</p>
+<ul class="simple">
+<li><p>https://github.com/BAMresearch/mcsas3gui/releases/latest</p></li>
+</ul>
+<p>Release assets are built for tagged releases. This is the easiest path when a
+release is available for your operating system.</p>
+</section>
+<section id="option-2-run-with-one-uv-command">
+<h3>Option 2: Run with one <code class="docutils literal notranslate"><span class="pre">uv</span></code> command<a class="headerlink" href="#option-2-run-with-one-uv-command" title="Link to this heading">¶</a></h3>
+<p>If <a class="reference external" href="https://docs.astral.sh/uv/"><code class="docutils literal notranslate"><span class="pre">uv</span></code></a> is installed, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uvx<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.14<span class="w"> </span>--from<span class="w"> </span>mcsas3gui<span class="w"> </span>m3gui
+</pre></div>
+</div>
+<p>The first run may take a few minutes. <code class="docutils literal notranslate"><span class="pre">uvx</span></code> creates an isolated Python
+environment, installs McSAS3GUI and McSAS3, and then starts the <code class="docutils literal notranslate"><span class="pre">m3gui</span></code>
+application. You do not need to create or activate a virtual environment.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">uv</span></code> is not installed yet:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</pre></div>
+</div>
+<p>On Windows PowerShell:</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="n">powershell</span> <span class="n">-ExecutionPolicy</span> <span class="n">ByPass</span> <span class="n">-c</span> <span class="s2">"irm https://astral.sh/uv/install.ps1 | iex"</span>
+</pre></div>
+</div>
+<p>After installing <code class="docutils literal notranslate"><span class="pre">uv</span></code>, close and reopen the terminal if the <code class="docutils literal notranslate"><span class="pre">uvx</span></code> command is not
+found.</p>
+</section>
+<section id="keep-the-command-installed">
+<h3>Keep the command installed<a class="headerlink" href="#keep-the-command-installed" title="Link to this heading">¶</a></h3>
+<p>For regular use from the terminal, install the GUI command once:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.14<span class="w"> </span>mcsas3gui
+m3gui
+</pre></div>
+</div>
+</section>
+</section>
+<section id="first-run">
+<h2>First Run<a class="headerlink" href="#first-run" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Open the <strong>Getting Started</strong> tab.</p></li>
+<li><p>Choose <strong>Quick Start demo</strong> from the template list.</p></li>
+<li><p>Use the loaded example settings to preview the data and model.</p></li>
+<li><p>Run the optimization.</p></li>
+<li><p>Run histogramming to create the distribution plot.</p></li>
+</ol>
+<p>The optimization produces an HDF5 result file. Histogramming adds distribution
+results to that file and writes a PDF plot next to it.</p>
+</section>
+<section id="what-the-tabs-do">
+<h2>What the Tabs Do<a class="headerlink" href="#what-the-tabs-do" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Getting Started</strong> loads complete example workflows.</p></li>
+<li><p><strong>Data Loading</strong> tells McSAS3 how to read your data file.</p></li>
+<li><p><strong>Run Settings</strong> sets the scattering model and optimization limits.</p></li>
+<li><p><strong>McSAS3 Optimization</strong> runs one or more optimizations.</p></li>
+<li><p><strong>Histogram Settings</strong> defines the distributions to calculate.</p></li>
+<li><p><strong>(Re-)Histogramming</strong> recalculates histograms from existing optimization
+results, without rerunning the optimization.</p></li>
+</ul>
+<p>Both optimization buttons are abortable. While running, they change to
+<code class="docutils literal notranslate"><span class="pre">Running...</span> <span class="pre">Click</span> <span class="pre">to</span> <span class="pre">abort.</span></code> and forward a stop request to the core McSAS3
+runner.</p>
+</section>
+<section id="other-installation-options">
+<h2>Other Installation Options<a class="headerlink" href="#other-installation-options" title="Link to this heading">¶</a></h2>
+<p>McSAS3GUI requires Python 3.12 or newer. The examples in this README use
+Python 3.14, the current recommended runtime.</p>
 <p>Install the released GUI package with <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>mcsas3gui
 </pre></div>
 </div>
-<p>If you use <code class="docutils literal notranslate"><span class="pre">uv</span></code>, create and activate a Python 3.12+ environment, then install the same package with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>venv<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
+<p>If you prefer a manually managed <code class="docutils literal notranslate"><span class="pre">uv</span></code> environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>venv<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.14
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>mcsas3gui
+m3gui
 </pre></div>
 </div>
-<p>On Windows, activate the environment with <code class="docutils literal notranslate"><span class="pre">.venv\Scripts\activate</span></code> instead of <code class="docutils literal notranslate"><span class="pre">source</span></code>.</p>
+<p>On Windows, activate the environment with <code class="docutils literal notranslate"><span class="pre">.venv\Scripts\activate</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">source</span></code>.</p>
 <p>You can also install the in-development version with <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/BAMresearch/mcsas3gui.git@main
 </pre></div>
 </div>
 <p>or, from a local source checkout with <code class="docutils literal notranslate"><span class="pre">uv</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>venv<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>venv<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.14
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>../McSAS3<span class="w"> </span>.
 mcsas3gui<span class="w"> </span>--version
 </pre></div>
 </div>
-<p>Run the local source command from the <code class="docutils literal notranslate"><span class="pre">McSAS3GUI</span></code> repository with the <code class="docutils literal notranslate"><span class="pre">McSAS3</span></code> repository checked
-out next to it.</p>
-<p>For prebuilt standalone binaries (Linux, macOS, Windows), see the latest GitHub release:</p>
-<ul class="simple">
-<li><p>https://github.com/BAMresearch/mcsas3gui/releases/latest</p></li>
-</ul>
-<p>Release assets are built for tagged releases.</p>
-</section>
-<section id="running-the-application">
-<h2>Running the Application<a class="headerlink" href="#running-the-application" title="Link to this heading">¶</a></h2>
-<p>After activating the environment, the preferred launch commands are:</p>
+<p>Run the local source command from the <code class="docutils literal notranslate"><span class="pre">McSAS3GUI</span></code> repository with the <code class="docutils literal notranslate"><span class="pre">McSAS3</span></code>
+repository checked out next to it.</p>
+<p>After activating an environment, these launch commands all work:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mcsas3gui
-</pre></div>
-</div>
-<p>or the short alias:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>m3gui
-</pre></div>
-</div>
-<p>The module form also works:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>mcsas3gui
+m3gui
+python<span class="w"> </span>-m<span class="w"> </span>mcsas3gui
 </pre></div>
 </div>
 </section>
@@ -428,17 +486,8 @@ only happens in the release workflow because it requires GitHub secrets and Appl
 <p>Store the emitted values in GitHub under Settings, Secrets and variables, Actions.</p>
 </section>
 </section>
-<section id="quick-start">
-<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
-<ol class="arabic simple">
-<li><p>Open the <strong>Getting Started</strong> tab and choose one of the shipped prefab workflows, or configure
-the tabs manually.</p></li>
-<li><p>In <strong>Data Loading</strong>, choose a read-configuration YAML and a test dataset.</p></li>
-<li><p>In <strong>Run Settings</strong>, choose a run configuration and preview a single repetition.</p></li>
-<li><p>In <strong>McSAS3 Optimization</strong>, launch the full optimization for one or more files.</p></li>
-<li><p>In <strong>Histogram Settings</strong> and <strong>Run Histogramming</strong>, configure and run histogram generation on
-the result files.</p></li>
-</ol>
+<section id="example-files">
+<h2>Example Files<a class="headerlink" href="#example-files" title="Link to this heading">¶</a></h2>
 <p>The shipped example configurations live under:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">src/mcsas3gui/configurations/readdata</span></code></p></li>
@@ -453,8 +502,6 @@ the result files.</p></li>
 <p>Read configurations declare source data units with <code class="docutils literal notranslate"><span class="pre">QUnits:</span> <span class="pre">&quot;1/nm&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">IUnits:</span> <span class="pre">&quot;1/(m</span> <span class="pre">sr)&quot;</span></code>.
 Run configurations keep <code class="docutils literal notranslate"><span class="pre">logRandom:</span> <span class="pre">true</span></code> enabled, which is the recommended standard mode for
 log-uniform parameter sampling.</p>
-<p>Both optimization buttons are abortable. While running, they change to
-<code class="docutils literal notranslate"><span class="pre">Running...</span> <span class="pre">Click</span> <span class="pre">to</span> <span class="pre">abort.</span></code> and forward a stop request to the core McSAS3 runner.</p>
 </section>
 <section id="structure">
 <h2>Structure<a class="headerlink" href="#structure" title="Link to this heading">¶</a></h2>
@@ -556,7 +603,7 @@ copier update --trust --skip-answered
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on Aug 26, 2026 (git 7402614)</div>
+              Last updated on Aug 28, 2026 (git 75e7936)</div>
           </div>
           <div class="right-details">
             
@@ -578,14 +625,21 @@ copier update --trust --skip-answered
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">McSAS3GUI (v0.2.1)</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#running-the-application">Running the Application</a></li>
+<li><a class="reference internal" href="#start-here">Start Here</a><ul>
+<li><a class="reference internal" href="#option-1-download-the-application">Option 1: Download the application</a></li>
+<li><a class="reference internal" href="#option-2-run-with-one-uv-command">Option 2: Run with one <code class="docutils literal notranslate"><span class="pre">uv</span></code> command</a></li>
+<li><a class="reference internal" href="#keep-the-command-installed">Keep the command installed</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#first-run">First Run</a></li>
+<li><a class="reference internal" href="#what-the-tabs-do">What the Tabs Do</a></li>
+<li><a class="reference internal" href="#other-installation-options">Other Installation Options</a></li>
 <li><a class="reference internal" href="#standalone-gui-bundles">Standalone GUI bundles</a><ul>
 <li><a class="reference internal" href="#standalone-release-process">Standalone release process</a></li>
 <li><a class="reference internal" href="#github-secrets-for-macos-standalone-releases">GitHub secrets for macOS standalone releases</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li><a class="reference internal" href="#example-files">Example Files</a></li>
 <li><a class="reference internal" href="#structure">Structure</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
 <li><a class="reference internal" href="#development">Development</a><ul>

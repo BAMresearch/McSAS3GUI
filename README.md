@@ -9,15 +9,90 @@
 [![Continuous Integration and Deployment Status](https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/BAMresearch/mcsas3gui/actions/workflows/ci-cd.yml)
 [![Coverage report](https://img.shields.io/endpoint?url=https://BAMresearch.github.io/mcsas3gui/coverage-report/cov.json)](https://BAMresearch.github.io/mcsas3gui/coverage-report/)
 
-A graphical user interface for the canonical McSAS3 workflow.
+McSAS3GUI is the desktop application for McSAS3. It guides you through loading
+SAXS/SANS data, previewing a model fit, running the Monte Carlo optimization,
+and turning the result into histograms.
 
-McSAS3GUI is a thin desktop client over the maintained McSAS3 public API. It loads data through
-the canonical `ProcessingData` workflow, previews fits, runs optimizations, and launches
-histogramming without depending on removed legacy McSAS3 internals.
+If you are unfamiliar with Python environments, start with one of the two paths
+below. The rest of this README is mostly for people who want to script,
+customize, or build McSAS3GUI themselves.
 
-## Installation
+## Start Here
 
-McSAS3GUI requires Python 3.12 or newer.
+### Option 1: Download the application
+
+For prebuilt standalone binaries, see the latest GitHub release:
+
+- https://github.com/BAMresearch/mcsas3gui/releases/latest
+
+Release assets are built for tagged releases. This is the easiest path when a
+release is available for your operating system.
+
+### Option 2: Run with one `uv` command
+
+If [`uv`](https://docs.astral.sh/uv/) is installed, run:
+
+```bash
+uvx --python 3.14 --from mcsas3gui m3gui
+```
+
+The first run may take a few minutes. `uvx` creates an isolated Python
+environment, installs McSAS3GUI and McSAS3, and then starts the `m3gui`
+application. You do not need to create or activate a virtual environment.
+
+If `uv` is not installed yet:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+On Windows PowerShell:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+After installing `uv`, close and reopen the terminal if the `uvx` command is not
+found.
+
+### Keep the command installed
+
+For regular use from the terminal, install the GUI command once:
+
+```bash
+uv tool install --python 3.14 mcsas3gui
+m3gui
+```
+
+## First Run
+
+1. Open the **Getting Started** tab.
+2. Choose **Quick Start demo** from the template list.
+3. Use the loaded example settings to preview the data and model.
+4. Run the optimization.
+5. Run histogramming to create the distribution plot.
+
+The optimization produces an HDF5 result file. Histogramming adds distribution
+results to that file and writes a PDF plot next to it.
+
+## What the Tabs Do
+
+- **Getting Started** loads complete example workflows.
+- **Data Loading** tells McSAS3 how to read your data file.
+- **Run Settings** sets the scattering model and optimization limits.
+- **McSAS3 Optimization** runs one or more optimizations.
+- **Histogram Settings** defines the distributions to calculate.
+- **(Re-)Histogramming** recalculates histograms from existing optimization
+  results, without rerunning the optimization.
+
+Both optimization buttons are abortable. While running, they change to
+`Running... Click to abort.` and forward a stop request to the core McSAS3
+runner.
+
+## Other Installation Options
+
+McSAS3GUI requires Python 3.12 or newer. The examples in this README use
+Python 3.14, the current recommended runtime.
 
 Install the released GUI package with `pip`:
 
@@ -25,15 +100,17 @@ Install the released GUI package with `pip`:
 pip install mcsas3gui
 ```
 
-If you use `uv`, create and activate a Python 3.12+ environment, then install the same package with:
+If you prefer a manually managed `uv` environment:
 
 ```bash
-uv venv --python 3.12
+uv venv --python 3.14
 source .venv/bin/activate
 uv pip install mcsas3gui
+m3gui
 ```
 
-On Windows, activate the environment with `.venv\Scripts\activate` instead of `source`.
+On Windows, activate the environment with `.venv\Scripts\activate` instead of
+`source`.
 
 You can also install the in-development version with `pip`:
 
@@ -44,38 +121,20 @@ pip install git+https://github.com/BAMresearch/mcsas3gui.git@main
 or, from a local source checkout with `uv`:
 
 ```bash
-uv venv --python 3.12
+uv venv --python 3.14
 source .venv/bin/activate
 uv pip install ../McSAS3 .
 mcsas3gui --version
 ```
 
-Run the local source command from the `McSAS3GUI` repository with the `McSAS3` repository checked
-out next to it.
+Run the local source command from the `McSAS3GUI` repository with the `McSAS3`
+repository checked out next to it.
 
-For prebuilt standalone binaries (Linux, macOS, Windows), see the latest GitHub release:
-
-- https://github.com/BAMresearch/mcsas3gui/releases/latest
-
-Release assets are built for tagged releases. 
-
-## Running the Application
-
-After activating the environment, the preferred launch commands are:
+After activating an environment, these launch commands all work:
 
 ```bash
 mcsas3gui
-```
-
-or the short alias:
-
-```bash
 m3gui
-```
-
-The module form also works:
-
-```bash
 python -m mcsas3gui
 ```
 
@@ -145,15 +204,7 @@ The helper script:
 
 Store the emitted values in GitHub under Settings, Secrets and variables, Actions.
 
-## Quick Start
-
-1. Open the **Getting Started** tab and choose one of the shipped prefab workflows, or configure
-   the tabs manually.
-2. In **Data Loading**, choose a read-configuration YAML and a test dataset.
-3. In **Run Settings**, choose a run configuration and preview a single repetition.
-4. In **McSAS3 Optimization**, launch the full optimization for one or more files.
-5. In **Histogram Settings** and **Run Histogramming**, configure and run histogram generation on
-   the result files.
+## Example Files
 
 The shipped example configurations live under:
 
@@ -169,9 +220,6 @@ The shipped example datasets live under:
 Read configurations declare source data units with `QUnits: "1/nm"` and `IUnits: "1/(m sr)"`.
 Run configurations keep `logRandom: true` enabled, which is the recommended standard mode for
 log-uniform parameter sampling.
-
-Both optimization buttons are abortable. While running, they change to
-`Running... Click to abort.` and forward a stop request to the core McSAS3 runner.
 
 ## Structure
 

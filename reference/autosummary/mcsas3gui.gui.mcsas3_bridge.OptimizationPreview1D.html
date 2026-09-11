@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="mcsas3gui.gui.mcsas3_bridge.ProcessingFrames1D" href="mcsas3gui.gui.mcsas3_bridge.ProcessingFrames1D.html"><link rel="prev" title="mcsas3gui.gui.mcsas3_bridge.run_test_optimization" href="mcsas3gui.gui.mcsas3_bridge.run_test_optimization.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D - McSAS3GUI 0.2.1 documentation</title>
+        <title>mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D - McSAS3GUI 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=34bb78ad" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">McSAS3GUI 0.2.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">McSAS3GUI 0.3.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">McSAS3GUI 0.2.1 documentation</span>
+  <span class="sidebar-brand-text">McSAS3GUI 0.3.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -192,7 +192,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">McSAS3GUI (v0.2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">McSAS3GUI (v0.3.0)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
@@ -227,6 +227,7 @@
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.run_settings_helpers.combine_run_configuration_documents.html">mcsas3gui.gui.run_settings_helpers.combine_run_configuration_documents</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.run_settings_helpers.format_preview_progress_message.html">mcsas3gui.gui.run_settings_helpers.format_preview_progress_message</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.run_settings_helpers.format_preview_status_header.html">mcsas3gui.gui.run_settings_helpers.format_preview_status_header</a></li>
+<li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.run_settings_helpers.plot_preview_fit_curves.html">mcsas3gui.gui.run_settings_helpers.plot_preview_fit_curves</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mcsas3gui.gui.run_settings_helpers.preview_result_file_path.html">mcsas3gui.gui.run_settings_helpers.preview_result_file_path</a></li>
 </ul>
 </li>
@@ -310,12 +311,12 @@
 <h1>mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D<a class="headerlink" href="#mcsas3gui-gui-mcsas3-bridge-optimizationpreview1d" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mcsas3gui.gui.mcsas3_bridge.</span></span><span class="sig-name descname"><span class="pre">OptimizationPreview1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_intensity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_gofs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_accept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mcsas3gui/gui/mcsas3_bridge.html#OptimizationPreview1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mcsas3gui.gui.mcsas3_bridge.</span></span><span class="sig-name descname"><span class="pre">OptimizationPreview1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_intensity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_gofs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_accept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0_parameter_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mcsas3gui/gui/mcsas3_bridge.html#OptimizationPreview1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Preview-fit arrays and optimizer traces loaded from a single repetition result.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_intensity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_gofs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_accept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_intensity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_gofs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_accept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0_parameter_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
@@ -332,6 +333,12 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.background_curve" title="mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.background_curve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">background_curve</span></code></a></p></td>
+<td><p>Return the fitted flat plus optional Porod background contribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.fitted_curve" title="mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.fitted_curve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fitted_curve</span></code></a></p></td>
+<td><p>Return the complete scale/background-adjusted preview curve.</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_q</span></code></p></td>
 <td><p></p></td>
 </tr>
@@ -353,9 +360,24 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0_parameter_names</span></code></p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 </div>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.background_curve">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">background_curve</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.background_curve" title="Link to this definition">¶</a></dt>
+<dd><p>Return the fitted flat plus optional Porod background contribution.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.fitted_curve">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fitted_curve</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.fitted_curve" title="Link to this definition">¶</a></dt>
+<dd><p>Return the complete scale/background-adjusted preview curve.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -395,7 +417,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on Aug 28, 2026 (git 75e7936)</div>
+              Last updated on Sep 11, 2026 (git b00fdaf)</div>
           </div>
           <div class="right-details">
             
@@ -419,6 +441,8 @@
 <li><a class="reference internal" href="#">mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D</a><ul>
 <li><a class="reference internal" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D"><code class="docutils literal notranslate"><span class="pre">OptimizationPreview1D</span></code></a><ul>
 <li><a class="reference internal" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.__init__"><code class="docutils literal notranslate"><span class="pre">OptimizationPreview1D.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.background_curve"><code class="docutils literal notranslate"><span class="pre">OptimizationPreview1D.background_curve</span></code></a></li>
+<li><a class="reference internal" href="#mcsas3gui.gui.mcsas3_bridge.OptimizationPreview1D.fitted_curve"><code class="docutils literal notranslate"><span class="pre">OptimizationPreview1D.fitted_curve</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -432,7 +456,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

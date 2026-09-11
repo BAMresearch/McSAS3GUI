@@ -18,6 +18,7 @@ mcsas3gui.gui.run\_settings\_helpers
       combine_run_configuration_documents
       format_preview_progress_message
       format_preview_status_header
+      plot_preview_fit_curves
       preview_result_file_path
    
    

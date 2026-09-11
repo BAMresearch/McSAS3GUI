@@ -25,6 +25,8 @@ mcsas3gui.gui.mcsas3\_bridge.OptimizationPreview1D
 
    .. autosummary::
    
+      ~OptimizationPreview1D.background_curve
+      ~OptimizationPreview1D.fitted_curve
       ~OptimizationPreview1D.fit_q
       ~OptimizationPreview1D.fit_intensity
       ~OptimizationPreview1D.accepted_gofs
@@ -32,5 +34,6 @@ mcsas3gui.gui.mcsas3\_bridge.OptimizationPreview1D
       ~OptimizationPreview1D.max_iter
       ~OptimizationPreview1D.max_accept
       ~OptimizationPreview1D.x0
+      ~OptimizationPreview1D.x0_parameter_names
    
    

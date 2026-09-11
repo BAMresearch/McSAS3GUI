@@ -1,0 +1,6 @@
+mcsas3gui.gui.run\_settings\_helpers.plot\_preview\_fit\_curves
+===============================================================
+
+.. currentmodule:: mcsas3gui.gui.run_settings_helpers
+
+.. autofunction:: plot_preview_fit_curves

@@ -254,12 +254,12 @@ class PreviewOptimizationWorker(QThread):
             self._active_hat.request_stop()
 
     def run(self) -> None:
-        McHat, optimize_file_processing, _prepare_file_processing = _load_mcsas3_runtime()
-        load_preview = _load_bridge_runtime()
         progress_logger = None
         progress_handler = None
         progress_logger_level = logging.NOTSET
         try:
+            McHat, optimize_file_processing, _prepare_file_processing = _load_mcsas3_runtime()
+            load_preview = _load_bridge_runtime()
             progress_logger, progress_handler, progress_logger_level = _attach_progress_log_handler(
                 self.progress_text_signal.emit
             )

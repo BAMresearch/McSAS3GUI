@@ -276,6 +276,7 @@ class RunSettingsTab(QWidget):
         self.preview_worker.progress_text_signal.connect(self._on_preview_progress)
         self.preview_worker.preview_ready_signal.connect(self._on_preview_ready)
         self.preview_worker.finished_signal.connect(self._on_preview_finished)
+        self.preview_worker.finished.connect(self._on_preview_thread_finished)
         self._set_test_run_button_running_state(True)
         self.info_field.setPlainText(format_preview_status_header(run_config))
         self.preview_worker.start()
@@ -311,9 +312,16 @@ class RunSettingsTab(QWidget):
     def _on_preview_finished(self, stopped: bool, message: str) -> None:
         self._set_test_run_button_running_state(False)
         self.info_field.append(message)
+
+    def _on_preview_thread_finished(self) -> None:
+        """Release preview resources only after ``QThread.run()`` has returned."""
+
+        worker = self.preview_worker
         self.preview_worker = None
         self._preview_run_config = None
         cleanup_preview_result_file(self.preview_result_file)
+        if worker is not None:
+            worker.deleteLater()
 
     def _on_preview_progress(self, message: str) -> None:
         if not message:

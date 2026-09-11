@@ -1,8 +1,35 @@
 import sys
+from types import SimpleNamespace
 
 import pytest
 
 from mcsas3gui import _bootstrap
+
+
+def test_has_canonical_mcsas3_requires_fitted_background_api(monkeypatch):
+    monkeypatch.setattr(_bootstrap.importlib.util, "find_spec", lambda module_name: object())
+    monkeypatch.setattr(
+        _bootstrap.importlib,
+        "import_module",
+        lambda module_name: SimpleNamespace(background_intensity=lambda: None),
+    )
+
+    assert _bootstrap._has_canonical_mcsas3() is False
+
+
+def test_has_canonical_mcsas3_accepts_complete_fitted_background_api(monkeypatch):
+    monkeypatch.setattr(_bootstrap.importlib.util, "find_spec", lambda module_name: object())
+    monkeypatch.setattr(
+        _bootstrap.importlib,
+        "import_module",
+        lambda module_name: SimpleNamespace(
+            background_intensity=lambda: None,
+            fit_parameter_names=lambda: None,
+            fitted_intensity=lambda: None,
+        ),
+    )
+
+    assert _bootstrap._has_canonical_mcsas3() is True
 
 
 def test_ensure_compatible_mcsas3_returns_none_when_api_is_available(monkeypatch):
@@ -29,5 +56,5 @@ def test_ensure_compatible_mcsas3_raises_when_no_compatible_source_exists(monkey
     monkeypatch.setattr(_bootstrap, "_has_canonical_mcsas3", lambda: False)
     monkeypatch.setattr(_bootstrap, "_candidate_mcsas3_src_paths", lambda: [])
 
-    with pytest.raises(ImportError, match="canonical workflow API"):
+    with pytest.raises(ImportError, match="canonical workflow and fitted-background APIs"):
         _bootstrap.ensure_compatible_mcsas3()

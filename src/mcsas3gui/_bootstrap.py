@@ -10,6 +10,7 @@ REQUIRED_MCSAS3_MODULES = (
     "mcsas3.workflows",
     "mcsas3.data_adapters",
     "mcsas3.data_model",
+    "mcsas3.mcsas3_cli_histogrammer",
 )
 REQUIRED_MCSAS3_ATTRIBUTES = (
     "background_intensity",
@@ -75,8 +76,8 @@ def ensure_compatible_mcsas3() -> Path | None:
 
     raise ImportError(
         "McSAS3GUI requires a McSAS3 installation with the canonical workflow and fitted-background APIs "
-        "(mcsas3.workflows, mcsas3.data_adapters, mcsas3.data_model, background_intensity, "
-        "fit_parameter_names, fitted_intensity). "
+        "(mcsas3.workflows, mcsas3.data_adapters, mcsas3.data_model, mcsas3.mcsas3_cli_histogrammer, "
+        "background_intensity, fit_parameter_names, fitted_intensity). "
         "Install the current McSAS3 package, set MCSAS3GUI_MCSAS3_SRC, or place the McSAS3 source "
         "checkout next to McSAS3GUI."
     )

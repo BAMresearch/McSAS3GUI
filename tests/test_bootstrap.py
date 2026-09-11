@@ -6,6 +6,16 @@ import pytest
 from mcsas3gui import _bootstrap
 
 
+def test_has_canonical_mcsas3_requires_histogram_cli_module(monkeypatch):
+    monkeypatch.setattr(
+        _bootstrap.importlib.util,
+        "find_spec",
+        lambda module_name: None if module_name == "mcsas3.mcsas3_cli_histogrammer" else object(),
+    )
+
+    assert _bootstrap._has_canonical_mcsas3() is False
+
+
 def test_has_canonical_mcsas3_requires_fitted_background_api(monkeypatch):
     monkeypatch.setattr(_bootstrap.importlib.util, "find_spec", lambda module_name: object())
     monkeypatch.setattr(

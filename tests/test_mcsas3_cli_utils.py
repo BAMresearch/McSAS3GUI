@@ -104,10 +104,10 @@ def test_histogram_command_falls_back_to_python_module(monkeypatch):
 
 
 def test_histogram_command_prefers_entrypoint_beside_selected_python(monkeypatch, tmp_path):
-    bin_dir = tmp_path / "venv" / "bin"
+    bin_dir = tmp_path / "venv" / ("Scripts" if mcsas3_cli.os.name == "nt" else "bin")
     bin_dir.mkdir(parents=True)
-    python_executable = bin_dir / "python3.13"
-    histogrammer = bin_dir / "mcsas3-histogrammer"
+    python_executable = bin_dir / ("python.exe" if mcsas3_cli.os.name == "nt" else "python3.13")
+    histogrammer = bin_dir / mcsas3_cli._histogrammer_executable_name()
     python_executable.write_text("")
     histogrammer.write_text("")
     monkeypatch.setattr(mcsas3_cli, "_compatible_source_checkout", lambda: None)

@@ -77,6 +77,7 @@ run_configuration: # ibid.
   maxIter: 50000
   maxAccept: 5000
   convCrit: 1.8
+  fitPorodBackground: false
   nRep: 10
   nCores: 10
   logRandom: true

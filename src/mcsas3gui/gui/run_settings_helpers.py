@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -52,11 +52,32 @@ def format_preview_status_header(run_config: Mapping[str, Any]) -> str:
     max_iter = _format_limit(run_config.get("maxIter"), default="default")
     max_accept = _format_limit(run_config.get("maxAccept"), default="∞")
     conv_crit = _format_limit(run_config.get("convCrit"), default="default")
+    porod_status = "enabled" if run_config.get("fitPorodBackground", False) else "disabled"
     return (
         "Preview optimization running...\n"
         f"Max Iter: {max_iter}\n"
         f"Max Accept: {max_accept}\n"
-        f"Convergence Criterion: {conv_crit}"
+        f"Convergence Criterion: {conv_crit}\n"
+        f"Non-negative q^-4 Background: {porod_status}"
+    )
+
+
+def plot_preview_fit_curves(
+    axes: Any,
+    fit_q: Sequence[float],
+    fitted_intensity: Sequence[float],
+    background_intensity: Sequence[float],
+) -> None:
+    """Plot the complete preview fit and its fitted background contribution."""
+
+    axes.plot(fit_q, fitted_intensity, "r--", label="Test McSAS3 Optimization", zorder=10)
+    axes.plot(
+        fit_q,
+        background_intensity,
+        color="0.5",
+        linestyle=":",
+        label="Fitted background (flat + Porod)",
+        zorder=9,
     )
 
 

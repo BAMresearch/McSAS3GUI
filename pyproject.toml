@@ -26,7 +26,7 @@ classifiers = [
 dependencies = [
     "h5py",
     "matplotlib",
-    "mcsas3>=1.0.6",
+    "mcsas3>=1.3.0",
     "modacor>=1.0.0",
     "numpy",
     "pandas",

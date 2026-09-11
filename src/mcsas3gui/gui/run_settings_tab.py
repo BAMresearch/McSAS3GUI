@@ -18,6 +18,7 @@ from .run_settings_helpers import (
     combine_run_configuration_documents,
     format_preview_progress_message,
     format_preview_status_header,
+    plot_preview_fit_curves,
     preview_result_file_path,
 )
 from .yaml_editor_widget import YAMLEditorWidget
@@ -168,9 +169,11 @@ class RunSettingsTab(QWidget):
             max_iter = document.get("maxIter", "Not specified")
             conv_crit = document.get("convCrit", "Not specified")
             n_cores = document.get("nCores", "Not specified")
+            fit_porod_background = document.get("fitPorodBackground", False)
             info_text += f"  Max Iterations: {max_iter}\n"
             info_text += f"  Convergence Criterion: {conv_crit}\n"
             info_text += f"  Cores: {n_cores}\n"
+            info_text += f"  Fit non-negative q^-4 background: {fit_porod_background}\n"
 
             # do nothing if the model name is empty (None):
             if not model_name:
@@ -297,12 +300,12 @@ class RunSettingsTab(QWidget):
     def _on_preview_ready(self, preview) -> None:
         self._plot_fit(
             fit_q=preview.fit_q,
-            fit_intensity=preview.fit_intensity,
+            fitted_intensity=preview.fitted_curve,
+            background_intensity=preview.background_curve,
             accepted_gofs=preview.accepted_gofs,
             accepted_steps=preview.accepted_steps,
             max_iter=preview.max_iter,
             max_accept=preview.max_accept,
-            x0=preview.x0,
         )
 
     def _on_preview_finished(self, stopped: bool, message: str) -> None:
@@ -324,12 +327,12 @@ class RunSettingsTab(QWidget):
     def _plot_fit(
         self,
         fit_q: Sequence[float],
-        fit_intensity: Sequence[float],
+        fitted_intensity: Sequence[float],
+        background_intensity: Sequence[float],
         accepted_gofs: Sequence[float],
         accepted_steps: Sequence[int],
         max_iter: int,
         max_accept: int,
-        x0: Sequence[float],
     ) -> None:
         """
         Plot the fit results in the existing data plot or reopen it if not open,
@@ -337,12 +340,12 @@ class RunSettingsTab(QWidget):
 
         Args:
             fit_q (array-like): Q values of the fit.
-            fit_intensity (array-like): Intensity values of the fit.
+            fitted_intensity (array-like): Complete fitted intensity values.
+            background_intensity (array-like): Fitted flat plus optional Porod background.
             accepted_gofs (array-like): Accepted goodness-of-fit values.
             accepted_steps (array-like): Steps where fits were accepted.
             max_iter (int): Maximum iteration setting.
             max_accept (int): Maximum accept setting.
-            x0 (array-like): Scaling and background [scale, background].
         """
         try:
             # Retrieve the data plot from the DataLoadingTab
@@ -351,8 +354,12 @@ class RunSettingsTab(QWidget):
             ax = data_tab.show_plot_popup()
 
             # Plot the fit on the existing data plot with zorder for proper layering
-            scaled_fit_intensity = x0[0] * fit_intensity + x0[1]
-            ax.plot(fit_q, scaled_fit_intensity, "r--", label="Test McSAS3 Optimization", zorder=10)
+            plot_preview_fit_curves(
+                ax,
+                fit_q,
+                fitted_intensity,
+                background_intensity,
+            )
             ax.legend()
             data_tab.fig.canvas.draw()
 

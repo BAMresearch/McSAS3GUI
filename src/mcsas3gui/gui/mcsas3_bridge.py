@@ -6,6 +6,7 @@ from typing import Any, Mapping
 
 import numpy as np
 import pandas as pd
+from mcsas3 import background_intensity, fit_parameter_names, fitted_intensity
 from mcsas3.data_adapters import (
     STAGE_BINNED,
     STAGE_CLIPPED,
@@ -39,6 +40,19 @@ class OptimizationPreview1D:
     max_iter: int
     max_accept: int
     x0: np.ndarray
+    x0_parameter_names: tuple[str, ...]
+
+    @property
+    def fitted_curve(self) -> np.ndarray:
+        """Return the complete scale/background-adjusted preview curve."""
+
+        return fitted_intensity(self.fit_intensity, self.x0, self.fit_q)
+
+    @property
+    def background_curve(self) -> np.ndarray:
+        """Return the fitted flat plus optional Porod background contribution."""
+
+        return background_intensity(self.x0, self.fit_q)
 
 
 def prepare_processing_from_file(data_file: Path, read_config: Mapping[str, Any]) -> ProcessingData:
@@ -84,6 +98,15 @@ def load_optimization_preview(
     selected_bundle = selected_bundle_from_processing(processing)
     fit_q = _fit_q_from_bundle(selected_bundle)
     repetition_path = _optimization_repetition_path(result_index, repetition)
+    x0 = np.asarray(loadKV(result_file, repetition_path / "x0"), dtype=float)
+    stored_parameter_names = loadKV(result_file, repetition_path / "x0ParameterNames", default=None)
+    if stored_parameter_names is None:
+        x0_parameter_names = fit_parameter_names(x0)
+    else:
+        x0_parameter_names = tuple(
+            value.decode() if isinstance(value, (bytes, bytearray, np.bytes_)) else str(value)
+            for value in np.asarray(stored_parameter_names).reshape(-1)
+        )
 
     return OptimizationPreview1D(
         fit_q=fit_q,
@@ -92,7 +115,8 @@ def load_optimization_preview(
         accepted_steps=np.asarray(loadKV(result_file, repetition_path / "acceptedSteps"), dtype=int),
         max_iter=int(loadKV(result_file, repetition_path / "maxIter")),
         max_accept=int(loadKV(result_file, repetition_path / "maxAccept")),
-        x0=np.asarray(loadKV(result_file, repetition_path / "x0"), dtype=float),
+        x0=x0,
+        x0_parameter_names=x0_parameter_names,
     )
 
 

@@ -104,9 +104,17 @@ def test_runtime_run_config_defaults_to_nondeterministic_seed_for_multiple_repet
 
 
 def test_runtime_run_config_preserves_explicit_seed():
-    runtime_config = optimization_worker._runtime_run_config({"modelName": "sphere", "nRep": 2, "seed": 7})
+    runtime_config = optimization_worker._runtime_run_config(
+        {
+            "modelName": "sphere",
+            "nRep": 2,
+            "seed": 7,
+            "fitPorodBackground": True,
+        }
+    )
 
     assert runtime_config["seed"] == 7
+    assert runtime_config["fitPorodBackground"] is True
 
 
 def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
@@ -138,6 +146,7 @@ def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
             "maxIter": 1,
             "maxAccept": 1,
             "convCrit": 0.0,
+            "fitPorodBackground": True,
             "nRep": 2,
             "nCores": 2,
         },
@@ -147,6 +156,12 @@ def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
     repetition0 = loadKV(result_file, path / "repetition0" / "parameterSet", datatype="dictToPandas")
     repetition1 = loadKV(result_file, path / "repetition1" / "parameterSet", datatype="dictToPandas")
     assert not repetition0.equals(repetition1)
+    optimization_path = ResultIndex(1).nxsEntryPoint / "optimization" / "repetition0"
+    fit_parameters = np.asarray(loadKV(result_file, optimization_path / "x0"), dtype=float)
+    parameter_names = [value.decode() for value in loadKV(result_file, optimization_path / "x0ParameterNames")]
+    assert parameter_names == ["scale", "background", "porodCoefficient"]
+    assert fit_parameters.shape == (3,)
+    assert fit_parameters[2] >= 0.0
 
 
 def test_execute_hat_run_explicit_seed_offsets_by_repetition(tmp_path):

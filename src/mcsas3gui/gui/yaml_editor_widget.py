@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import (
 )
 
 logger = logging.getLogger("McSAS3")
+YAML_FILE_FILTER = "YAML Files (*.yaml *.yml)"
 
 
 class CustomDumper(yaml.Dumper):
@@ -112,6 +113,7 @@ class YAMLErrorHighlighter(QSyntaxHighlighter):
 
 class YAMLEditorWidget(QWidget):
     fileSaved = pyqtSignal(str)
+    fileLoaded = pyqtSignal(str)
 
     def __init__(self, directory, parent=None, multipart: bool = False):
         super().__init__(parent)
@@ -176,7 +178,7 @@ class YAMLEditorWidget(QWidget):
 
     def load_yaml(self):
         """Open a file dialog to load a YAML file and display it in the editor."""
-        file_name, _ = QFileDialog.getOpenFileName(self, "Load Configuration", self.directory, "YAML Files (*.yaml)")
+        file_name, _ = QFileDialog.getOpenFileName(self, "Load Configuration", self.directory, YAML_FILE_FILTER)
         if file_name:
             logger.debug(f"Loading YAML configuration from file: {file_name}")
             with open(file_name, "r") as file:
@@ -188,6 +190,7 @@ class YAMLEditorWidget(QWidget):
                         if doc
                     )
                     self.yaml_editor.setPlainText(yaml_text)
+                    self.fileLoaded.emit(file_name)
                 except yaml.YAMLError as e:
                     logger.error(f"Error loading YAML file {file_name}: {e}")
                     self.yaml_editor.setPlainText("Error loading YAML file.")

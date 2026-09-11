@@ -72,16 +72,34 @@ def _resolved_run_limits(run_config: Mapping[str, Any] | None) -> tuple[int, int
     return max_iter, max_accept
 
 
+def configured_model_parameter_value(
+    parameter: str,
+    default_value: Any,
+    run_config: Mapping[str, Any],
+) -> str:
+    """Format a SasModels parameter using configured values before raw defaults."""
+
+    fit_limits = run_config.get("fitParameterLimits")
+    if isinstance(fit_limits, Mapping) and parameter in fit_limits:
+        return f"{fit_limits[parameter]} (fit range)"
+    static_parameters = run_config.get("staticParameters")
+    if isinstance(static_parameters, Mapping) and parameter in static_parameters:
+        return f"{static_parameters[parameter]} (static)"
+    return f"{default_value} (SasModels default)"
+
+
 def format_preview_status_header(run_config: Mapping[str, Any]) -> str:
     """Build the initial text shown while the preview optimization is running."""
     max_iter, max_accept = _resolved_run_limits(run_config)
     conv_crit = _format_limit(run_config.get("convCrit"), default="default")
+    flat_background_mode = run_config.get("fitFlatBackground", True)
     porod_status = "enabled" if run_config.get("fitPorodBackground", False) else "disabled"
     return (
         "Preview optimization running...\n"
         f"Max Iter: {max_iter}\n"
         f"Max Accept: {max_accept}\n"
         f"Convergence Criterion: {conv_crit}\n"
+        f"Flat Background Fit: {flat_background_mode}\n"
         f"Non-negative q^-4 Background: {porod_status}"
     )
 

@@ -142,11 +142,13 @@ def test_runtime_run_config_preserves_explicit_seed():
             "modelName": "sphere",
             "nRep": 2,
             "seed": 7,
+            "fitFlatBackground": "positive",
             "fitPorodBackground": True,
         }
     )
 
     assert runtime_config["seed"] == 7
+    assert runtime_config["fitFlatBackground"] == "positive"
     assert runtime_config["fitPorodBackground"] is True
 
 
@@ -179,6 +181,7 @@ def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
             "maxIter": 1,
             "maxAccept": 1,
             "convCrit": 0.0,
+            "fitFlatBackground": False,
             "fitPorodBackground": True,
             "nRep": 2,
             "nCores": 2,
@@ -194,6 +197,7 @@ def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
     parameter_names = [value.decode() for value in loadKV(result_file, optimization_path / "x0ParameterNames")]
     assert parameter_names == ["scale", "background", "porodCoefficient"]
     assert fit_parameters.shape == (3,)
+    assert fit_parameters[1] == 0.0
     assert fit_parameters[2] >= 0.0
 
 

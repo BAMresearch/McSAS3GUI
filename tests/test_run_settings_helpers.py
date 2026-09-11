@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from mcsas3gui.gui.run_settings_helpers import (
     cleanup_preview_result_file,
     combine_run_configuration_documents,
+    configured_model_parameter_value,
     format_preview_progress_message,
     format_preview_status_header,
     plot_preview_fit_curves,
@@ -55,6 +56,7 @@ def test_format_preview_status_header_includes_run_limits():
             "maxIter": 5000,
             "maxAccept": 125,
             "convCrit": 1.0,
+            "fitFlatBackground": "positive",
             "fitPorodBackground": True,
         }
     )
@@ -63,6 +65,7 @@ def test_format_preview_status_header_includes_run_limits():
     assert "Max Iter: 5000" in header
     assert "Max Accept: 125" in header
     assert "Convergence Criterion: 1.0" in header
+    assert "Flat Background Fit: positive" in header
     assert "Non-negative q^-4 Background: enabled" in header
 
 
@@ -71,6 +74,7 @@ def test_format_preview_status_header_shows_resolved_omitted_limits():
 
     assert "Max Iter: 5000" in header
     assert "Max Accept: 5000" in header
+    assert "Flat Background Fit: True" in header
 
 
 def test_format_preview_status_header_uses_large_max_accept_for_omitted_max_iter():
@@ -78,6 +82,17 @@ def test_format_preview_status_header_uses_large_max_accept_for_omitted_max_iter
 
     assert "Max Iter: 7000" in header
     assert "Max Accept: 7000" in header
+
+
+def test_configured_model_parameter_value_prefers_fit_then_static_then_default():
+    run_config = {
+        "fitParameterLimits": {"radius": [0.01, 300]},
+        "staticParameters": {"background": 0, "radius": 50},
+    }
+
+    assert configured_model_parameter_value("radius", 50, run_config) == "[0.01, 300] (fit range)"
+    assert configured_model_parameter_value("background", 0.001, run_config) == "0 (static)"
+    assert configured_model_parameter_value("sld_solvent", 6, run_config) == "6 (SasModels default)"
 
 
 def test_plot_preview_fit_curves_adds_grey_dotted_background():

@@ -16,6 +16,7 @@ from .run_control_helpers import set_abortable_button_state, worker_is_running
 from .run_settings_helpers import (
     cleanup_preview_result_file,
     combine_run_configuration_documents,
+    configured_model_parameter_value,
     format_preview_progress_message,
     format_preview_status_header,
     plot_preview_fit_curves,
@@ -169,10 +170,12 @@ class RunSettingsTab(QWidget):
             max_iter = document.get("maxIter", "Not specified")
             conv_crit = document.get("convCrit", "Not specified")
             n_cores = document.get("nCores", "Not specified")
+            fit_flat_background = document.get("fitFlatBackground", True)
             fit_porod_background = document.get("fitPorodBackground", False)
             info_text += f"  Max Iterations: {max_iter}\n"
             info_text += f"  Convergence Criterion: {conv_crit}\n"
             info_text += f"  Cores: {n_cores}\n"
+            info_text += f"  Fit flat background: {fit_flat_background}\n"
             info_text += f"  Fit non-negative q^-4 background: {fit_porod_background}\n"
 
             # do nothing if the model name is empty (None):
@@ -213,7 +216,8 @@ class RunSettingsTab(QWidget):
 
                 info_text += "  Sasmodels Parameters: \n"
                 for param, default_value in filtered_parameters.items():
-                    info_text += f"    - {param}: {default_value}\n"  # noqa: E221
+                    display_value = configured_model_parameter_value(param, default_value, document)
+                    info_text += f"    - {param}: {display_value}\n"  # noqa: E221
 
                 info_text += (
                     "  To configure parameters, add each to 'fitParameterLimits'"

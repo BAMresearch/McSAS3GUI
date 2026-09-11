@@ -1,0 +1,7 @@
+nbins: 100
+dataRange: [0.02, 7.0]
+IEmin: 0.02
+pathDict:
+  Q: /entry/result/Q
+  I: /entry/result/I
+  ISigma: /entry/result/I_errors

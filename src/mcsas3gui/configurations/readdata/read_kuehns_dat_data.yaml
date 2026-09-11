@@ -1,0 +1,8 @@
+nbins: 100
+dataRange: [0.03, 10.0]
+IEmin: 0.02
+csvargs:
+  sep: ' '
+  header: null
+  skiprows: 1
+  names: [Q, I, ISigma]

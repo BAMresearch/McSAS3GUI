@@ -14,6 +14,7 @@ maxIter: 50000
 maxAccept: 5000
 convCrit: 1
 fitPorodBackground: false
+fitFlatBackground: true
 nRep: 10
 nCores: 10
 logRandom: true

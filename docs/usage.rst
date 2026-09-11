@@ -55,6 +55,10 @@ Run-configuration YAML files should normally include ``logRandom: true`` so fit 
 sampled log-uniformly over their configured ranges. This is the recommended standard operating
 mode for the supplied examples.
 
+Set the top-level ``fitFlatBackground`` option to ``true`` for a signed fitted constant,
+``positive`` for a zero-or-positive fitted constant, or ``false`` to fix the constant at zero.
+The default is ``true`` for compatibility with existing run configurations.
+
 Set ``fitPorodBackground: true`` in the top level of a run configuration to fit an optional
 non-negative additive ``porodCoefficient * q^-4`` term with the model scale and flat background.
 It is disabled by default. The fitted exponent is fixed at -4, Q uses the canonical ``1/nm``

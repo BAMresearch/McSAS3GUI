@@ -36,6 +36,7 @@ def test_has_canonical_mcsas3_accepts_complete_fitted_background_api(monkeypatch
             background_intensity=lambda: None,
             fit_parameter_names=lambda: None,
             fitted_intensity=lambda: None,
+            normalize_flat_background_mode=lambda: None,
         ),
     )
 

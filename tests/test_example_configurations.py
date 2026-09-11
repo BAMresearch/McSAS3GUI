@@ -70,6 +70,7 @@ def test_shipped_run_configurations_enable_log_random(config_path: Path):
     config = _load_yaml_mapping(config_path)
 
     assert config["logRandom"] is True
+    assert config["fitPorodBackground"] is False
 
 
 @pytest.mark.parametrize("prefab_path", PREFAB_CONFIGURATION_PATHS, ids=_path_id)
@@ -77,3 +78,4 @@ def test_prefab_inline_run_configurations_enable_log_random(prefab_path: Path):
     prefab = _load_yaml_mapping(prefab_path)
 
     assert prefab["run_configuration"]["logRandom"] is True
+    assert prefab["run_configuration"]["fitPorodBackground"] is False

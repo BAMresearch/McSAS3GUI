@@ -55,5 +55,12 @@ Run-configuration YAML files should normally include ``logRandom: true`` so fit 
 sampled log-uniformly over their configured ranges. This is the recommended standard operating
 mode for the supplied examples.
 
+Set ``fitPorodBackground: true`` in the top level of a run configuration to fit an optional
+non-negative additive ``porodCoefficient * q^-4`` term with the model scale and flat background.
+It is disabled by default. The fitted exponent is fixed at -4, Q uses the canonical ``1/nm``
+convention, and all fitted Q magnitudes must be finite and greater than zero. Because this term can
+correlate with low-Q particle scattering, enable it only when the additional background is
+physically justified.
+
 For ``fitParameterLimits: {radius: auto}``, McSAS3 resolves the radius range from the fitted Q
 support using ``pi / q_max`` for the lower limit and ``2 * pi / q_min`` for the upper limit.

@@ -45,6 +45,10 @@ The shipped read configurations declare source units with ``QUnits: "1/nm"`` and
 ``IUnits: "1/(m sr)"``. The run configurations keep ``logRandom: true`` enabled, which is the
 recommended standard mode for log-uniform parameter sampling.
 
+The shipped run configurations also show ``fitPorodBackground: false``. Change it to ``true`` to
+fit an optional non-negative additive ``q^-4`` background. This requires strictly positive fitted
+Q magnitudes and can affect the recovered low-Q particle distribution.
+
 Abort Running Tasks
 ===================
 

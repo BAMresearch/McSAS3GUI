@@ -79,3 +79,40 @@ def test_run_test_optimization_uses_canonical_workflow_and_loads_preview(monkeyp
     assert preview.max_iter == 100
     assert preview.max_accept == 10
     np.testing.assert_allclose(preview.x0, np.array([2.0, 0.5]))
+    assert preview.x0_parameter_names == ("scale", "background")
+    np.testing.assert_allclose(preview.fitted_curve, np.array([10.5]))
+    np.testing.assert_allclose(preview.background_curve, np.array([0.5]))
+
+
+def test_load_optimization_preview_reconstructs_porod_enabled_fit(tmp_path):
+    processing = prepare_1d_processing_data(
+        pd.DataFrame(
+            {
+                "Q": np.array([0.1, 0.2, 0.3], dtype=float),
+                "I": np.array([10.0, 20.0, 30.0], dtype=float),
+                "ISigma": np.array([1.0, 2.0, 3.0], dtype=float),
+            }
+        ),
+    )
+    result_file = tmp_path / "porod-preview.h5"
+    repetition_path = ResultIndex(1).nxsEntryPoint / "optimization" / "repetition0"
+    storeKV(result_file, repetition_path / "modelI", np.array([1.0, 2.0, 3.0], dtype=float))
+    storeKV(result_file, repetition_path / "acceptedGofs", np.array([1.0], dtype=float))
+    storeKV(result_file, repetition_path / "acceptedSteps", np.array([0], dtype=int))
+    storeKV(result_file, repetition_path / "maxIter", 100)
+    storeKV(result_file, repetition_path / "maxAccept", 10)
+    storeKV(result_file, repetition_path / "x0", np.array([2.0, 0.5, 1e-4], dtype=float))
+    storeKV(
+        result_file,
+        repetition_path / "x0ParameterNames",
+        ["scale", "background", "porodCoefficient"],
+    )
+
+    preview = mcsas3_bridge.load_optimization_preview(result_file, processing)
+
+    assert preview.x0_parameter_names == ("scale", "background", "porodCoefficient")
+    np.testing.assert_allclose(
+        preview.fitted_curve,
+        2.0 * np.array([1.0, 2.0, 3.0]) + 0.5 + 1e-4 * preview.fit_q**-4,
+    )
+    np.testing.assert_allclose(preview.background_curve, 0.5 + 1e-4 * preview.fit_q**-4)

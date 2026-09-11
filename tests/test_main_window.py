@@ -43,3 +43,23 @@ def test_main_window_close_event_closes_auxiliary_windows(monkeypatch, tmp_path)
     assert closable_tab.closed_aux_windows is True
     assert event.isAccepted()
     assert app is not None
+
+
+def test_main_window_forwards_loaded_configuration_paths(tmp_path):
+    app = QApplication.instance() or QApplication([])
+    window = McSAS3MainWindow(tmp_path)
+    data_settings_tab = window.tabs.widget(1)
+    run_settings_tab = window.tabs.widget(2)
+    optimization_tab = window.tabs.widget(3)
+    histogram_settings_tab = window.tabs.widget(4)
+    histogram_run_tab = window.tabs.widget(5)
+
+    data_settings_tab.yaml_editor_widget.fileLoaded.emit("/tmp/data.yml")
+    run_settings_tab.yaml_editor_widget.fileLoaded.emit("/tmp/run.yml")
+    histogram_settings_tab.yaml_editor_widget.fileLoaded.emit("/tmp/hist.yml")
+
+    assert optimization_tab.data_config_selector.get_file_path() == "/tmp/data.yml"
+    assert optimization_tab.run_config_selector.get_file_path() == "/tmp/run.yml"
+    assert histogram_run_tab.histogram_config_selector.get_file_path() == "/tmp/hist.yml"
+    window.close()
+    assert app is not None

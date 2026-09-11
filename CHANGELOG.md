@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.3.1 (2026-09-11)
+
+### Bug fixes
+
+* fix: improving flat background fitting, and sasmodels parameter value clarity. ([`03543ac`](https://github.com/BAMresearch/McSAS3GUI/commit/03543acba65be7d2d46569b1ec4e9682c7524e6a))
+
+* fix: make sure the resolved CLI is up to date for histogramming as well. ([`edc0fff`](https://github.com/BAMresearch/McSAS3GUI/commit/edc0fffb60694197693a76cd0090ae7203c08d4f))
+
+* fix: fix Qt race issue and prevent mixed-version McSAS3+McSAS3GUI operation ([`6df2aaa`](https://github.com/BAMresearch/McSAS3GUI/commit/6df2aaae4c0d3c7a181b6c3262f88db5c4a380f8))
+
+* fix: missing maxAccept would cause issue. ([`17ed25e`](https://github.com/BAMresearch/McSAS3GUI/commit/17ed25e743a5705f0701a9eefd19f959f7892f84))
+
+### Continuous integration
+
+* ci: fix fixtures ([`9751469`](https://github.com/BAMresearch/McSAS3GUI/commit/975146944799387687554332d5cd8787d38ca578))
+
 ## v0.3.0 (2026-09-11)
 
 ### Bug fixes

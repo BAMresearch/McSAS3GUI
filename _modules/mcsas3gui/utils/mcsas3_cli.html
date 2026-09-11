@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>mcsas3gui.utils.mcsas3_cli - McSAS3GUI 0.3.0 documentation</title>
+        <title>mcsas3gui.utils.mcsas3_cli - McSAS3GUI 0.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=34bb78ad" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">McSAS3GUI 0.3.0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">McSAS3GUI 0.3.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">McSAS3GUI 0.3.0 documentation</span>
+  <span class="sidebar-brand-text">McSAS3GUI 0.3.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -191,7 +191,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">McSAS3GUI (v0.3.0)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">McSAS3GUI (v0.3.1)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
@@ -224,6 +224,7 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../reference/autosummary/mcsas3gui.gui.run_settings_helpers.html">mcsas3gui.gui.run_settings_helpers</a><input aria-label="Toggle navigation of mcsas3gui.gui.run_settings_helpers" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../reference/autosummary/mcsas3gui.gui.run_settings_helpers.cleanup_preview_result_file.html">mcsas3gui.gui.run_settings_helpers.cleanup_preview_result_file</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../reference/autosummary/mcsas3gui.gui.run_settings_helpers.combine_run_configuration_documents.html">mcsas3gui.gui.run_settings_helpers.combine_run_configuration_documents</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../reference/autosummary/mcsas3gui.gui.run_settings_helpers.configured_model_parameter_value.html">mcsas3gui.gui.run_settings_helpers.configured_model_parameter_value</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../reference/autosummary/mcsas3gui.gui.run_settings_helpers.format_preview_progress_message.html">mcsas3gui.gui.run_settings_helpers.format_preview_progress_message</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../reference/autosummary/mcsas3gui.gui.run_settings_helpers.format_preview_status_header.html">mcsas3gui.gui.run_settings_helpers.format_preview_status_header</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../reference/autosummary/mcsas3gui.gui.run_settings_helpers.plot_preview_fit_curves.html">mcsas3gui.gui.run_settings_helpers.plot_preview_fit_curves</a></li>
@@ -337,7 +338,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_compatible_source_checkout</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the sibling McSAS3 source root when available in a dev checkout."""</span>
     <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">_bootstrap</span><span class="o">.</span><span class="n">_candidate_mcsas3_src_paths</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">candidate</span> <span class="o">/</span> <span class="s2">"mcsas3"</span> <span class="o">/</span> <span class="s2">"mcsas3_cli_histogrammer.py"</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">candidate</span>
     <span class="k">return</span> <span class="kc">None</span>
 
@@ -355,6 +356,13 @@
 <span class="w">    </span><span class="sd">"""Return the platform-specific histogrammer executable name."""</span>
     <span class="n">suffix</span> <span class="o">=</span> <span class="s2">".exe"</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"nt"</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">"mcsas3-histogrammer</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_adjacent_histogrammer</span><span class="p">(</span><span class="n">python_executable</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the histogram entry point installed beside the selected Python executable."""</span>
+
+    <span class="n">candidate</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">python_executable</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">_histogrammer_executable_name</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">candidate</span> <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_bundled_histogrammer_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -427,6 +435,22 @@
     <span class="k">if</span> <span class="n">source_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">SubprocessSpec</span><span class="p">(</span><span class="n">module_command</span><span class="p">,</span> <span class="n">env_overrides</span><span class="o">=</span><span class="n">_pythonpath_override</span><span class="p">(</span><span class="n">source_root</span><span class="p">))</span>
 
+    <span class="n">adjacent_histogrammer</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">"frozen"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">adjacent_histogrammer</span> <span class="o">=</span> <span class="n">_adjacent_histogrammer</span><span class="p">(</span><span class="n">executable</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">adjacent_histogrammer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SubprocessSpec</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">adjacent_histogrammer</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span>
+                <span class="s2">"-r"</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">result_file</span><span class="p">),</span>
+                <span class="s2">"-H"</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">hist_config</span><span class="p">),</span>
+                <span class="s2">"-i"</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">result_index</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
     <span class="n">histogrammer</span> <span class="o">=</span> <span class="n">which</span><span class="p">(</span><span class="s2">"mcsas3-histogrammer"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">histogrammer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">SubprocessSpec</span><span class="p">([</span><span class="n">histogrammer</span><span class="p">,</span> <span class="s2">"-r"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">result_file</span><span class="p">),</span> <span class="s2">"-H"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">hist_config</span><span class="p">),</span> <span class="s2">"-i"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">result_index</span><span class="p">)])</span>
@@ -470,7 +494,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on Sep 11, 2026 (git b00fdaf)</div>
+              Last updated on Sep 11, 2026 (git 3492af6)</div>
           </div>
           <div class="right-details">
             
@@ -485,7 +509,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

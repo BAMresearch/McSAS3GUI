@@ -10,11 +10,24 @@ REQUIRED_MCSAS3_MODULES = (
     "mcsas3.workflows",
     "mcsas3.data_adapters",
     "mcsas3.data_model",
+    "mcsas3.mcsas3_cli_histogrammer",
+)
+REQUIRED_MCSAS3_ATTRIBUTES = (
+    "background_intensity",
+    "fit_parameter_names",
+    "fitted_intensity",
+    "normalize_flat_background_mode",
 )
 
 
 def _has_canonical_mcsas3() -> bool:
-    return all(importlib.util.find_spec(module_name) is not None for module_name in REQUIRED_MCSAS3_MODULES)
+    if not all(importlib.util.find_spec(module_name) is not None for module_name in REQUIRED_MCSAS3_MODULES):
+        return False
+    try:
+        mcsas3_module = importlib.import_module("mcsas3")
+    except ImportError:
+        return False
+    return all(hasattr(mcsas3_module, attribute) for attribute in REQUIRED_MCSAS3_ATTRIBUTES)
 
 
 def _candidate_mcsas3_src_paths() -> list[Path]:
@@ -63,8 +76,9 @@ def ensure_compatible_mcsas3() -> Path | None:
             return candidate
 
     raise ImportError(
-        "McSAS3GUI requires a McSAS3 installation with the canonical workflow API "
-        "(mcsas3.workflows, mcsas3.data_adapters, mcsas3.data_model). "
+        "McSAS3GUI requires a McSAS3 installation with the canonical workflow and fitted-background APIs "
+        "(mcsas3.workflows, mcsas3.data_adapters, mcsas3.data_model, mcsas3.mcsas3_cli_histogrammer, "
+        "background_intensity, fit_parameter_names, fitted_intensity, normalize_flat_background_mode). "
         "Install the current McSAS3 package, set MCSAS3GUI_MCSAS3_SRC, or place the McSAS3 source "
         "checkout next to McSAS3GUI."
     )

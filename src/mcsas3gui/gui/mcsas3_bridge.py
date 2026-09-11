@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+import math
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, Mapping
@@ -18,6 +20,10 @@ from mcsas3.data_adapters import (
 from mcsas3.data_model import BaseData, DataBundle, ProcessingData
 from mcsas3.mc_hdf import ResultIndex, loadKV
 from mcsas3.workflows import optimize_processing_data, prepare_1d_processing_data_from_file
+
+logger = logging.getLogger(__name__)
+
+DEFAULT_MAX_ITER = 5000
 
 
 @dataclass(frozen=True)
@@ -107,17 +113,49 @@ def load_optimization_preview(
             value.decode() if isinstance(value, (bytes, bytearray, np.bytes_)) else str(value)
             for value in np.asarray(stored_parameter_names).reshape(-1)
         )
+    max_iter, max_accept = _preview_limits(
+        loadKV(result_file, repetition_path / "maxIter", default=None),
+        loadKV(result_file, repetition_path / "maxAccept", default=None),
+    )
 
     return OptimizationPreview1D(
         fit_q=fit_q,
         fit_intensity=np.asarray(loadKV(result_file, repetition_path / "modelI"), dtype=float),
         accepted_gofs=np.asarray(loadKV(result_file, repetition_path / "acceptedGofs"), dtype=float),
         accepted_steps=np.asarray(loadKV(result_file, repetition_path / "acceptedSteps"), dtype=int),
-        max_iter=int(loadKV(result_file, repetition_path / "maxIter")),
-        max_accept=int(loadKV(result_file, repetition_path / "maxAccept")),
+        max_iter=max_iter,
+        max_accept=max_accept,
         x0=x0,
         x0_parameter_names=x0_parameter_names,
     )
+
+
+def _preview_limits(max_iter_value: Any, max_accept_value: Any) -> tuple[int, int]:
+    """Return finite limits for current and legacy optimization previews."""
+
+    def finite_limit(value: Any) -> int | None:
+        if value is None:
+            return None
+        try:
+            numeric_value = float(value)
+        except (TypeError, ValueError):
+            return None
+        if not np.isfinite(numeric_value) or numeric_value < 0:
+            return None
+        return math.ceil(numeric_value)
+
+    max_iter = finite_limit(max_iter_value)
+    max_accept = finite_limit(max_accept_value)
+    if max_iter is None:
+        max_iter = max(DEFAULT_MAX_ITER, max_accept or 0)
+        logger.warning("Stored maxIter is missing or non-finite; using %d for the preview.", max_iter)
+    if max_accept is None:
+        max_accept = max_iter
+        logger.warning("Stored maxAccept is missing or non-finite; using maxIter (%d) for the preview.", max_accept)
+    elif max_accept > max_iter:
+        logger.warning("Stored maxAccept exceeds maxIter; clipping it to %d for the preview.", max_iter)
+        max_accept = max_iter
+    return max_iter, max_accept
 
 
 def _optimization_repetition_path(result_index: int, repetition: int) -> PurePosixPath:

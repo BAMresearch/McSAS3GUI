@@ -49,6 +49,10 @@ The shipped run configurations also show ``fitPorodBackground: false``. Change i
 fit an optional non-negative additive ``q^-4`` background. This requires strictly positive fitted
 Q magnitudes and can affect the recovered low-Q particle distribution.
 
+They also show ``fitFlatBackground: true``. Keep ``true`` for the existing signed fit, use
+``positive`` for a zero-or-positive flat background, or use ``false`` to fix the flat contribution
+at zero.
+
 Abort Running Tasks
 ===================
 

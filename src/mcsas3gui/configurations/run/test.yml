@@ -13,8 +13,7 @@ staticParameters:
 maxIter: 100000
 maxAccept: 3000
 convCrit: 1
-fitPorodBackground: false
-fitFlatBackground: true
+fitPorodBackground: true
 nRep: 10
 nCores: 10
 logRandom: true

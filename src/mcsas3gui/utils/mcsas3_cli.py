@@ -28,7 +28,7 @@ class SubprocessSpec:
 def _compatible_source_checkout() -> Path | None:
     """Return the sibling McSAS3 source root when available in a dev checkout."""
     for candidate in _bootstrap._candidate_mcsas3_src_paths():
-        if candidate.is_dir():
+        if (candidate / "mcsas3" / "mcsas3_cli_histogrammer.py").is_file():
             return candidate
     return None
 
@@ -46,6 +46,13 @@ def _histogrammer_executable_name() -> str:
     """Return the platform-specific histogrammer executable name."""
     suffix = ".exe" if os.name == "nt" else ""
     return f"mcsas3-histogrammer{suffix}"
+
+
+def _adjacent_histogrammer(python_executable: str | Path) -> Path | None:
+    """Return the histogram entry point installed beside the selected Python executable."""
+
+    candidate = Path(python_executable).resolve().parent / _histogrammer_executable_name()
+    return candidate if candidate.is_file() else None
 
 
 def _bundled_histogrammer_path() -> Path | None:
@@ -115,6 +122,22 @@ def histogram_subprocess_spec(
     source_root = _compatible_source_checkout()
     if source_root is not None:
         return SubprocessSpec(module_command, env_overrides=_pythonpath_override(source_root))
+
+    adjacent_histogrammer = None
+    if not getattr(sys, "frozen", False):
+        adjacent_histogrammer = _adjacent_histogrammer(executable)
+    if adjacent_histogrammer is not None:
+        return SubprocessSpec(
+            [
+                adjacent_histogrammer.as_posix(),
+                "-r",
+                str(result_file),
+                "-H",
+                str(hist_config),
+                "-i",
+                str(result_index),
+            ]
+        )
 
     histogrammer = which("mcsas3-histogrammer")
     if histogrammer is not None:

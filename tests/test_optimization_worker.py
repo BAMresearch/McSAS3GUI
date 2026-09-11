@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 import logging
+import os
 from pathlib import Path
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import numpy as np
 import pandas as pd
 import yaml
 from mcsas3.mc_hdf import ResultIndex, loadKV
 from mcsas3.workflows import prepare_1d_processing_data
+from PyQt6.QtWidgets import QApplication
 
-from mcsas3gui.gui import optimization_worker
+from mcsas3gui.gui import optimization_worker, run_settings_tab
 
 
 class _FakeHat:
@@ -20,6 +24,35 @@ class _FakeHat:
 
     def request_stop(self) -> None:
         self.stop_requested = True
+
+
+class _FakeSignal:
+    def __init__(self):
+        self.callbacks = []
+
+    def connect(self, callback) -> None:
+        self.callbacks.append(callback)
+
+    def emit(self, *args) -> None:
+        for callback in self.callbacks:
+            callback(*args)
+
+
+class _FakePreviewWorker:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        self.progress_text_signal = _FakeSignal()
+        self.preview_ready_signal = _FakeSignal()
+        self.finished_signal = _FakeSignal()
+        self.finished = _FakeSignal()
+        self.started = False
+        self.deleted = False
+
+    def start(self) -> None:
+        self.started = True
+
+    def deleteLater(self) -> None:
+        self.deleted = True
 
 
 def test_optimization_worker_request_stop_forwards_to_active_hat(tmp_path):
@@ -109,11 +142,13 @@ def test_runtime_run_config_preserves_explicit_seed():
             "modelName": "sphere",
             "nRep": 2,
             "seed": 7,
+            "fitFlatBackground": "positive",
             "fitPorodBackground": True,
         }
     )
 
     assert runtime_config["seed"] == 7
+    assert runtime_config["fitFlatBackground"] == "positive"
     assert runtime_config["fitPorodBackground"] is True
 
 
@@ -146,6 +181,7 @@ def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
             "maxIter": 1,
             "maxAccept": 1,
             "convCrit": 0.0,
+            "fitFlatBackground": False,
             "fitPorodBackground": True,
             "nRep": 2,
             "nCores": 2,
@@ -161,6 +197,7 @@ def test_execute_hat_run_multi_repetition_uses_distinct_random_starts(tmp_path):
     parameter_names = [value.decode() for value in loadKV(result_file, optimization_path / "x0ParameterNames")]
     assert parameter_names == ["scale", "background", "porodCoefficient"]
     assert fit_parameters.shape == (3,)
+    assert fit_parameters[1] == 0.0
     assert fit_parameters[2] >= 0.0
 
 
@@ -289,6 +326,49 @@ def test_preview_optimization_worker_forces_single_repetition(tmp_path, monkeypa
     assert previews == [{"preview": True}]
     assert captured["preview"] == (result_file, {"processing": True}, 2, 0)
     assert finished == [(False, "Optimization completed successfully.")]
+
+
+def test_preview_worker_import_failure_is_reported(tmp_path, monkeypatch):
+    def fail_runtime_import():
+        raise ImportError("incompatible McSAS3 core")
+
+    monkeypatch.setattr(optimization_worker, "_load_mcsas3_runtime", fail_runtime_import)
+    finished: list[tuple[bool, str]] = []
+    worker = optimization_worker.PreviewOptimizationWorker(
+        processing={"processing": True},
+        result_file=tmp_path / "preview.h5",
+        run_config={"modelName": "sphere"},
+    )
+    worker.finished_signal.connect(lambda stopped, message: finished.append((stopped, message)))
+
+    worker.run()
+
+    assert finished == [(False, "Error during test optimization: incompatible McSAS3 core")]
+
+
+def test_run_settings_tab_retains_preview_worker_until_qthread_finishes(tmp_path, monkeypatch):
+    app = QApplication.instance() or QApplication([])
+    monkeypatch.setattr(run_settings_tab, "get_default_config_files", lambda directory: [])
+    monkeypatch.setattr(run_settings_tab, "PreviewOptimizationWorker", _FakePreviewWorker)
+    tab = run_settings_tab.RunSettingsTab(temp_dir=tmp_path)
+
+    tab._start_preview_worker({"processing": True}, {"modelName": "sphere"})
+    worker = tab.preview_worker
+    tab.preview_result_file.write_text("result")
+
+    worker.finished_signal.emit(False, "Preview failed safely.")
+
+    assert tab.preview_worker is worker
+    assert tab.preview_result_file.exists()
+    assert worker.deleted is False
+
+    worker.finished.emit()
+
+    assert tab.preview_worker is None
+    assert not tab.preview_result_file.exists()
+    assert worker.deleted is True
+    tab.close()
+    assert app is not None
 
 
 def test_preview_optimization_worker_emits_live_progress_messages(tmp_path, monkeypatch):

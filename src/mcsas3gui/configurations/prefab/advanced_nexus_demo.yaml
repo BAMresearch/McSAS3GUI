@@ -85,6 +85,7 @@ run_configuration: # ibid.
   maxAccept: 3000
   convCrit: 1
   fitPorodBackground: false
+  fitFlatBackground: true
   nRep: 10
   nCores: 10
   logRandom: true

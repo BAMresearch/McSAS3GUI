@@ -64,6 +64,7 @@ def test_histogram_subprocess_prefers_bundled_helper_when_frozen(monkeypatch, tm
 
 def test_histogram_command_prefers_installed_entrypoint(monkeypatch):
     monkeypatch.setattr(mcsas3_cli, "_compatible_source_checkout", lambda: None)
+    monkeypatch.setattr(mcsas3_cli, "_adjacent_histogrammer", lambda executable: None)
     monkeypatch.setattr(
         mcsas3_cli,
         "which",
@@ -78,6 +79,7 @@ def test_histogram_command_prefers_installed_entrypoint(monkeypatch):
 
 def test_histogram_command_falls_back_to_python_module(monkeypatch):
     monkeypatch.setattr(mcsas3_cli, "_compatible_source_checkout", lambda: None)
+    monkeypatch.setattr(mcsas3_cli, "_adjacent_histogrammer", lambda executable: None)
     monkeypatch.setattr(mcsas3_cli, "which", lambda name: None)
     monkeypatch.delattr(mcsas3_cli.sys, "frozen", raising=False)
 
@@ -98,4 +100,33 @@ def test_histogram_command_falls_back_to_python_module(monkeypatch):
         "hist.yaml",
         "-i",
         "3",
+    ]
+
+
+def test_histogram_command_prefers_entrypoint_beside_selected_python(monkeypatch, tmp_path):
+    bin_dir = tmp_path / "venv" / ("Scripts" if mcsas3_cli.os.name == "nt" else "bin")
+    bin_dir.mkdir(parents=True)
+    python_executable = bin_dir / ("python.exe" if mcsas3_cli.os.name == "nt" else "python3.13")
+    histogrammer = bin_dir / mcsas3_cli._histogrammer_executable_name()
+    python_executable.write_text("")
+    histogrammer.write_text("")
+    monkeypatch.setattr(mcsas3_cli, "_compatible_source_checkout", lambda: None)
+    monkeypatch.setattr(mcsas3_cli, "which", lambda name: "/wrong-environment/mcsas3-histogrammer")
+    monkeypatch.delattr(mcsas3_cli.sys, "frozen", raising=False)
+
+    command = mcsas3_cli.histogram_command(
+        Path("result.nxs"),
+        Path("hist.yaml"),
+        result_index=1,
+        python_executable=python_executable,
+    )
+
+    assert command == [
+        histogrammer.as_posix(),
+        "-r",
+        "result.nxs",
+        "-H",
+        "hist.yaml",
+        "-i",
+        "1",
     ]

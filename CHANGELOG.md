@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.3.0 (2026-09-11)
+
+### Bug fixes
+
+* fix: small usability fixes ([`f5ac8f4`](https://github.com/BAMresearch/McSAS3GUI/commit/f5ac8f43d78e217b5955d58b53252ecae453a029))
+
+### Enh
+
+* enh: adding a porod-slope background option to the minimizer and plot ([`df4eade`](https://github.com/BAMresearch/McSAS3GUI/commit/df4eadeb21ed038617618f64676341aea1440a16))
+
+### Unknown Scope
+
+* doc: update README for friendlier introduction ([`75e7936`](https://github.com/BAMresearch/McSAS3GUI/commit/75e7936a78a3290ea3a0b76a221bc9c2bd43e8a2))
+
+* Update README.md ([`7402614`](https://github.com/BAMresearch/McSAS3GUI/commit/740261464e8a5f5f21577cecec172037e3aa706b))
+
 ## v0.2.1 (2026-08-26)
 
 ### Bug fixes

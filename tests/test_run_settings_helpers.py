@@ -66,6 +66,20 @@ def test_format_preview_status_header_includes_run_limits():
     assert "Non-negative q^-4 Background: enabled" in header
 
 
+def test_format_preview_status_header_shows_resolved_omitted_limits():
+    header = format_preview_status_header({})
+
+    assert "Max Iter: 5000" in header
+    assert "Max Accept: 5000" in header
+
+
+def test_format_preview_status_header_uses_large_max_accept_for_omitted_max_iter():
+    header = format_preview_status_header({"maxAccept": 7000})
+
+    assert "Max Iter: 7000" in header
+    assert "Max Accept: 7000" in header
+
+
 def test_plot_preview_fit_curves_adds_grey_dotted_background():
     figure, axes = plt.subplots()
 

@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -116,3 +117,30 @@ def test_load_optimization_preview_reconstructs_porod_enabled_fit(tmp_path):
         2.0 * np.array([1.0, 2.0, 3.0]) + 0.5 + 1e-4 * preview.fit_q**-4,
     )
     np.testing.assert_allclose(preview.background_curve, 0.5 + 1e-4 * preview.fit_q**-4)
+
+
+def test_load_optimization_preview_clips_legacy_infinite_max_accept(tmp_path, caplog):
+    processing = prepare_1d_processing_data(
+        pd.DataFrame(
+            {
+                "Q": np.array([0.1, 0.2, 0.3], dtype=float),
+                "I": np.array([10.0, 20.0, 30.0], dtype=float),
+                "ISigma": np.array([1.0, 2.0, 3.0], dtype=float),
+            }
+        ),
+    )
+    result_file = tmp_path / "legacy-infinite-limit-preview.h5"
+    repetition_path = ResultIndex(1).nxsEntryPoint / "optimization" / "repetition0"
+    storeKV(result_file, repetition_path / "modelI", np.array([1.0, 2.0, 3.0], dtype=float))
+    storeKV(result_file, repetition_path / "acceptedGofs", np.array([1.0], dtype=float))
+    storeKV(result_file, repetition_path / "acceptedSteps", np.array([0], dtype=int))
+    storeKV(result_file, repetition_path / "maxIter", 100)
+    storeKV(result_file, repetition_path / "maxAccept", np.inf)
+    storeKV(result_file, repetition_path / "x0", np.array([2.0, 0.5], dtype=float))
+
+    with caplog.at_level(logging.WARNING, logger="mcsas3gui.gui.mcsas3_bridge"):
+        preview = mcsas3_bridge.load_optimization_preview(result_file, processing)
+
+    assert preview.max_iter == 100
+    assert preview.max_accept == 100
+    assert "Stored maxAccept is missing or non-finite; using maxIter (100)" in caplog.text
